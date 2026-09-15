@@ -21,59 +21,64 @@
   body{
     background:var(--bg); color:var(--fg);
     font:15px/1.4 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    display:grid; grid-template-rows:auto 1fr auto auto; height:100%; overflow:hidden;
-    padding:8px 10px; gap:8px; max-width:720px; margin:0 auto;
+    display:grid; grid-template-rows:auto 1fr auto; height:100%; overflow:hidden;
+    padding:8px 10px; gap:8px; max-width:720px; margin:0 auto; position:relative;
   }
   header{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
   h1{font-size:17px;font-weight:700;letter-spacing:-.01em}
   .count{font-size:14px;color:var(--mut);font-variant-numeric:tabular-nums}
 
-  /* message card */
   .stage{position:relative;min-height:0;display:grid;grid-template-rows:1fr auto;gap:6px}
-  .msg{
-    position:relative; background:var(--card); border:2px solid var(--line); border-radius:12px;
-    padding:10px 12px 10px 14px; display:grid; grid-template-rows:auto 1fr; gap:4px; min-height:0;
-    cursor:grab; touch-action:none; user-select:none; -webkit-user-select:none;
-    box-shadow:0 2px 0 var(--line);
-    transition:transform .18s ease, border-color .18s, box-shadow .18s;
-  }
-  .msg::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:5px;border-radius:0 4px 4px 0;background:var(--focus)}
-  .msg.drag{cursor:grabbing;z-index:5;box-shadow:0 12px 24px rgba(0,0,0,.18);border-color:var(--focus);transition:none}
-  .msg.wrong{border-color:var(--no);animation:shake .5s}
-  .msg.right{border-color:var(--ok)}
-  .msg .from{font-size:14px;color:var(--mut);display:flex;gap:6px;align-items:center}
-  .msg .from b{color:var(--fg)}
-  .msg .body{overflow:auto;font-size:15px;padding-right:4px}
-  .msg:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-  .hint{font-size:14px;color:var(--mut);text-align:center}
 
   /* intro */
   .intro{display:grid;grid-template-rows:1fr auto;gap:8px;min-height:0}
   .intro-body{overflow:auto;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:10px 14px;font-size:15px}
   .intro-body p{margin:0 0 8px}
-  .kicker{font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)!important;font-weight:600}
-  .btn.primary{background:var(--focus);color:#fff;border-color:var(--focus);justify-self:stretch}
+  .kicker{font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:600}
   body.playing .intro{display:none}
   body:not(.playing) .msg, body:not(.playing) .hint, body:not(.playing) .fb{display:none!important}
   body:not(.playing) .team{opacity:.45}
+
+  /* message card - a drop target for icons AND draggable to a desk */
+  .msg{
+    position:relative; background:var(--card); border:2px solid var(--line); border-radius:12px;
+    padding:10px 12px 10px 14px; display:grid; grid-template-rows:auto 1fr; gap:4px; min-height:0;
+    cursor:grab; touch-action:none; user-select:none; -webkit-user-select:none;
+    box-shadow:0 2px 0 var(--line);
+    transition:transform .18s ease, border-color .18s, box-shadow .18s, background .18s;
+  }
+  .msg::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:5px;border-radius:0 4px 4px 0;background:var(--focus)}
+  .msg.drag{cursor:grabbing;z-index:5;box-shadow:0 12px 24px rgba(0,0,0,.18);border-color:var(--focus);transition:none}
+  .msg.target{border-color:var(--focus);border-style:dashed;background:var(--bg)}
+  .msg.wrong{border-color:var(--no);animation:shake .5s}
+  .msg.right{border-color:var(--ok)}
+  .msg .from{font-size:14px;color:var(--mut)}
+  .msg .from b{color:var(--fg)}
+  .msg .body{overflow:auto;font-size:15px;padding-right:4px}
+  .msg:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+  .hint{font-size:14px;color:var(--mut);text-align:center}
+
   /* feedback */
-  .fb{min-height:44px;border-radius:10px;padding:8px 12px;font-size:14px;display:none;border-left:5px solid}
-  .fb.show{display:block}
+  .fb{min-height:44px;border-radius:10px;padding:8px 12px;font-size:14px;display:none;border-left:5px solid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+  .fb.show{display:grid}
   .fb.ok{background:var(--okbg);border-color:var(--ok)} .fb.no{background:var(--nobg);border-color:var(--no)}
   .fb b{display:block;font-size:14px}
+  .fb .next{display:none}
+  .fb.ok .next{display:inline-block}
 
-  /* the team - desks are drop zones AND buttons */
+  /* the team - desks are drop zones, drag sources AND buttons */
   .team{display:grid;grid-template-columns:repeat(5,1fr);gap:0;position:relative;align-items:start}
   .desk{
-    position:relative; background:none; border:0; font:inherit; color:var(--fg); cursor:pointer;
+    position:relative; background:none; border:0; font:inherit; color:var(--fg); cursor:grab;
     display:grid; justify-items:center; gap:3px; padding:6px 2px 4px; min-height:64px; border-radius:10px;
-    transition:transform .18s, background .18s;
+    transition:transform .18s, background .18s; touch-action:none; user-select:none; -webkit-user-select:none;
   }
   .desk:focus-visible{outline:3px solid var(--focus);outline-offset:-2px}
   .desk.over{background:var(--card);transform:translateY(-3px)}
   .desk.flash-no{animation:flashno .5s}
+  .desk.lifted .avatar{opacity:.35}
   .avatar{
-    width:52px;height:52px;border-radius:50%;display:grid;place-items:center;position:relative;
+    width:52px;height:52px;border-radius:50%;display:grid;place-items:center;position:relative;z-index:1;
     background:var(--card);border:3px solid var(--line);transition:border-color .2s, background .2s, transform .2s;
   }
   .avatar svg{width:34px;height:34px}
@@ -81,39 +86,41 @@
   .desk.done .avatar svg{fill:#fff}
   .desk .name{font-size:14px;font-weight:600;line-height:1.1}
   .desk .role{font-size:14px;color:var(--mut);line-height:1.05;min-height:2.1em;text-align:center}
-  .desk .tick{position:absolute;top:2px;right:6px;width:20px;height:20px;border-radius:50%;background:var(--ok);color:#fff;font-size:13px;display:none;place-items:center;font-weight:700}
+  .desk .tick{position:absolute;top:2px;right:6px;width:20px;height:20px;border-radius:50%;background:var(--ok);color:#fff;font-size:13px;display:none;place-items:center;font-weight:700;z-index:2}
   .desk.done .tick{display:grid;animation:pop .35s ease-out}
-  /* chain links between desks */
-  .links{position:absolute;left:10%;right:10%;top:31px;height:6px;display:grid;grid-template-columns:repeat(4,1fr);pointer-events:none;z-index:-1}
+  .ghost{position:fixed;left:0;top:0;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;pointer-events:none;z-index:20;
+    background:var(--c);border:3px solid #fff;box-shadow:0 10px 24px rgba(0,0,0,.3);transform:translate(-50%,-50%) scale(1.1)}
+  .ghost svg{width:34px;height:34px;fill:#fff}
+  /* chain links between adjacent desks */
+  .links{position:absolute;left:10%;right:10%;top:31px;height:6px;display:grid;grid-template-columns:repeat(4,1fr);pointer-events:none;z-index:0}
   .link{height:6px;background:var(--line);border-radius:3px;margin:0 20px;position:relative;overflow:hidden}
-  .link.dash{background:repeating-linear-gradient(90deg,var(--line) 0 8px,transparent 8px 14px)}
   .link::after{content:"";position:absolute;inset:0;background:var(--ok);transform:scaleX(0);transform-origin:left}
   .link.joined::after{transform:scaleX(1);transition:transform .5s ease-out}
   .link.joined{background:var(--ok)}
 
   /* finale */
-  .deal{position:absolute;top:20px;left:0;width:26px;height:26px;border-radius:50%;background:var(--ae);border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);display:none;z-index:6}
-  .deal.go{display:block;animation:travel 2.2s ease-in-out forwards}
+  .deal{position:absolute;width:26px;height:26px;border-radius:50%;background:var(--ae);border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);display:none;z-index:6;transform:translate(-50%,-50%)}
+  .deal.go{display:block}
   .done-panel{display:none;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;align-self:end;background:var(--okbg);border-radius:10px;padding:8px 12px;font-size:14px}
   .done-panel.show{display:flex}
   .btn{font:inherit;font-size:14px;font-weight:600;padding:10px 14px;border-radius:8px;border:2px solid var(--fg);background:var(--bg);color:var(--fg);cursor:pointer;min-height:44px}
+  .btn.primary{background:var(--focus);color:#fff;border-color:var(--focus);justify-self:stretch}
+  .btn.small{min-height:36px;padding:6px 10px;border-color:var(--ok);color:var(--ok);white-space:nowrap}
   .btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+  canvas.fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:30;display:none}
+  canvas.fx.on{display:block}
 
   @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
   @keyframes flashno{0%,100%{background:none}30%{background:var(--nobg)}}
   @keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.3)}100%{transform:scale(1)}}
-  @keyframes travel{from{left:8%}to{left:calc(92% - 22px)}}
-  @media (prefers-reduced-motion:reduce){
-    *{animation:none!important;transition:none!important}
-    .deal.go{left:calc(92% - 22px)}
-  }
-  @media (min-width:480px){ .avatar{width:64px;height:64px} .avatar svg{width:40px;height:40px} .links{top:37px} .deal{top:28px} }
+  @media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
+  @media (min-width:480px){ .avatar{width:64px;height:64px} .avatar svg{width:40px;height:40px} .links{top:37px} }
 </style>
 </head>
 <body>
 <header>
   <h1>Who picks this up?</h1>
-  <div class="count" id="count" aria-live="polite">Message 1 of 5</div>
+  <div class="count" id="count" aria-live="polite"></div>
 </header>
 
 <div class="stage">
@@ -130,8 +137,8 @@
     <div class="from" id="from"></div>
     <div class="body" id="body"></div>
   </div>
-  <div class="fb" id="fb" role="status" aria-live="polite"></div>
-  <div class="hint" id="hint">Drag the message to the right person — or press 1–5, or choose a desk below.</div>
+  <div class="fb" id="fb" role="status" aria-live="polite"><div id="fbtext"></div><button class="btn small next" id="nextBtn" type="button">Next &rarr;</button></div>
+  <div class="hint" id="hint">Drag a person onto the message, or the message onto a person &mdash; or press 1&ndash;5.</div>
   <div class="done-panel" id="done">
     <span><b>That's the chain.</b> Every message you routed is a handover the deal passed through.</span>
     <button class="btn" id="again" type="button">Play again</button>
@@ -140,25 +147,27 @@
 
 <div class="team" id="team">
   <div class="links" aria-hidden="true">
-    <div class="link dash" data-link="0"></div><div class="link" data-link="1"></div><div class="link" data-link="2"></div><div class="link" data-link="3"></div>
+    <div class="link"></div><div class="link"></div><div class="link"></div><div class="link"></div>
   </div>
   <div class="deal" id="deal" aria-hidden="true"></div>
 </div>
+<canvas class="fx" id="fx" aria-hidden="true"></canvas>
 
 <script>
 (function(){
   'use strict';
-  // The team, in chain order. "You" first: the associate feeds the chain.
+  var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // The team, in TRUE chain order. Desks are displayed shuffled; the finale travels this order.
   var TEAM = [
-    {id:'you',  name:'You',   role:'Sales Associate', c:'var(--you)',
+    {id:'you',  name:'You',   role:'Sales Associate', c:'var(--you)', hex:'#7a5cf0',
      svg:'<svg viewBox="0 0 24 24" fill="#7a5cf0"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7z"/></svg>'},
-    {id:'sdr',  name:'Naomi', role:'SDR', c:'var(--sdr)',
+    {id:'sdr',  name:'Naomi', role:'SDR', c:'var(--sdr)', hex:'#f2a900',
      svg:'<svg viewBox="0 0 24 24" fill="#f2a900"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>'},
-    {id:'ae',   name:'Romeo', role:'Account exec', c:'var(--ae)',
+    {id:'ae',   name:'Romeo', role:'Account exec', c:'var(--ae)', hex:'#e0407a',
      svg:'<svg viewBox="0 0 24 24" fill="#e0407a"><path d="M20 6h-3V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zM9 4h6v2H9z"/></svg>'},
-    {id:'sa',   name:'Maya',  role:'Solution architect', c:'var(--sa)',
+    {id:'sa',   name:'Maya',  role:'Solution architect', c:'var(--sa)', hex:'#2e9bd9',
      svg:'<svg viewBox="0 0 24 24" fill="#2e9bd9"><path d="M3 5h7v7H3zM14 5h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/></svg>'},
-    {id:'csm',  name:'Talia', role:'Customer success', c:'var(--csm)',
+    {id:'csm',  name:'Talia', role:'Customer success', c:'var(--csm)', hex:'#22a66f',
      svg:'<svg viewBox="0 0 24 24" fill="#22a66f"><path d="M12 21s-7-4.6-9.3-8.7C.8 8.8 3 5 6.5 5c2 0 3.3 1 4 2.1C11.2 6 12.5 5 14.5 5 18 5 20.2 8.8 18.3 12.3 16 16.4 12 21 12 21z"/></svg>'},
   ];
   // Five messages. Substance is the week's: Anarres Systems and its people, the Carrow and Vale deal.
@@ -184,78 +193,127 @@
      ok:'You: Yours. Research, meeting briefs and keeping the CRM accurate are the entry-level tasks that keep the whole chain moving.',
      no:{sdr:'Naomi: I could, but this is exactly what the new associate is here for. Take it.', ae:'Romeo: I asked for it — I can’t also write it. This one’s yours.', sa:'Maya: Background research and CRM notes aren’t a design job. That’s you.', csm:'Talia: Not a customer task. Prep and CRM hygiene for a live deal — that’s yours.'}},
   ];
+  var READ_MS = 9000;   // how long a right answer stays before auto-advancing (or press Next)
 
   var team = document.getElementById('team'), msg = document.getElementById('msg'),
       fromEl = document.getElementById('from'), bodyEl = document.getElementById('body'),
-      fb = document.getElementById('fb'), count = document.getElementById('count'),
-      hint = document.getElementById('hint'), done = document.getElementById('done'),
-      deal = document.getElementById('deal');
-  var order, i, solved, desks = {};
-
-  // Build desks
-  TEAM.forEach(function(t, n){
-    var b = document.createElement('button');
-    b.type = 'button'; b.className = 'desk'; b.dataset.id = t.id; b.style.setProperty('--c', t.c);
-    b.setAttribute('aria-label', 'Send to ' + t.name + ', ' + t.role + ' (key ' + (n+1) + ')');
-    b.innerHTML = '<span class="tick" aria-hidden="true">✓</span><span class="avatar" aria-hidden="true">' + t.svg + '</span><span class="name">' + t.name + '</span><span class="role">' + t.role + '</span>';
-    b.addEventListener('click', function(){ route(t.id); });
-    team.appendChild(b); desks[t.id] = b;
-  });
+      fb = document.getElementById('fb'), fbtext = document.getElementById('fbtext'), nextBtn = document.getElementById('nextBtn'),
+      count = document.getElementById('count'), hint = document.getElementById('hint'),
+      done = document.getElementById('done'), deal = document.getElementById('deal'), fx = document.getElementById('fx');
+  var byId = {}; TEAM.forEach(function(t){ byId[t.id] = t; });
+  var order, i, solved, desks = {}, rowOrder = [], timer = null, suppressClick = false, busy = false;
 
   function shuffle(a){ for (var k=a.length-1;k>0;k--){ var j=Math.floor(Math.random()*(k+1)); var x=a[k]; a[k]=a[j]; a[j]=x; } return a; }
 
+  function buildDesks(){
+    Object.keys(desks).forEach(function(k){ desks[k].remove(); }); desks = {};
+    rowOrder = shuffle(TEAM.map(function(t){return t.id;}));
+    rowOrder.forEach(function(id, n){
+      var t = byId[id], b = document.createElement('button');
+      b.type = 'button'; b.className = 'desk'; b.dataset.id = id; b.style.setProperty('--c', t.c);
+      b.setAttribute('aria-label', 'Send to ' + t.name + ', ' + t.role + ' (key ' + (n+1) + ')');
+      b.innerHTML = '<span class="tick" aria-hidden="true">✓</span><span class="avatar" aria-hidden="true">' + t.svg + '</span><span class="name">' + t.name + '</span><span class="role">' + t.role + '</span>';
+      b.addEventListener('click', function(){ if (suppressClick){ suppressClick = false; return; } route(id); });
+      attachDeskDrag(b, t);
+      team.appendChild(b); desks[id] = b;
+    });
+  }
+
   function start(){
-    order = shuffle(MSGS.map(function(_,k){return k;})); i = 0; solved = {};
-    Object.keys(desks).forEach(function(k){ desks[k].classList.remove('done'); });
+    order = shuffle(MSGS.map(function(_,k){return k;})); i = 0; solved = {}; busy = false;
+    buildDesks();
     team.querySelectorAll('.link').forEach(function(l){ l.classList.remove('joined'); });
-    deal.classList.remove('go'); done.classList.remove('show'); hint.style.display='';
-    msg.style.display=''; show();
+    deal.classList.remove('go'); done.classList.remove('show'); hint.style.display=''; msg.style.display='';
+    show();
   }
   function show(){
+    clearTimeout(timer); busy = false;
     var m = MSGS[order[i]];
     fromEl.innerHTML = 'From: <b>' + m.from + '</b>'; bodyEl.textContent = m.text;
     count.textContent = 'Message ' + (i+1) + ' of 5';
-    fb.className = 'fb'; fb.textContent = ''; msg.className = 'msg'; msg.focus({preventScroll:true});
+    fb.className = 'fb'; fbtext.textContent = ''; msg.className = 'msg'; msg.focus({preventScroll:true});
+  }
+  function advance(){
+    clearTimeout(timer);
+    if (i === 4){ finish(); } else { i++; show(); }
   }
   function route(id){
-    if (done.classList.contains('show')) return;
+    if (busy || done.classList.contains('show')) return;
     var m = MSGS[order[i]];
     if (id === m.to){
-      msg.classList.add('right'); fb.className = 'fb show ok'; fb.innerHTML = '<b>Right desk.</b>' + m.ok;
+      busy = true;
+      msg.classList.add('right'); fb.className = 'fb show ok'; fbtext.innerHTML = '<b>Right desk.</b>' + m.ok;
       desks[id].classList.add('done'); solved[id] = true; joinLinks();
-      if (i === 4){ finish(); } else { i++; setTimeout(show, 1400); }
+      nextBtn.focus({preventScroll:true});
+      timer = setTimeout(advance, READ_MS);
     } else {
       msg.classList.remove('wrong'); void msg.offsetWidth; msg.classList.add('wrong');
       desks[id].classList.remove('flash-no'); void desks[id].offsetWidth; desks[id].classList.add('flash-no');
-      fb.className = 'fb show no'; fb.innerHTML = '<b>Bounced back.</b>' + m.no[id];
+      fb.className = 'fb show no'; fbtext.innerHTML = '<b>Bounced back.</b>' + m.no[id];
     }
   }
+  nextBtn.addEventListener('click', advance);
   function joinLinks(){
-    var ids = TEAM.map(function(t){return t.id;});
     team.querySelectorAll('.link').forEach(function(l, n){
-      if (solved[ids[n]] && solved[ids[n+1]]) l.classList.add('joined');
+      if (solved[rowOrder[n]] && solved[rowOrder[n+1]]) l.classList.add('joined');
     });
   }
+
+  // Finale: the deal travels the chain in its TRUE order across the shuffled desks, then fireworks.
   function finish(){
-    setTimeout(function(){
-      msg.style.display='none'; hint.style.display='none'; fb.className='fb'; done.classList.add('show');
-      deal.classList.add('go'); document.getElementById('again').focus();
-    }, 1200);
+    msg.style.display='none'; hint.style.display='none'; fb.className='fb';
+    var tr = team.getBoundingClientRect();
+    var stops = TEAM.map(function(t){ var r = desks[t.id].querySelector('.avatar').getBoundingClientRect();
+      return {x: r.left + r.width/2 - tr.left, y: r.top + r.height/2 - tr.top}; });
+    deal.classList.add('go');
+    if (REDUCED || !deal.animate){
+      deal.style.left = stops[4].x + 'px'; deal.style.top = stops[4].y + 'px'; done.classList.add('show'); document.getElementById('again').focus(); return;
+    }
+    var kf = stops.map(function(p){ return {left: p.x + 'px', top: p.y + 'px'}; });
+    deal.style.left = kf[0].left; deal.style.top = kf[0].top;
+    var anim = deal.animate(kf, {duration: 2600, easing: 'ease-in-out', fill: 'forwards'});
+    anim.onfinish = function(){
+      var r = deal.getBoundingClientRect();
+      fireworks(r.left + r.width/2, r.top + r.height/2);
+      setTimeout(function(){ done.classList.add('show'); document.getElementById('again').focus(); }, 900);
+    };
+  }
+  function fireworks(cx, cy){
+    var ctx = fx.getContext('2d'), dpr = window.devicePixelRatio || 1, W = window.innerWidth, H = window.innerHeight;
+    fx.width = W * dpr; fx.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); fx.classList.add('on');
+    var cols = TEAM.map(function(t){ return t.hex; }), parts = [], t0 = performance.now();
+    function burst(x, y, n, speed){ for (var k=0;k<n;k++){ var a = Math.random()*Math.PI*2, v = speed*(0.4+Math.random()*0.8);
+      parts.push({x:x, y:y, vx:Math.cos(a)*v, vy:Math.sin(a)*v, life:1, c:cols[k%cols.length], r:2+Math.random()*2.5}); } }
+    burst(cx, cy, 90, 5.5);
+    setTimeout(function(){ burst(cx - 60, cy - 70, 60, 4.5); }, 250);
+    setTimeout(function(){ burst(cx + 50, cy - 90, 60, 4.5); }, 500);
+    setTimeout(function(){ burst(W/2, H*0.35, 120, 6.5); }, 800);
+    (function frame(now){
+      ctx.clearRect(0, 0, W, H);
+      var alive = false;
+      parts.forEach(function(p){
+        if (p.life <= 0) return; alive = true;
+        p.x += p.vx; p.y += p.vy; p.vy += 0.12; p.vx *= 0.985; p.vy *= 0.985; p.life -= 0.014;
+        ctx.globalAlpha = Math.max(p.life, 0); ctx.fillStyle = p.c; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+      if (alive && now - t0 < 4000) requestAnimationFrame(frame); else { fx.classList.remove('on'); ctx.clearRect(0,0,W,H); }
+    })(t0);
   }
   document.getElementById('again').addEventListener('click', start);
   document.getElementById('startBtn').addEventListener('click', function(){ document.body.classList.add('playing'); start(); });
 
-  // Keyboard: 1-5 routes to a desk in chain order.
+  // Keyboard: 1-5 routes to a desk in DISPLAYED order (matches the aria labels).
   document.addEventListener('keydown', function(e){
-    if (e.target.tagName === 'BUTTON' && e.key !== '1' && e.key !== '2' && e.key !== '3' && e.key !== '4' && e.key !== '5') return;
+    if (!document.body.classList.contains('playing')) return;
     var n = parseInt(e.key, 10);
-    if (n >= 1 && n <= 5){ route(TEAM[n-1].id); e.preventDefault(); }
+    if (n >= 1 && n <= 5 && rowOrder[n-1]){ route(rowOrder[n-1]); e.preventDefault(); }
   });
 
-  // Pointer drag: the card follows the pointer; release over a desk routes it.
+  // Drag 1: the message card to a desk.
   var drag = null;
   msg.addEventListener('pointerdown', function(e){
-    if (done.classList.contains('show')) return;
+    if (busy || done.classList.contains('show')) return;
     drag = {x:e.clientX, y:e.clientY}; msg.setPointerCapture(e.pointerId); msg.classList.add('drag');
   });
   msg.addEventListener('pointermove', function(e){
@@ -264,15 +322,15 @@
     var over = deskAt(e.clientX, e.clientY);
     Object.keys(desks).forEach(function(k){ desks[k].classList.toggle('over', over === k); });
   });
-  function endDrag(e){
+  function endCardDrag(e){
     if (!drag) return;
     var over = deskAt(e.clientX, e.clientY);
     drag = null; msg.classList.remove('drag'); msg.style.transform = '';
     Object.keys(desks).forEach(function(k){ desks[k].classList.remove('over'); });
     if (over) route(over);
   }
-  msg.addEventListener('pointerup', endDrag);
-  msg.addEventListener('pointercancel', endDrag);
+  msg.addEventListener('pointerup', endCardDrag);
+  msg.addEventListener('pointercancel', endCardDrag);
   function deskAt(x, y){
     msg.style.pointerEvents = 'none';
     var el = document.elementFromPoint(x, y);
@@ -281,7 +339,32 @@
     return d ? d.dataset.id : null;
   }
 
-  count.textContent = '';
+  // Drag 2: a desk icon onto the message card. A short press with no movement stays a click.
+  function attachDeskDrag(b, t){
+    var st = null, ghost = null;
+    b.addEventListener('pointerdown', function(e){
+      if (busy || done.classList.contains('show')) return;
+      st = {x:e.clientX, y:e.clientY, moved:false}; b.setPointerCapture(e.pointerId);
+    });
+    b.addEventListener('pointermove', function(e){
+      if (!st) return;
+      if (!st.moved && Math.hypot(e.clientX-st.x, e.clientY-st.y) < 6) return;
+      if (!st.moved){ st.moved = true; b.classList.add('lifted');
+        ghost = document.createElement('div'); ghost.className = 'ghost'; ghost.style.setProperty('--c', t.c); ghost.innerHTML = t.svg; document.body.appendChild(ghost); }
+      ghost.style.left = e.clientX + 'px'; ghost.style.top = e.clientY + 'px';
+      msg.classList.toggle('target', overMsg(e.clientX, e.clientY));
+    });
+    function end(e){
+      if (!st) return;
+      var wasDrag = st.moved, hit = wasDrag && overMsg(e.clientX, e.clientY);
+      st = null; b.classList.remove('lifted'); msg.classList.remove('target');
+      if (ghost){ ghost.remove(); ghost = null; }
+      if (wasDrag){ suppressClick = true; setTimeout(function(){ suppressClick = false; }, 0); if (hit) route(t.id); }
+    }
+    b.addEventListener('pointerup', end);
+    b.addEventListener('pointercancel', end);
+  }
+  function overMsg(x, y){ var r = msg.getBoundingClientRect(); return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom; }
 })();
 </script>
 </body>
