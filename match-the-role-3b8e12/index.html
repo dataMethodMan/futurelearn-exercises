@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Who picks this up?</title>
+<!-- Interactive learning activity. Not for redistribution. -->
+<style>
+  :root{
+    --bg:#ffffff; --fg:#17171c; --mut:#55555f; --line:#d9d9e0; --card:#f5f5f8;
+    --ok:#137a3c; --okbg:#e2f5e8; --no:#b3261e; --nobg:#fbe5e3; --focus:#1140d6;
+    --sdr:#f2a900; --ae:#e0407a; --sa:#2e9bd9; --csm:#22a66f; --you:#7a5cf0;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{ --bg:#131318; --fg:#f1f1f5; --mut:#b3b3bd; --line:#34343e; --card:#1d1d24;
+      --ok:#7fdca2; --okbg:#153323; --no:#ff9a92; --nobg:#3f1c19; --focus:#9db4ff; }
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg); color:var(--fg);
+    font:15px/1.4 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    display:grid; grid-template-rows:auto 1fr auto auto; height:100%; overflow:hidden;
+    padding:8px 10px; gap:8px; max-width:720px; margin:0 auto;
+  }
+  header{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  h1{font-size:17px;font-weight:700;letter-spacing:-.01em}
+  .count{font-size:14px;color:var(--mut);font-variant-numeric:tabular-nums}
+
+  /* message card */
+  .stage{position:relative;min-height:0;display:grid;grid-template-rows:1fr auto;gap:6px}
+  .msg{
+    position:relative; background:var(--card); border:2px solid var(--line); border-radius:12px;
+    padding:10px 12px 10px 14px; display:grid; grid-template-rows:auto 1fr; gap:4px; min-height:0;
+    cursor:grab; touch-action:none; user-select:none; -webkit-user-select:none;
+    box-shadow:0 2px 0 var(--line);
+    transition:transform .18s ease, border-color .18s, box-shadow .18s;
+  }
+  .msg::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:5px;border-radius:0 4px 4px 0;background:var(--focus)}
+  .msg.drag{cursor:grabbing;z-index:5;box-shadow:0 12px 24px rgba(0,0,0,.18);border-color:var(--focus);transition:none}
+  .msg.wrong{border-color:var(--no);animation:shake .5s}
+  .msg.right{border-color:var(--ok)}
+  .msg .from{font-size:14px;color:var(--mut);display:flex;gap:6px;align-items:center}
+  .msg .from b{color:var(--fg)}
+  .msg .body{overflow:auto;font-size:15px;padding-right:4px}
+  .msg:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+  .hint{font-size:14px;color:var(--mut);text-align:center}
+
+  /* feedback */
+  .fb{min-height:44px;border-radius:10px;padding:8px 12px;font-size:14px;display:none;border-left:5px solid}
+  .fb.show{display:block}
+  .fb.ok{background:var(--okbg);border-color:var(--ok)} .fb.no{background:var(--nobg);border-color:var(--no)}
+  .fb b{display:block;font-size:14px}
+
+  /* the team - desks are drop zones AND buttons */
+  .team{display:grid;grid-template-columns:repeat(5,1fr);gap:0;position:relative;align-items:start}
+  .desk{
+    position:relative; background:none; border:0; font:inherit; color:var(--fg); cursor:pointer;
+    display:grid; justify-items:center; gap:3px; padding:6px 2px 4px; min-height:64px; border-radius:10px;
+    transition:transform .18s, background .18s;
+  }
+  .desk:focus-visible{outline:3px solid var(--focus);outline-offset:-2px}
+  .desk.over{background:var(--card);transform:translateY(-3px)}
+  .desk.flash-no{animation:flashno .5s}
+  .avatar{
+    width:52px;height:52px;border-radius:50%;display:grid;place-items:center;position:relative;
+    background:var(--card);border:3px solid var(--line);transition:border-color .2s, background .2s, transform .2s;
+  }
+  .avatar svg{width:34px;height:34px}
+  .desk.done .avatar{border-color:var(--c);background:var(--c);transform:scale(1.08)}
+  .desk.done .avatar svg{fill:#fff}
+  .desk .name{font-size:14px;font-weight:600;line-height:1.1}
+  .desk .role{font-size:12px;color:var(--mut);line-height:1.1;min-height:2.2em;text-align:center}
+  .desk .tick{position:absolute;top:2px;right:6px;width:20px;height:20px;border-radius:50%;background:var(--ok);color:#fff;font-size:13px;display:none;place-items:center;font-weight:700}
+  .desk.done .tick{display:grid;animation:pop .35s ease-out}
+  /* chain links between desks */
+  .links{position:absolute;left:10%;right:10%;top:31px;height:6px;display:grid;grid-template-columns:repeat(4,1fr);pointer-events:none;z-index:-1}
+  .link{height:6px;background:var(--line);border-radius:3px;margin:0 20px;position:relative;overflow:hidden}
+  .link.dash{background:repeating-linear-gradient(90deg,var(--line) 0 8px,transparent 8px 14px)}
+  .link::after{content:"";position:absolute;inset:0;background:var(--ok);transform:scaleX(0);transform-origin:left}
+  .link.joined::after{transform:scaleX(1);transition:transform .5s ease-out}
+  .link.joined{background:var(--ok)}
+
+  /* finale */
+  .deal{position:absolute;top:20px;left:0;width:26px;height:26px;border-radius:50%;background:var(--ae);border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);display:none;z-index:6}
+  .deal.go{display:block;animation:travel 2.2s ease-in-out forwards}
+  .done-panel{display:none;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;align-self:end;background:var(--okbg);border-radius:10px;padding:8px 12px;font-size:14px}
+  .done-panel.show{display:flex}
+  .btn{font:inherit;font-size:14px;font-weight:600;padding:10px 14px;border-radius:8px;border:2px solid var(--fg);background:var(--bg);color:var(--fg);cursor:pointer;min-height:44px}
+  .btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+  @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+  @keyframes flashno{0%,100%{background:none}30%{background:var(--nobg)}}
+  @keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.3)}100%{transform:scale(1)}}
+  @keyframes travel{from{left:8%}to{left:calc(92% - 22px)}}
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    .deal.go{left:calc(92% - 22px)}
+  }
+  @media (min-width:480px){ .avatar{width:64px;height:64px} .avatar svg{width:40px;height:40px} .links{top:37px} .deal{top:28px} }
+</style>
+</head>
+<body>
+<header>
+  <h1>Who picks this up?</h1>
+  <div class="count" id="count" aria-live="polite">Message 1 of 5</div>
+</header>
+
+<div class="stage">
+  <div class="msg" id="msg" tabindex="0" role="group" aria-roledescription="draggable message" aria-describedby="hint">
+    <div class="from" id="from"></div>
+    <div class="body" id="body"></div>
+  </div>
+  <div class="fb" id="fb" role="status" aria-live="polite"></div>
+  <div class="hint" id="hint">Drag the message to the right person — or press 1–5, or choose a desk below.</div>
+  <div class="done-panel" id="done">
+    <span><b>That's the chain.</b> Every message you routed is a handover the deal passed through.</span>
+    <button class="btn" id="again" type="button">Play again</button>
+  </div>
+</div>
+
+<div class="team" id="team">
+  <div class="links" aria-hidden="true">
+    <div class="link dash" data-link="0"></div><div class="link" data-link="1"></div><div class="link" data-link="2"></div><div class="link" data-link="3"></div>
+  </div>
+  <div class="deal" id="deal" aria-hidden="true"></div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  // The team, in chain order. "You" first: the associate feeds the chain.
+  var TEAM = [
+    {id:'you',  name:'You',   role:'Sales Associate', c:'var(--you)',
+     svg:'<svg viewBox="0 0 24 24" fill="#7a5cf0"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7z"/></svg>'},
+    {id:'sdr',  name:'Naomi', role:'SDR', c:'var(--sdr)',
+     svg:'<svg viewBox="0 0 24 24" fill="#f2a900"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>'},
+    {id:'ae',   name:'Romeo', role:'Account Exec', c:'var(--ae)',
+     svg:'<svg viewBox="0 0 24 24" fill="#e0407a"><path d="M20 6h-3V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zM9 4h6v2H9z"/></svg>'},
+    {id:'sa',   name:'Maya',  role:'Solution Arch.', c:'var(--sa)',
+     svg:'<svg viewBox="0 0 24 24" fill="#2e9bd9"><path d="M3 5h7v7H3zM14 5h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/></svg>'},
+    {id:'csm',  name:'Talia', role:'Customer Success', c:'var(--csm)',
+     svg:'<svg viewBox="0 0 24 24" fill="#22a66f"><path d="M12 21s-7-4.6-9.3-8.7C.8 8.8 3 5 6.5 5c2 0 3.3 1 4 2.1C11.2 6 12.5 5 14.5 5 18 5 20.2 8.8 18.3 12.3 16 16.4 12 21 12 21z"/></svg>'},
+  ];
+  // Five messages. Substance is the week's: Anarres Systems and its people, the Carrow and Vale deal.
+  var MSGS = [
+    {from:'Webinar follow-ups', to:'sdr',
+     text:'The Blackwood Logistics lead from last month’s webinar replied: “Interested, but not this quarter.” Someone needs to stay in touch until they’re ready to talk properly.',
+     ok:'Naomi: Mine. I keep leads warm until they’re ready for a real conversation — then Romeo gets a qualified opportunity, not a cold name.',
+     no:{you:'Romeo: You’ll help with this later, but nurturing a lead over months is the SDR’s job. Try Naomi.', ae:'Romeo: Not mine — I run discovery and close deals. First contact and warming leads is Naomi.', sa:'Maya: I design solutions for clients who’ve committed. This one hasn’t even qualified yet. Try Naomi.', csm:'Talia: I look after customers after they sign. This isn’t a customer yet — try Naomi.'}},
+    {from:'Carrow & Vale — CIO', to:'ae',
+     text:'The CIO wants the full proposal, with pricing, by Friday. She’s said she’ll want to negotiate the terms before anything goes to procurement.',
+     ok:'Romeo: Mine. Proposal, pricing and negotiation are the account executive’s — I turn interest into a signed contract.',
+     no:{you:'Romeo: I’ll want your help pulling the brief together, but pricing and negotiation sit with me. Send it to me.', sdr:'Naomi: I got them to this point — the deal is Romeo’s now. Try him.', sa:'Maya: I’ll be on the call for the technical fit, but the proposal and the terms are Romeo’s.', csm:'Talia: Nothing’s signed yet, so it isn’t mine. Romeo owns the deal.'}},
+    {from:'Carrow & Vale — IT lead', to:'sa',
+     text:'Their IT lead is asking whether we integrate with the systems they already run, and whether we meet their compliance obligations. They want a deployment plan before they sign.',
+     ok:'Maya: Mine. Turning their needs into a technical design that fits — integration, compliance, scale — is what a solution architect does.',
+     no:{you:'Maya: This needs the technical design, not research. That’s me.', sdr:'Naomi: Way past my stage. Integration and compliance questions go to Maya.', ae:'Romeo: I’ll be on the call, but the deployment plan is Maya’s — she makes it fit.', csm:'Talia: Once it’s deployed I’ll help them use it. Designing it is Maya.'}},
+    {from:'Halden Retail', to:'csm',
+     text:'Halden Retail signed six weeks ago. Their team still hasn’t logged in to the platform, and their renewal date is in ten months.',
+     ok:'Talia: Mine. After the sale I make sure they actually get value — onboarding, training, check-ins — so the renewal takes care of itself.',
+     no:{you:'Talia: You could help me prepare the training, but a signed customer who isn’t using the product is a customer success problem. Mine.', sdr:'Naomi: They’re a customer, not a lead. That’s Talia.', ae:'Romeo: I closed it; Talia keeps it. Adoption and renewal are hers.', sa:'Maya: The solution’s deployed. Getting them to use it is Talia.'}},
+    {from:'Romeo', to:'you',
+     text:'Romeo’s meeting with the CIO is tomorrow. He needs a one-page brief on Carrow & Vale’s recent tech investments and press coverage — and last week’s call notes still aren’t in the CRM.',
+     ok:'You: Yours. Research, meeting briefs and keeping the CRM accurate are the entry-level tasks that keep the whole chain moving.',
+     no:{sdr:'Naomi: I could, but this is exactly what the new associate is here for. Take it.', ae:'Romeo: I asked for it — I can’t also write it. This one’s yours.', sa:'Maya: Background research and CRM notes aren’t a design job. That’s you.', csm:'Talia: Not a customer task. Prep and CRM hygiene for a live deal — that’s yours.'}},
+  ];
+
+  var team = document.getElementById('team'), msg = document.getElementById('msg'),
+      fromEl = document.getElementById('from'), bodyEl = document.getElementById('body'),
+      fb = document.getElementById('fb'), count = document.getElementById('count'),
+      hint = document.getElementById('hint'), done = document.getElementById('done'),
+      deal = document.getElementById('deal');
+  var order, i, solved, desks = {};
+
+  // Build desks
+  TEAM.forEach(function(t, n){
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'desk'; b.dataset.id = t.id; b.style.setProperty('--c', t.c);
+    b.setAttribute('aria-label', 'Send to ' + t.name + ', ' + t.role + ' (key ' + (n+1) + ')');
+    b.innerHTML = '<span class="tick" aria-hidden="true">✓</span><span class="avatar" aria-hidden="true">' + t.svg + '</span><span class="name">' + t.name + '</span><span class="role">' + t.role + '</span>';
+    b.addEventListener('click', function(){ route(t.id); });
+    team.appendChild(b); desks[t.id] = b;
+  });
+
+  function shuffle(a){ for (var k=a.length-1;k>0;k--){ var j=Math.floor(Math.random()*(k+1)); var x=a[k]; a[k]=a[j]; a[j]=x; } return a; }
+
+  function start(){
+    order = shuffle(MSGS.map(function(_,k){return k;})); i = 0; solved = {};
+    Object.keys(desks).forEach(function(k){ desks[k].classList.remove('done'); });
+    team.querySelectorAll('.link').forEach(function(l){ l.classList.remove('joined'); });
+    deal.classList.remove('go'); done.classList.remove('show'); hint.style.display='';
+    msg.style.display=''; show();
+  }
+  function show(){
+    var m = MSGS[order[i]];
+    fromEl.innerHTML = 'From: <b>' + m.from + '</b>'; bodyEl.textContent = m.text;
+    count.textContent = 'Message ' + (i+1) + ' of 5';
+    fb.className = 'fb'; fb.textContent = ''; msg.className = 'msg'; msg.focus({preventScroll:true});
+  }
+  function route(id){
+    if (done.classList.contains('show')) return;
+    var m = MSGS[order[i]];
+    if (id === m.to){
+      msg.classList.add('right'); fb.className = 'fb show ok'; fb.innerHTML = '<b>Right desk.</b>' + m.ok;
+      desks[id].classList.add('done'); solved[id] = true; joinLinks();
+      if (i === 4){ finish(); } else { i++; setTimeout(show, 1400); }
+    } else {
+      msg.classList.remove('wrong'); void msg.offsetWidth; msg.classList.add('wrong');
+      desks[id].classList.remove('flash-no'); void desks[id].offsetWidth; desks[id].classList.add('flash-no');
+      fb.className = 'fb show no'; fb.innerHTML = '<b>Bounced back.</b>' + m.no[id];
+    }
+  }
+  function joinLinks(){
+    var ids = TEAM.map(function(t){return t.id;});
+    team.querySelectorAll('.link').forEach(function(l, n){
+      if (solved[ids[n]] && solved[ids[n+1]]) l.classList.add('joined');
+    });
+  }
+  function finish(){
+    setTimeout(function(){
+      msg.style.display='none'; hint.style.display='none'; fb.className='fb'; done.classList.add('show');
+      deal.classList.add('go'); document.getElementById('again').focus();
+    }, 1200);
+  }
+  document.getElementById('again').addEventListener('click', start);
+
+  // Keyboard: 1-5 routes to a desk in chain order.
+  document.addEventListener('keydown', function(e){
+    if (e.target.tagName === 'BUTTON' && e.key !== '1' && e.key !== '2' && e.key !== '3' && e.key !== '4' && e.key !== '5') return;
+    var n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 5){ route(TEAM[n-1].id); e.preventDefault(); }
+  });
+
+  // Pointer drag: the card follows the pointer; release over a desk routes it.
+  var drag = null;
+  msg.addEventListener('pointerdown', function(e){
+    if (done.classList.contains('show')) return;
+    drag = {x:e.clientX, y:e.clientY}; msg.setPointerCapture(e.pointerId); msg.classList.add('drag');
+  });
+  msg.addEventListener('pointermove', function(e){
+    if (!drag) return;
+    msg.style.transform = 'translate(' + (e.clientX-drag.x) + 'px,' + (e.clientY-drag.y) + 'px) rotate(-1.5deg)';
+    var over = deskAt(e.clientX, e.clientY);
+    Object.keys(desks).forEach(function(k){ desks[k].classList.toggle('over', over === k); });
+  });
+  function endDrag(e){
+    if (!drag) return;
+    var over = deskAt(e.clientX, e.clientY);
+    drag = null; msg.classList.remove('drag'); msg.style.transform = '';
+    Object.keys(desks).forEach(function(k){ desks[k].classList.remove('over'); });
+    if (over) route(over);
+  }
+  msg.addEventListener('pointerup', endDrag);
+  msg.addEventListener('pointercancel', endDrag);
+  function deskAt(x, y){
+    msg.style.pointerEvents = 'none';
+    var el = document.elementFromPoint(x, y);
+    msg.style.pointerEvents = '';
+    var d = el && el.closest ? el.closest('.desk') : null;
+    return d ? d.dataset.id : null;
+  }
+
+  start();
+})();
+</script>
+</body>
+</html>
