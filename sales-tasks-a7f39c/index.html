@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Where does your work land?</title>
+<!-- Interactive learning activity. Not for redistribution. -->
+<style>
+  :root{
+    --bg:#ffffff; --fg:#1c1c1e; --mut:#55555c; --line:#d6d6dc; --card:#f6f6f8;
+    --accent:#0a5c7a; --ok:#14532d; --okbg:#e6f4ea; --no:#7f1d1d; --nobg:#fdecea;
+    --focus:#0a5c7a;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{ --bg:#141416; --fg:#f2f2f4; --mut:#b4b4bd; --line:#3a3a42; --card:#1e1e22;
+      --accent:#7fd4f0; --ok:#a7dfb8; --okbg:#16301f; --no:#f5b8b2; --nobg:#341a18;
+      --focus:#7fd4f0; }
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg); color:var(--fg);
+    font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    /* K: fill the frame exactly, never overflow it */
+    display:flex; flex-direction:column; overflow:hidden;
+    padding:10px; gap:8px;
+  }
+  /* M: 14px standard / 18px large is the FLOOR, at 4.5:1 and 3:1 */
+  .bar{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+  .pip{flex:1;height:5px;border-radius:3px;background:var(--line)}
+  .pip.done{background:var(--accent)}
+  .count{font-size:14px;color:var(--mut);white-space:nowrap}
+  h1{font-size:18px;line-height:1.25;font-weight:650}
+  .panel{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:8px}
+  /* the ONLY scroll region, and K permits it explicitly */
+  .task{
+    flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:10px 12px;font-size:14px;
+  }
+  .task p+p{margin-top:7px}
+  .ask{font-weight:650;color:var(--fg)}
+  .opts{flex:0 0 auto;display:grid;gap:6px}
+  button{
+    font:inherit;font-size:14px;text-align:left;cursor:pointer;
+    background:var(--bg);color:var(--fg);
+    border:1.5px solid var(--line);border-radius:9px;padding:9px 11px;
+    /* J: comfortable hit target on touch */
+    min-height:42px;
+  }
+  button:hover:not(:disabled){border-color:var(--accent)}
+  button:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+  button:disabled{cursor:default;opacity:1}
+  button.pick{border-color:var(--accent);border-width:2px}
+  .fb{
+    flex:0 0 auto;font-size:14px;border-radius:9px;padding:9px 11px;
+    border:1px solid transparent;
+  }
+  .fb.y{background:var(--okbg);color:var(--ok);border-color:var(--ok)}
+  .fb.n{background:var(--nobg);color:var(--no);border-color:var(--no)}
+  .fb b{display:block;margin-bottom:2px}
+  .go{
+    flex:0 0 auto;background:var(--accent);color:#fff;border-color:var(--accent);
+    text-align:center;font-weight:650;
+  }
+  @media (prefers-color-scheme:dark){ .go{color:#08222c} }
+  /* the board - the thing a quiz step cannot make */
+  .board{flex:1 1 auto;min-height:0;overflow-y:auto;display:grid;gap:6px;align-content:start}
+  .lane{border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:8px;padding:7px 10px;background:var(--card)}
+  .lane h2{font-size:14px;font-weight:650;color:var(--accent)}
+  .lane p{font-size:14px;color:var(--fg);margin-top:2px}
+  .hint{font-size:14px;color:var(--mut)}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  @media (min-width:600px){
+    body{padding:16px;gap:12px} h1{font-size:22px}
+    .task,button,.fb,.hint,.lane p,.lane h2{font-size:16px}
+    .opts{grid-template-columns:1fr 1fr}
+    .go{grid-column:1/-1}
+  }
+</style>
+</head>
+<body>
+
+<div class="bar" aria-hidden="true">
+  <span class="pip" id="p0"></span><span class="pip" id="p1"></span>
+  <span class="pip" id="p2"></span><span class="pip" id="p3"></span>
+  <span class="count" id="count">1 of 4</span>
+</div>
+
+<h1 id="head">Where does your work land?</h1>
+
+<div class="panel" id="panel">
+  <div class="task" id="task" tabindex="0" role="group" aria-labelledby="head"></div>
+  <div class="opts" id="opts" role="group" aria-label="Choose the business goal"></div>
+  <div class="fb" id="fb" role="status" aria-live="polite" hidden></div>
+  <button class="go" id="go" hidden></button>
+</div>
+
+<p class="sr" aria-live="polite" id="sr"></p>
+
+<script>
+/* Content is the source document's, verbatim where it is the learner's to read.
+   correct = index into goals. */
+var GOALS = ["Lead qualification","Pipeline progression","Relationship building",
+             "Effective sales conversations"];
+
+var TASKS = [
+  { task:"prospect research",
+    body:["You’ve been asked to spend part of your morning using LinkedIn and industry databases to identify companies that could benefit from Jin Cloud Solutions’ cloud platforms. You collect information such as company size, industry focus, and the contact details of decision-makers."],
+    correct:0,
+    fb:["That’s correct. Prospect research ensures that the sales team focuses on high-potential leads that align with Jin Cloud Solutions’ customer profile.",
+        "Not quite. Prospect research is conducted before opportunities enter the sales pipeline.",
+        "Not quite. Relationships develop after the initial engagement, not during the research stage.",
+        "Not quite. Research supports conversations indirectly, but its primary purpose is to qualify leads."] },
+
+  { task:"updating the CRM",
+    body:["After joining a discovery call with a senior sales rep, you enter key details into the CRM: the client’s current challenges, their timeline for change, and their interest in Jin Cloud Solutions’ services."],
+    correct:1,
+    fb:["Not quite. By this stage, the lead is already identified and qualified.",
+        "That’s correct. Updating CRM records helps track opportunities and move them smoothly through the pipeline.",
+        "Not quite. CRM updates support internal coordination, not client relationships.",
+        "Not quite. While helpful, the primary purpose of effective sales conversations is to track and advance deals."] },
+
+  { task:"preparing meeting briefs",
+    body:["Your manager is meeting with the Chief Information Officer of a potential client. You gather information about the company’s recent tech investments, competitor tools they use, and recent press releases to prepare a summary document."],
+    correct:3,
+    fb:["Not quite. Lead qualification happens earlier in the process.",
+        "Not quite. Meeting preparation ensures quality discussions, not directly moving stages.",
+        "Not quite. Relationship building comes during and after the conversation.",
+        "That’s correct. Preparing briefs equips reps to tailor their approach and deliver relevant discussions."] },
+
+  { task:"scheduling follow-ups",
+    body:["After a product demo, you send follow-up emails to thank participants, include a summary of what was covered, and propose dates for the following conversation."],
+    correct:2,
+    fb:["Not quite. By this stage, the lead has already been identified.",
+        "Not quite. Follow-ups nurture relationships rather than move the deal through pipeline stages.",
+        "That’s correct. Follow-ups show attentiveness and professionalism, strengthening client trust.",
+        "Not quite. The follow-up supports future discussions but isn’t the conversation itself."] }
+];
+
+var order = [0,1,2,3], at = 0, placed = [], answered = false;
+
+var $ = function(id){ return document.getElementById(id); };
+var esc = function(s){ var d=document.createElement("div"); d.textContent=s; return d.innerHTML; };
+
+function pips(){
+  for (var i=0;i<4;i++) $("p"+i).className = "pip" + (i<at ? " done" : "");
+  $("count").textContent = (at<4 ? (at+1)+" of 4" : "Done");
+}
+
+function render(){
+  pips();
+  if (at >= 4) return board();
+  var t = TASKS[order[at]];
+  answered = false;
+  $("head").textContent = "Where does your work land?";
+  $("task").innerHTML = t.body.map(function(p){ return "<p>"+esc(p)+"</p>"; }).join("")
+    + '<p class="ask">Which business goal does this task — ' + esc(t.task) + ' — support?</p>';
+  var o = $("opts"); o.innerHTML = "";
+  GOALS.forEach(function(g,i){
+    var b = document.createElement("button");
+    b.type = "button"; b.textContent = g; b.dataset.i = i;
+    b.addEventListener("click", function(){ choose(i); });
+    o.appendChild(b);
+  });
+  $("fb").hidden = true; $("go").hidden = true;
+  $("task").scrollTop = 0;
+  $("sr").textContent = "Task " + (at+1) + " of 4. " + t.body.join(" ");
+}
+
+function choose(i){
+  if (answered) return;
+  answered = true;
+  var t = TASKS[order[at]], right = (i === t.correct);
+  placed.push({ task: t.task, goal: GOALS[t.correct], firstTry: right });
+  var btns = $("opts").querySelectorAll("button");
+  for (var k=0;k<btns.length;k++){
+    btns[k].disabled = true;
+    if (k === i) btns[k].className = "pick";
+  }
+  var fb = $("fb");
+  fb.className = "fb " + (right ? "y" : "n");
+  fb.innerHTML = "<b>" + esc(GOALS[i]) + "</b>" + esc(t.fb[i]);
+  fb.hidden = false;
+  var go = $("go");
+  go.textContent = (at === 3) ? "See where your week landed" : "Next task";
+  go.hidden = false;
+  go.focus();
+  $("sr").textContent = t.fb[i];
+}
+
+function board(){
+  $("head").textContent = "Your week at Jin Cloud Solutions";
+  $("opts").innerHTML = ""; $("fb").hidden = true; $("go").hidden = true;
+  var t = $("task");
+  t.className = "board";
+  t.innerHTML = GOALS.map(function(g){
+    var mine = placed.filter(function(p){ return p.goal === g; })
+                     .map(function(p){ return p.task; });
+    return '<div class="lane"><h2>' + esc(g) + '</h2><p>'
+         + (mine.length ? esc(mine.join(", ")) : "—") + "</p></div>";
+  }).join("")
+  + '<p class="hint">Every task on your list supports a different goal. None of this work '
+  + 'is admin for its own sake — each one moves a different part of the sale forward.</p>';
+  var again = document.createElement("button");
+  again.type = "button"; again.className = "go"; again.textContent = "Start again";
+  again.addEventListener("click", function(){
+    at = 0; placed = []; t.className = "task"; render();
+  });
+  $("panel").appendChild(again);
+  again.focus();
+  pips();
+  $("sr").textContent = "Complete. " + placed.map(function(p){
+    return p.task + " supports " + p.goal + "."; }).join(" ");
+}
+
+/* L: arrow keys on top of native tab/enter */
+document.addEventListener("keydown", function(e){
+  if (e.key !== "ArrowDown" && e.key !== "ArrowUp" &&
+      e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+  var btns = Array.prototype.slice.call(document.querySelectorAll("#opts button:not(:disabled)"));
+  if (!btns.length) return;
+  var i = btns.indexOf(document.activeElement);
+  if (i < 0) { btns[0].focus(); e.preventDefault(); return; }
+  var fwd = (e.key === "ArrowDown" || e.key === "ArrowRight");
+  btns[(i + (fwd ? 1 : btns.length - 1)) % btns.length].focus();
+  e.preventDefault();
+});
+
+$("go").addEventListener("click", function(){ at++; render(); });
+render();
+</script>
+</body>
+</html>
