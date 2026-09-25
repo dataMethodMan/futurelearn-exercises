@@ -139,6 +139,8 @@
   </div>
   <div class="fb" id="fb" role="status" aria-live="polite"><div id="fbtext"></div><button class="btn small next" id="nextBtn" type="button">Next &rarr;</button></div>
   <div class="hint" id="hint">Drag a person onto the message, or the message onto a person &mdash; or press 1&ndash;5.</div>
+  <script>/* touch-only screen (phone, most tablets): there are no number keys to press - say tap */
+  if (matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches) document.getElementById('hint').textContent = 'Drag the message onto a person, or tap the person who should pick it up.'</script>
   <div class="done-panel" id="done">
     <span><b>That's the chain.</b> Every message you routed is a handover the deal passed through.</span>
     <button class="btn" id="again" type="button">Play again</button>
