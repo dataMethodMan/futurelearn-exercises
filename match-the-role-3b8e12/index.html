@@ -24,66 +24,87 @@
        native <button>, so tab + enter routes the current message; keys 1-5 too.
     J  desks are at least 56x64 px; keyboard shortcuts are optional, never required.
     F  no score computed, stored or sent. G no branding. C no login, no data.
-    Motion (shake, joins, the token's journey, fireworks) is decorative and is disabled
-    under prefers-reduced-motion.
+  Motion is reserved for the learning model: a routed message activates its owner and the
+  final deal token reconstructs the role chain. Reduced motion receives the same state as
+  text without movement. Decorative fireworks were removed in the 2026-10-01 redesign.
   Steve's asks folded in on 2026-09-15: scenario front card; drag the icons in; let the
   right-answer feedback stay until read; fireworks when the token reaches the end;
   shuffle the desk order each play. Opportunity-AI pass, 2026-10-01: after the five
   clear ownership decisions, one replayable pressure test asks for a lead AND a supporting
-  role. This keeps the basic distinctions but stops the model implying that real work
-  always belongs to one sealed department.
+  role. The 2026-10-01 deal-room pass adds an optional evidence clue, a persistent ownership
+  map and an explicit debrief; each visual state now carries learning meaning.
 -->
 <style>
   :root{
-    --bg:#ffffff; --fg:#17171c; --mut:#55555f; --line:#d9d9e0; --card:#f5f5f8;
-    --ok:#137a3c; --okbg:#e2f5e8; --no:#b3261e; --nobg:#fbe5e3; --focus:#1140d6;
-    --sdr:#f2a900; --ae:#e0407a; --sa:#2e9bd9; --csm:#22a66f; --you:#7a5cf0;
+    --bg:#f5f3ef; --panel:#fffdfa; --fg:#14202b; --mut:#5b6670; --line:#d7d2c9; --card:#ffffff;
+    --ink:#0d2538; --accent:#d50a7f; --accent2:#7d2cff;
+    --ok:#087f5b; --okbg:#e8f7f1; --no:#b42318; --nobg:#fff0ee; --focus:#2458e6;
+    --sdr:#e6a100; --ae:#d9447f; --sa:#168ec4; --csm:#15976a; --you:#7257d9;
   }
   @media (prefers-color-scheme:dark){
-    :root{ --bg:#131318; --fg:#f1f1f5; --mut:#b3b3bd; --line:#34343e; --card:#1d1d24;
-      --ok:#7fdca2; --okbg:#153323; --no:#ff9a92; --nobg:#3f1c19; --focus:#9db4ff; }
+    :root{ --bg:#101820; --panel:#16222c; --fg:#f6f1ea; --mut:#b9c2c9; --line:#3a4853; --card:#1d2a35;
+      --ink:#f6f1ea; --ok:#76dfba; --okbg:#173b31; --no:#ffaaa3; --nobg:#472321; --focus:#9db4ff; }
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
   body{
     background:var(--bg); color:var(--fg);
     font:15px/1.4 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    display:grid; grid-template-rows:auto 1fr auto; height:100%; overflow:hidden;
-    padding:8px 10px; gap:8px; max-width:720px; margin:0 auto; position:relative;
+    display:grid; grid-template-rows:auto auto 1fr auto; height:100%; overflow:hidden;
+    padding:8px 10px; gap:7px; max-width:720px; margin:0 auto; position:relative;
+    background-image:radial-gradient(circle at 10% -10%,color-mix(in srgb,var(--accent) 9%,transparent),transparent 32%);
   }
-  header{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-  h1{font-size:17px;font-weight:700;letter-spacing:-.01em}
-  .count{font-size:14px;color:var(--mut);font-variant-numeric:tabular-nums}
+  header{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .brand{display:flex;align-items:center;gap:8px;min-width:0}
+  .brandmark{width:26px;height:26px;border-radius:8px;background:linear-gradient(145deg,var(--accent),var(--accent2));color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800;box-shadow:0 4px 12px color-mix(in srgb,var(--accent) 25%,transparent)}
+  .eyebrow{font-size:10px;line-height:1;text-transform:uppercase;letter-spacing:.14em;color:var(--mut);font-weight:800}
+  h1{font-size:17px;line-height:1.1;font-weight:760;letter-spacing:-.025em}
+  .count{font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 8px;white-space:nowrap}
+
+  .map{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:0 3px;position:relative}
+  .map::before{content:"";position:absolute;left:10%;right:10%;top:8px;height:2px;background:var(--line)}
+  .phase{position:relative;z-index:1;display:grid;justify-items:center;gap:2px;color:var(--mut);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.035em;min-width:0}
+  .phase-dot{width:17px;height:17px;border-radius:50%;border:2px solid var(--line);background:var(--bg);display:grid;place-items:center;font-size:9px;transition:.22s ease}
+  .phase.active{color:var(--fg)} .phase.active .phase-dot{background:var(--c);border-color:var(--c);color:#fff;box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 18%,transparent)}
+  .phase.now .phase-dot{transform:scale(1.2)}
 
   .stage{position:relative;min-height:0;display:grid;grid-template-rows:1fr auto;gap:6px}
 
   /* intro */
   .intro{display:grid;grid-template-rows:1fr auto;gap:8px;min-height:0}
-  .intro-body{overflow:auto;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:10px 14px;font-size:15px}
+  .intro-body{overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px 14px;font-size:15px;box-shadow:0 8px 30px rgba(13,37,56,.08)}
   .intro-body p{margin:0 0 8px}
-  .kicker{font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:600}
+  .kicker{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:800}
+  .brief{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .brief span{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:3px 7px;font-size:11px;color:var(--mut)}
   body.playing .intro{display:none}
   body:not(.playing) .msg, body:not(.playing) .hint, body:not(.playing) .fb{display:none!important}
   body:not(.playing) .team{opacity:.45}
 
   /* message card - a drop target for icons AND draggable to a desk */
   .msg{
-    position:relative; background:var(--card); border:2px solid var(--line); border-radius:12px;
-    padding:10px 12px 10px 14px; display:grid; grid-template-rows:auto 1fr; gap:4px; min-height:0;
+    position:relative; background:var(--panel); border:1px solid var(--line); border-radius:15px;
+    padding:9px 11px 9px 14px; display:grid; grid-template-rows:auto auto 1fr; gap:3px; min-height:0;
     cursor:grab; touch-action:none; user-select:none; -webkit-user-select:none;
-    box-shadow:0 2px 0 var(--line);
+    box-shadow:0 7px 22px rgba(13,37,56,.09);
     transition:transform .18s ease, border-color .18s, box-shadow .18s, background .18s;
   }
-  .msg::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:5px;border-radius:0 4px 4px 0;background:var(--focus)}
+  .msg::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:4px;border-radius:0 4px 4px 0;background:linear-gradient(var(--accent),var(--accent2))}
   .msg.drag{cursor:grabbing;z-index:5;box-shadow:0 12px 24px rgba(0,0,0,.18);border-color:var(--focus);transition:none}
   .msg.target{border-color:var(--focus);border-style:dashed;background:var(--bg)}
   .msg.wrong{border-color:var(--no);animation:shake .5s}
   .msg.right{border-color:var(--ok)}
-  .msg .from{font-size:14px;color:var(--mut)}
+  .inbox-label{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);font-weight:800}
+  .msg .from{font-size:13px;color:var(--mut)}
   .msg .from b{color:var(--fg)}
   .msg .body{overflow:auto;font-size:15px;padding-right:4px}
   .msg:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-  .hint{font-size:14px;color:var(--mut);text-align:center}
+  .hintbar{display:flex;align-items:center;justify-content:center;gap:8px;min-height:28px}
+  .hint{font-size:12px;color:var(--mut);text-align:center}
+  .clue{font:inherit;font-size:12px;font-weight:700;color:var(--focus);background:transparent;border:0;border-bottom:1px solid currentColor;cursor:pointer;padding:2px;white-space:nowrap}
+  .clue:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:3px}
+  .cluebox{display:none;font-size:12px;color:var(--fg);background:color-mix(in srgb,var(--focus) 8%,var(--panel));border-left:3px solid var(--focus);padding:5px 8px;border-radius:6px}
+  .cluebox.show{display:block}
 
   /* feedback */
   .fb{min-height:44px;border-radius:10px;padding:8px 12px;font-size:14px;display:none;border-left:5px solid;grid-template-columns:1fr auto;gap:8px;align-items:center}
@@ -94,95 +115,92 @@
   .fb.ok .next{display:inline-block}
 
   /* the team - desks are drop zones, drag sources AND buttons */
-  .team{display:grid;grid-template-columns:repeat(5,1fr);gap:0;position:relative;align-items:start}
+  .team{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;position:relative;align-items:start}
   .desk{
     position:relative; background:none; border:0; font:inherit; color:var(--fg); cursor:grab;
-    display:grid; justify-items:center; gap:3px; padding:6px 2px 4px; min-height:64px; border-radius:10px;
+    display:grid; justify-items:center; gap:2px; padding:5px 2px 3px; min-height:70px; border-radius:12px;
     transition:transform .18s, background .18s; touch-action:none; user-select:none; -webkit-user-select:none;
   }
   .desk:focus-visible{outline:3px solid var(--focus);outline-offset:-2px}
   .desk.over{background:var(--card);transform:translateY(-3px)}
   .desk.flash-no{animation:flashno .5s}
   .desk.lifted .avatar{opacity:.35}
-  .avatar{
-    width:52px;height:52px;border-radius:50%;display:grid;place-items:center;position:relative;z-index:1;
-    background:var(--card);border:3px solid var(--line);transition:border-color .2s, background .2s, transform .2s;
-  }
-  .avatar svg{width:34px;height:34px}
-  .desk.done .avatar{border-color:var(--c);background:var(--c);transform:scale(1.08)}
-  .desk.done .avatar svg{fill:#fff}
-  .desk .name{font-size:14px;font-weight:600;line-height:1.1}
-  .desk .role{font-size:14px;color:var(--mut);line-height:1.05;min-height:2.1em;text-align:center}
-  .desk .tick{position:absolute;top:2px;right:6px;width:20px;height:20px;border-radius:50%;background:var(--ok);color:#fff;font-size:13px;display:none;place-items:center;font-weight:700;z-index:2}
+  .avatar{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;position:relative;z-index:1;background:var(--panel);border:2px solid var(--line);transition:border-color .2s,background .2s,transform .2s;color:var(--c);font-size:17px;font-weight:850;letter-spacing:-.04em;box-shadow:0 3px 10px rgba(13,37,56,.08)}
+  .avatar svg{position:absolute;width:17px;height:17px;right:-5px;bottom:-4px;padding:3px;border-radius:50%;background:var(--panel);border:1px solid var(--line);fill:var(--c)}
+  .desk.done .avatar{border-color:var(--c);background:var(--c);color:#fff;transform:translateY(-2px)}
+  .desk.done .avatar svg{fill:var(--c)}
+  .desk .name{font-size:12px;font-weight:750;line-height:1.1}
+  .desk .role{font-size:10px;color:var(--mut);line-height:1.05;min-height:2.1em;text-align:center}
+  .desk .tick{position:absolute;top:1px;right:3px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:var(--ok);color:#fff;font-size:9px;display:none;place-items:center;font-weight:800;z-index:2;text-transform:uppercase;letter-spacing:.04em}
   .desk.done .tick{display:grid;animation:pop .35s ease-out}
   .ghost{position:fixed;left:0;top:0;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;pointer-events:none;z-index:20;
     background:var(--c);border:3px solid #fff;box-shadow:0 10px 24px rgba(0,0,0,.3);transform:translate(-50%,-50%) scale(1.1)}
   .ghost svg{width:34px;height:34px;fill:#fff}
-  /* chain links between adjacent desks */
-  .links{position:absolute;left:10%;right:10%;top:31px;height:6px;display:grid;grid-template-columns:repeat(4,1fr);pointer-events:none;z-index:0}
-  .link{height:6px;background:var(--line);border-radius:3px;margin:0 20px;position:relative;overflow:hidden}
-  .link::after{content:"";position:absolute;inset:0;background:var(--ok);transform:scaleX(0);transform-origin:left}
-  .link.joined::after{transform:scaleX(1);transition:transform .5s ease-out}
-  .link.joined{background:var(--ok)}
-
   /* finale */
-  .deal{position:absolute;width:26px;height:26px;border-radius:50%;background:var(--ae);border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);display:none;z-index:6;transform:translate(-50%,-50%)}
+  .deal{position:absolute;width:27px;height:21px;border-radius:6px;background:linear-gradient(145deg,var(--accent),var(--accent2));border:2px solid #fff;box-shadow:0 4px 10px rgba(0,0,0,.25);display:none;z-index:6;transform:translate(-50%,-50%)}
+  .deal::after{content:"";position:absolute;left:6px;right:6px;top:4px;height:2px;background:rgba(255,255,255,.85);box-shadow:0 4px 0 rgba(255,255,255,.55)}
   .deal.go{display:block}
-  .done-panel{display:none;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;align-self:end;background:var(--okbg);border-radius:10px;padding:8px 12px;font-size:14px}
+  .done-panel{display:none;gap:7px;align-items:center;justify-content:space-between;flex-wrap:wrap;align-self:end;background:var(--okbg);border:1px solid color-mix(in srgb,var(--ok) 35%,transparent);border-radius:12px;padding:8px 10px;font-size:12px}
   .done-panel.show{display:flex}
   .done-actions{display:flex;gap:6px;flex-wrap:wrap}
-  .btn{font:inherit;font-size:14px;font-weight:600;padding:10px 14px;border-radius:8px;border:2px solid var(--fg);background:var(--bg);color:var(--fg);cursor:pointer;min-height:44px}
-  .btn.primary{background:var(--focus);color:#fff;border-color:var(--focus);justify-self:stretch}
+  .btn{font:inherit;font-size:13px;font-weight:750;padding:9px 13px;border-radius:9px;border:1px solid var(--fg);background:var(--panel);color:var(--fg);cursor:pointer;min-height:42px}
+  .btn.primary{background:linear-gradient(100deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;justify-self:stretch;box-shadow:0 7px 18px color-mix(in srgb,var(--accent) 25%,transparent)}
   .btn.small{min-height:36px;padding:6px 10px;border-color:var(--ok);color:var(--ok);white-space:nowrap}
   .btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-  canvas.fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:30;display:none}
-  canvas.fx.on{display:block}
-  body.twist .links, body.twist .deal{display:none!important}
+  body.twist .deal{display:none!important}
 
   @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
   @keyframes flashno{0%,100%{background:none}30%{background:var(--nobg)}}
   @keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.3)}100%{transform:scale(1)}}
   @media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
-  @media (min-width:480px){ .avatar{width:64px;height:64px} .avatar svg{width:40px;height:40px} .links{top:37px} }
+  @media (min-width:480px){ .avatar{width:58px;height:58px;font-size:20px}.desk .name{font-size:13px}.desk .role{font-size:11px} }
+  @media (max-height:350px){body{padding-top:5px;padding-bottom:5px;gap:4px}.map{display:none}.avatar{width:39px;height:39px}.desk{min-height:58px}.intro-body{padding:8px 12px}.brief{display:none}}
 </style>
 </head>
 <body>
 <header>
-  <h1>Who picks this up?</h1>
+  <div class="brand"><span class="brandmark" aria-hidden="true">A</span><div><div class="eyebrow">Anarres · deal desk</div><h1>Who picks this up?</h1></div></div>
   <div class="count" id="count" aria-live="polite"></div>
 </header>
+
+<div class="map" id="map" aria-label="Role ownership map">
+  <div class="phase" data-id="you" style="--c:var(--you)"><span class="phase-dot">1</span><span>Prepare</span></div>
+  <div class="phase" data-id="sdr" style="--c:var(--sdr)"><span class="phase-dot">2</span><span>Qualify</span></div>
+  <div class="phase" data-id="ae" style="--c:var(--ae)"><span class="phase-dot">3</span><span>Win</span></div>
+  <div class="phase" data-id="sa" style="--c:var(--sa)"><span class="phase-dot">4</span><span>Shape</span></div>
+  <div class="phase" data-id="csm" style="--c:var(--csm)"><span class="phase-dot">5</span><span>Grow</span></div>
+</div>
 
 <div class="stage">
   <div class="intro" id="intro">
     <div class="intro-body">
-      <p class="kicker">Your first morning</p>
-      <p>You've just joined <b>Anarres Systems</b>, a cybersecurity start-up, as a Sales Associate. Your manager has given you the team's shared inbox.</p>
+      <p class="kicker">Live deal · your first morning</p>
+      <p>You've joined <b>Anarres Systems</b> as a Sales Associate. Your first job is to triage the team's shared inbox without breaking the handoffs.</p>
       <p>One deal is live: <b>Carrow &amp; Vale Consulting</b>, a global consultancy that needs to protect client data during mergers. Naomi found them, Romeo is working the deal, Maya is on the technical fit, and Talia will look after them once they sign.</p>
-      <p>Five messages are waiting. Decide who picks each one up &mdash; or whether it's yours.</p>
+      <p><b>Five messages are waiting.</b> Decide who owns each next move. If you are unsure, inspect one clue before you route it.</p>
+      <div class="brief" aria-label="Activity details"><span>5 messages</span><span>No score</span><span>Retry freely</span></div>
     </div>
-    <button class="btn primary" id="startBtn" type="button">Open the inbox</button>
+    <button class="btn primary" id="startBtn" type="button">Enter the deal room</button>
   </div>
   <div class="msg" id="msg" tabindex="0" role="group" aria-roledescription="draggable message" aria-describedby="hint">
+    <div class="inbox-label">Shared inbox · needs an owner</div>
     <div class="from" id="from"></div>
     <div class="body" id="body"></div>
   </div>
   <div class="fb" id="fb" role="status" aria-live="polite"><div id="fbtext"></div><button class="btn small next" id="nextBtn" type="button">Next &rarr;</button></div>
-  <div class="hint" id="hint">Drag a person onto the message, or the message onto a person &mdash; or press 1&ndash;5.</div>
+  <div class="cluebox" id="cluebox" role="status"></div>
+  <div class="hintbar"><div class="hint" id="hint">Choose, drag, or press 1&ndash;5.</div><button class="clue" id="clueBtn" type="button">Need a clue?</button></div>
   <script>/* touch-only screen (phone, most tablets): there are no number keys to press - say tap */
-  if (matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches) document.getElementById('hint').textContent = 'Drag the message onto a person, or tap the person who should pick it up.'</script>
+  if (matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches) document.getElementById('hint').textContent = 'Tap a person, or drag the message.'</script>
   <div class="done-panel" id="done">
-    <span id="doneText"><b>That's the chain.</b> Every message you routed is a handover the deal passed through.</span>
+    <span id="doneText"><b>Ownership map complete.</b> You matched each signal to the role equipped to act on it.</span>
     <div class="done-actions"><button class="btn small" id="twistBtn" type="button">Pressure-test it</button><button class="btn" id="again" type="button">Play again</button></div>
   </div>
 </div>
 
 <div class="team" id="team">
-  <div class="links" aria-hidden="true">
-    <div class="link"></div><div class="link"></div><div class="link"></div><div class="link"></div>
-  </div>
   <div class="deal" id="deal" aria-hidden="true"></div>
 </div>
-<canvas class="fx" id="fx" aria-hidden="true"></canvas>
 
 <script>
 (function(){
@@ -190,36 +208,36 @@
   var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   // The team, in TRUE chain order. Desks are displayed shuffled; the finale travels this order.
   var TEAM = [
-    {id:'you',  name:'You',   role:'Sales Associate', c:'var(--you)', hex:'#7a5cf0',
+    {id:'you',  name:'You',   role:'Sales Associate', initial:'You', c:'var(--you)',
      svg:'<svg viewBox="0 0 24 24" fill="#7a5cf0"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7z"/></svg>'},
-    {id:'sdr',  name:'Naomi', role:'SDR', c:'var(--sdr)', hex:'#f2a900',
+    {id:'sdr',  name:'Naomi', role:'SDR', initial:'N', c:'var(--sdr)',
      svg:'<svg viewBox="0 0 24 24" fill="#f2a900"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>'},
-    {id:'ae',   name:'Romeo', role:'Account exec', c:'var(--ae)', hex:'#e0407a',
+    {id:'ae',   name:'Romeo', role:'Account exec', initial:'R', c:'var(--ae)',
      svg:'<svg viewBox="0 0 24 24" fill="#e0407a"><path d="M20 6h-3V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zM9 4h6v2H9z"/></svg>'},
-    {id:'sa',   name:'Maya',  role:'Solution architect', c:'var(--sa)', hex:'#2e9bd9',
+    {id:'sa',   name:'Maya',  role:'Solution architect', initial:'M', c:'var(--sa)',
      svg:'<svg viewBox="0 0 24 24" fill="#2e9bd9"><path d="M3 5h7v7H3zM14 5h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/></svg>'},
-    {id:'csm',  name:'Talia', role:'Customer success', c:'var(--csm)', hex:'#22a66f',
+    {id:'csm',  name:'Talia', role:'Customer success', initial:'T', c:'var(--csm)',
      svg:'<svg viewBox="0 0 24 24" fill="#22a66f"><path d="M12 21s-7-4.6-9.3-8.7C.8 8.8 3 5 6.5 5c2 0 3.3 1 4 2.1C11.2 6 12.5 5 14.5 5 18 5 20.2 8.8 18.3 12.3 16 16.4 12 21 12 21z"/></svg>'},
   ];
   // Five messages. Substance is the week's: Anarres Systems and its people, the Carrow and Vale deal.
   var MSGS = [
-    {from:'Webinar follow-ups', to:'sdr',
+    {from:'Webinar follow-ups', to:'sdr', cue:'Look at the relationship stage: this contact is interested, but not ready for a sales conversation.',
      text:'The Blackwood Logistics lead from last month’s webinar replied: “Interested, but not this quarter.” Someone needs to stay in touch until they’re ready to talk properly.',
      ok:'Naomi: Mine. I keep leads warm until they’re ready for a real conversation — then Romeo gets a qualified opportunity, not a cold name.',
      no:{you:'Romeo: You’ll help with this later, but nurturing a lead over months is the SDR’s job. Try Naomi.', ae:'Romeo: Not mine — I run discovery and close deals. First contact and warming leads is Naomi.', sa:'Maya: I design solutions for clients who’ve committed. This one hasn’t even qualified yet. Try Naomi.', csm:'Talia: I look after customers after they sign. This isn’t a customer yet — try Naomi.'}},
-    {from:'Carrow & Vale — CIO', to:'ae',
+    {from:'Carrow & Vale — CIO', to:'ae', cue:'Focus on the action words: proposal, pricing and negotiation.',
      text:'The CIO wants the full proposal, with pricing, by Friday. She’s said she’ll want to negotiate the terms before anything goes to procurement.',
      ok:'Romeo: Mine. Proposal, pricing and negotiation are the account executive’s — I turn interest into a signed contract.',
      no:{you:'Romeo: I’ll want your help pulling the brief together, but pricing and negotiation sit with me. Send it to me.', sdr:'Naomi: I got them to this point — the deal is Romeo’s now. Try him.', sa:'Maya: I’ll be on the call for the technical fit, but the proposal and the terms are Romeo’s.', csm:'Talia: Nothing’s signed yet, so it isn’t mine. Romeo owns the deal.'}},
-    {from:'Carrow & Vale — IT lead', to:'sa',
+    {from:'Carrow & Vale — IT lead', to:'sa', cue:'Separate commercial ownership from technical fit: integration, compliance and deployment are the key signals.',
      text:'Their IT lead is asking whether we integrate with the systems they already run, and whether we meet their compliance obligations. They want a deployment plan before they sign.',
      ok:'Maya: Mine. Turning their needs into a technical design that fits — integration, compliance, scale — is what a solution architect does.',
      no:{you:'Maya: This needs the technical design, not research. That’s me.', sdr:'Naomi: Way past my stage. Integration and compliance questions go to Maya.', ae:'Romeo: I’ll be on the call, but the deployment plan is Maya’s — she makes it fit.', csm:'Talia: Once it’s deployed I’ll help them use it. Designing it is Maya.'}},
-    {from:'Halden Retail', to:'csm',
+    {from:'Halden Retail', to:'csm', cue:'The contract is already signed. The problem is adoption and value after the sale.',
      text:'Halden Retail signed six weeks ago. Their team still hasn’t logged in to the platform, and their renewal date is in ten months.',
      ok:'Talia: Mine. After the sale I make sure they actually get value — onboarding, training, check-ins — so the renewal takes care of itself.',
      no:{you:'Talia: You could help me prepare the training, but a signed customer who isn’t using the product is a customer success problem. Mine.', sdr:'Naomi: They’re a customer, not a lead. That’s Talia.', ae:'Romeo: I closed it; Talia keeps it. Adoption and renewal are hers.', sa:'Maya: The solution’s deployed. Getting them to use it is Talia.'}},
-    {from:'Romeo', to:'you',
+    {from:'Romeo', to:'you', cue:'This is preparation work: research, a meeting brief and accurate CRM notes.',
      text:'Romeo’s meeting with the CIO is tomorrow. He needs a one-page brief on Carrow & Vale’s recent tech investments and press coverage — and last week’s call notes still aren’t in the CRM.',
      ok:'You: Yours. Research, meeting briefs and keeping the CRM accurate are the entry-level tasks that keep the whole chain moving.',
      no:{sdr:'Naomi: I could, but this is exactly what the new associate is here for. Take it.', ae:'Romeo: I asked for it — I can’t also write it. This one’s yours.', sa:'Maya: Background research and CRM notes aren’t a design job. That’s you.', csm:'Talia: Not a customer task. Prep and CRM hygiene for a live deal — that’s yours.'}},
@@ -249,13 +267,12 @@
      leadNo:{you:'You prepare the evidence, but Naomi owns qualification and the handoff. She leads.', ae:'Romeo takes the qualified opportunity next; Naomi must complete the qualification and handoff first.', sa:'There is no technical-design question yet. Naomi leads qualification.', csm:'There is no signed customer yet. Naomi leads the handoff from nurtured lead to qualified opportunity.'},
      supportNo:{sdr:'Naomi is already leading. Choose the different role that prepares the brief and CRM notes.', ae:'Romeo receives the handoff, but the requested preparation work belongs to the sales associate.', sa:'No solution design is requested. The sales associate prepares the research and CRM record.', csm:'This is before the sale. The sales associate supplies the preparation support.'}}
   ];
-  var READ_MS = 9000;   // how long a right answer stays before auto-advancing (or press Next)
-
   var team = document.getElementById('team'), msg = document.getElementById('msg'),
       fromEl = document.getElementById('from'), bodyEl = document.getElementById('body'),
       fb = document.getElementById('fb'), fbtext = document.getElementById('fbtext'), nextBtn = document.getElementById('nextBtn'),
       count = document.getElementById('count'), hint = document.getElementById('hint'),
-      done = document.getElementById('done'), deal = document.getElementById('deal'), fx = document.getElementById('fx');
+      done = document.getElementById('done'), deal = document.getElementById('deal'),
+      clueBtn = document.getElementById('clueBtn'), cluebox = document.getElementById('cluebox'), map = document.getElementById('map');
   var byId = {}; TEAM.forEach(function(t){ byId[t.id] = t; });
   var order, i, solved, desks = {}, rowOrder = [], timer = null, suppressClick = false, busy = false,
       mode = 'route', twist = null;
@@ -269,7 +286,7 @@
       var t = byId[id], b = document.createElement('button');
       b.type = 'button'; b.className = 'desk'; b.dataset.id = id; b.style.setProperty('--c', t.c);
       b.setAttribute('aria-label', 'Send to ' + t.name + ', ' + t.role + ' (key ' + (n+1) + ')');
-      b.innerHTML = '<span class="tick" aria-hidden="true">✓</span><span class="avatar" aria-hidden="true">' + t.svg + '</span><span class="name">' + t.name + '</span><span class="role">' + t.role + '</span>';
+      b.innerHTML = '<span class="tick" aria-hidden="true">✓</span><span class="avatar" aria-hidden="true">' + t.initial + t.svg + '</span><span class="name">' + t.name + '</span><span class="role">' + t.role + '</span>';
       b.addEventListener('click', function(){ if (suppressClick){ suppressClick = false; return; } route(id); });
       attachDeskDrag(b, t);
       team.appendChild(b); desks[id] = b;
@@ -279,10 +296,10 @@
   function start(){
     order = shuffle(MSGS.map(function(_,k){return k;})); i = 0; solved = {}; busy = false; mode = 'route'; twist = null;
     document.body.classList.remove('twist'); document.getElementById('twistBtn').hidden = false;
-    document.getElementById('doneText').innerHTML = '<b>That\'s the chain.</b> Every message you routed is a handover the deal passed through.';
+    document.getElementById('doneText').innerHTML = '<b>Ownership map complete.</b> Watch the deal move through the roles, then test a messier handoff.';
     nextBtn.textContent = 'Next →';
     buildDesks();
-    team.querySelectorAll('.link').forEach(function(l){ l.classList.remove('joined'); });
+    map.querySelectorAll('.phase').forEach(function(p){ p.classList.remove('active','now'); });
     deal.classList.remove('go'); done.classList.remove('show'); hint.style.display=''; msg.style.display='';
     show();
   }
@@ -291,7 +308,9 @@
     var m = MSGS[order[i]];
     fromEl.innerHTML = 'From: <b>' + m.from + '</b>'; bodyEl.textContent = m.text;
     count.textContent = 'Message ' + (i+1) + ' of 5';
-    fb.className = 'fb'; fbtext.textContent = ''; msg.className = 'msg'; msg.focus({preventScroll:true});
+    fb.className = 'fb'; fbtext.textContent = ''; msg.className = 'msg';
+    cluebox.className = 'cluebox'; cluebox.textContent = ''; clueBtn.hidden = false; clueBtn.disabled = false; clueBtn.textContent = 'Need a clue?';
+    msg.focus({preventScroll:true});
   }
   function advance(){
     clearTimeout(timer);
@@ -305,25 +324,24 @@
     var m = MSGS[order[i]];
     if (id === m.to){
       busy = true;
-      msg.classList.add('right'); fb.className = 'fb show ok'; fbtext.innerHTML = '<b>Right desk.</b>' + m.ok;
-      desks[id].classList.add('done'); solved[id] = true; joinLinks();
+      msg.classList.add('right'); fb.className = 'fb show ok'; fbtext.innerHTML = '<b>Good call.</b>' + m.ok;
+      desks[id].classList.add('done'); solved[id] = true; activatePhase(id); clueBtn.hidden = true; cluebox.className='cluebox';
       nextBtn.focus({preventScroll:true});
-      timer = setTimeout(advance, READ_MS);
     } else {
       msg.classList.remove('wrong'); void msg.offsetWidth; msg.classList.add('wrong');
       desks[id].classList.remove('flash-no'); void desks[id].offsetWidth; desks[id].classList.add('flash-no');
-      fb.className = 'fb show no'; fbtext.innerHTML = '<b>Bounced back.</b>' + m.no[id];
+      fb.className = 'fb show no'; fbtext.innerHTML = '<b>That handoff would bounce.</b>' + m.no[id];
     }
   }
   function startTwist(){
     clearTimeout(timer); busy = false; mode = 'twist-lead';
     twist = TWISTS[Math.floor(Math.random()*TWISTS.length)];
     document.body.classList.add('twist'); done.classList.remove('show'); deal.classList.remove('go');
-    Object.keys(desks).forEach(function(k){ desks[k].classList.remove('done'); });
-    team.querySelectorAll('.link').forEach(function(l){ l.classList.remove('joined'); });
+    Object.keys(desks).forEach(function(k){ desks[k].classList.remove('done'); desks[k].querySelector('.tick').textContent='✓'; });
+    map.querySelectorAll('.phase').forEach(function(p){ p.classList.remove('active','now'); });
     msg.style.display='grid'; hint.style.display=''; msg.className='msg'; fb.className='fb';
     fromEl.innerHTML = 'What changed: <b>' + twist.from + '</b>'; bodyEl.textContent = twist.text;
-    count.textContent = 'Pressure test · lead'; hint.textContent = 'Choose the role that leads this response.';
+    count.textContent = 'Pressure · lead'; hint.textContent = 'Who owns the next move?'; clueBtn.hidden = true; cluebox.className='cluebox';
     nextBtn.textContent = 'Choose support →'; msg.focus({preventScroll:true});
   }
   function routeTwist(id){
@@ -331,7 +349,7 @@
     if (id === answer){
       busy = true; msg.classList.add('right'); fb.className = 'fb show ok';
       fbtext.innerHTML = '<b>' + (leadStage ? 'Right lead.' : 'Right support.') + '</b>' + (leadStage ? twist.leadOk : twist.supportOk);
-      desks[id].classList.add('done'); nextBtn.focus({preventScroll:true}); timer = setTimeout(advance, READ_MS);
+      desks[id].classList.add('done'); desks[id].querySelector('.tick').textContent = leadStage ? 'Lead' : 'Support'; nextBtn.focus({preventScroll:true});
     } else {
       msg.classList.remove('wrong'); void msg.offsetWidth; msg.classList.add('wrong');
       desks[id].classList.remove('flash-no'); void desks[id].offsetWidth; desks[id].classList.add('flash-no');
@@ -340,24 +358,24 @@
   }
   function showTwistSupport(){
     clearTimeout(timer); busy = false; mode = 'twist-support'; fb.className='fb'; msg.className='msg';
-    count.textContent = 'Pressure test · support';
+    count.textContent = 'Pressure · support';
     fromEl.innerHTML = 'Lead: <b>' + byId[twist.lead].name + ', ' + byId[twist.lead].role + '</b>';
-    hint.textContent = 'Now choose the different role that supplies the missing expertise.';
+    hint.textContent = 'Who supplies the missing expertise?';
     nextBtn.textContent = 'Finish →'; msg.focus({preventScroll:true});
   }
   function finishTwist(){
     clearTimeout(timer); busy = false; mode = 'twist-done'; msg.style.display='none'; hint.style.display='none'; fb.className='fb';
-    document.getElementById('doneText').innerHTML = '<b>One lead, one handoff.</b> ' + twist.leadOk + ' ' + twist.supportOk;
+    document.getElementById('doneText').innerHTML = '<b>Ownership is not isolation.</b> ' + twist.leadOk + ' ' + twist.supportOk;
     document.getElementById('twistBtn').hidden = true; done.classList.add('show'); document.getElementById('again').focus();
   }
   nextBtn.addEventListener('click', advance);
-  function joinLinks(){
-    team.querySelectorAll('.link').forEach(function(l, n){
-      if (solved[rowOrder[n]] && solved[rowOrder[n+1]]) l.classList.add('joined');
-    });
+  function activatePhase(id){
+    var p = map.querySelector('.phase[data-id="' + id + '"]');
+    if (p) p.classList.add('active');
   }
 
-  // Finale: the deal travels the chain in its TRUE order across the shuffled desks, then fireworks.
+  // Finale: reconstruct the supported role chain across the shuffled desks. The motion is
+  // explanatory, not a reward; reduced-motion users receive the complete map immediately.
   function finish(){
     msg.style.display='none'; hint.style.display='none'; fb.className='fb';
     var tr = team.getBoundingClientRect();
@@ -365,39 +383,23 @@
       return {x: r.left + r.width/2 - tr.left, y: r.top + r.height/2 - tr.top}; });
     deal.classList.add('go');
     if (REDUCED || !deal.animate){
+      TEAM.forEach(function(t){ activatePhase(t.id); });
       deal.style.left = stops[4].x + 'px'; deal.style.top = stops[4].y + 'px'; done.classList.add('show'); document.getElementById('twistBtn').focus(); return;
     }
     var kf = stops.map(function(p){ return {left: p.x + 'px', top: p.y + 'px'}; });
     deal.style.left = kf[0].left; deal.style.top = kf[0].top;
-    var anim = deal.animate(kf, {duration: 2600, easing: 'ease-in-out', fill: 'forwards'});
+    TEAM.forEach(function(t,n){ setTimeout(function(){ var p=map.querySelector('.phase[data-id="'+t.id+'"]'); if(p){ map.querySelectorAll('.phase').forEach(function(x){x.classList.remove('now');}); p.classList.add('active','now'); } }, n*500); });
+    var anim = deal.animate(kf, {duration: 2400, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'forwards'});
     anim.onfinish = function(){
-      var r = deal.getBoundingClientRect();
-      fireworks(r.left + r.width/2, r.top + r.height/2);
-      setTimeout(function(){ done.classList.add('show'); document.getElementById('twistBtn').focus(); }, 900);
+      map.querySelectorAll('.phase').forEach(function(x){x.classList.remove('now');});
+      done.classList.add('show'); document.getElementById('twistBtn').focus();
     };
   }
-  function fireworks(cx, cy){
-    var ctx = fx.getContext('2d'), dpr = window.devicePixelRatio || 1, W = window.innerWidth, H = window.innerHeight;
-    fx.width = W * dpr; fx.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); fx.classList.add('on');
-    var cols = TEAM.map(function(t){ return t.hex; }), parts = [], t0 = performance.now();
-    function burst(x, y, n, speed){ for (var k=0;k<n;k++){ var a = Math.random()*Math.PI*2, v = speed*(0.4+Math.random()*0.8);
-      parts.push({x:x, y:y, vx:Math.cos(a)*v, vy:Math.sin(a)*v, life:1, c:cols[k%cols.length], r:2+Math.random()*2.5}); } }
-    burst(cx, cy, 90, 5.5);
-    setTimeout(function(){ burst(cx - 60, cy - 70, 60, 4.5); }, 250);
-    setTimeout(function(){ burst(cx + 50, cy - 90, 60, 4.5); }, 500);
-    setTimeout(function(){ burst(W/2, H*0.35, 120, 6.5); }, 800);
-    (function frame(now){
-      ctx.clearRect(0, 0, W, H);
-      var alive = false;
-      parts.forEach(function(p){
-        if (p.life <= 0) return; alive = true;
-        p.x += p.vx; p.y += p.vy; p.vy += 0.12; p.vx *= 0.985; p.vy *= 0.985; p.life -= 0.014;
-        ctx.globalAlpha = Math.max(p.life, 0); ctx.fillStyle = p.c; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
-      });
-      ctx.globalAlpha = 1;
-      if (alive && now - t0 < 4000) requestAnimationFrame(frame); else { fx.classList.remove('on'); ctx.clearRect(0,0,W,H); }
-    })(t0);
-  }
+  clueBtn.addEventListener('click', function(){
+    if (mode !== 'route') return;
+    var m = MSGS[order[i]]; cluebox.textContent = 'Decision clue: ' + m.cue; cluebox.className='cluebox show';
+    clueBtn.textContent = 'Clue open'; clueBtn.disabled = true;
+  });
   document.getElementById('again').addEventListener('click', start);
   document.getElementById('twistBtn').addEventListener('click', startTwist);
   document.getElementById('startBtn').addEventListener('click', function(){ document.body.classList.add('playing'); start(); });
