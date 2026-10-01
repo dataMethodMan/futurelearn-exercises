@@ -5,7 +5,34 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <title>Who picks this up?</title>
-<!-- Interactive learning activity. Not for redistribution. -->
+<!--
+  FutureLearn exercise step - C1 week 1, "Activity: Match the role to the responsibility".
+  This Activity was never built on the original platform; the syllabus brief is the only
+  source: "connect five real-world responsibilities to the correct B2B sales team roles -
+  Account Executive, SDR, Solution Architect, Customer Success Manager, and Sales
+  Associate... The correct role should be clearly identifiable based on the example."
+  The company, the people and the deal are the week's own (Anarres Systems; Naomi, Romeo,
+  Maya, Talia; Carrow and Vale Consulting) from the lesson's screencast.
+
+  Built against plat-0048 A-O:
+    D  a matching quiz would recreate platform functionality and fail. The added value
+       is the CHAIN: correct routes join the team together, and at the end the deal
+       travels the chain IN ITS TRUE ORDER across the shuffled desks - the learner sees the
+       handover sequence assembled from their own decisions. A quiz step cannot do that.
+    K  no page scroll; fixed rows; fits 320x405. The message text is the only scroll region.
+    L  drag is one way (message to desk, or desk icon to message). Every desk is also a
+       native <button>, so tab + enter routes the current message; keys 1-5 too.
+    J  desks are at least 56x64 px; keyboard shortcuts are optional, never required.
+    F  no score computed, stored or sent. G no branding. C no login, no data.
+    Motion (shake, joins, the token's journey, fireworks) is decorative and is disabled
+    under prefers-reduced-motion.
+  Steve's asks folded in on 2026-09-15: scenario front card; drag the icons in; let the
+  right-answer feedback stay until read; fireworks when the token reaches the end;
+  shuffle the desk order each play. Opportunity-AI pass, 2026-10-01: after the five
+  clear ownership decisions, one replayable pressure test asks for a lead AND a supporting
+  role. This keeps the basic distinctions but stops the model implying that real work
+  always belongs to one sealed department.
+-->
 <style>
   :root{
     --bg:#ffffff; --fg:#17171c; --mut:#55555f; --line:#d9d9e0; --card:#f5f5f8;
@@ -103,12 +130,14 @@
   .deal.go{display:block}
   .done-panel{display:none;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;align-self:end;background:var(--okbg);border-radius:10px;padding:8px 12px;font-size:14px}
   .done-panel.show{display:flex}
+  .done-actions{display:flex;gap:6px;flex-wrap:wrap}
   .btn{font:inherit;font-size:14px;font-weight:600;padding:10px 14px;border-radius:8px;border:2px solid var(--fg);background:var(--bg);color:var(--fg);cursor:pointer;min-height:44px}
   .btn.primary{background:var(--focus);color:#fff;border-color:var(--focus);justify-self:stretch}
   .btn.small{min-height:36px;padding:6px 10px;border-color:var(--ok);color:var(--ok);white-space:nowrap}
   .btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
   canvas.fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:30;display:none}
   canvas.fx.on{display:block}
+  body.twist .links, body.twist .deal{display:none!important}
 
   @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
   @keyframes flashno{0%,100%{background:none}30%{background:var(--nobg)}}
@@ -142,8 +171,8 @@
   <script>/* touch-only screen (phone, most tablets): there are no number keys to press - say tap */
   if (matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches) document.getElementById('hint').textContent = 'Drag the message onto a person, or tap the person who should pick it up.'</script>
   <div class="done-panel" id="done">
-    <span><b>That's the chain.</b> Every message you routed is a handover the deal passed through.</span>
-    <button class="btn" id="again" type="button">Play again</button>
+    <span id="doneText"><b>That's the chain.</b> Every message you routed is a handover the deal passed through.</span>
+    <div class="done-actions"><button class="btn small" id="twistBtn" type="button">Pressure-test it</button><button class="btn" id="again" type="button">Play again</button></div>
   </div>
 </div>
 
@@ -195,6 +224,31 @@
      ok:'You: Yours. Research, meeting briefs and keeping the CRM accurate are the entry-level tasks that keep the whole chain moving.',
      no:{sdr:'Naomi: I could, but this is exactly what the new associate is here for. Take it.', ae:'Romeo: I asked for it — I can’t also write it. This one’s yours.', sa:'Maya: Background research and CRM notes aren’t a design job. That’s you.', csm:'Talia: Not a customer task. Prep and CRM hygiene for a live deal — that’s yours.'}},
   ];
+  // One changed condition per play. First choose the role that leads, then the role that
+  // contributes the missing expertise. This is practice, not a scored assessment.
+  var TWISTS = [
+    {from:'Carrow & Vale — procurement deadline',
+     text:'Carrow & Vale wants revised pricing and a deployment answer before the proposal goes to procurement. Who leads the response, and who supports them?',
+     lead:'ae', support:'sa',
+     leadOk:'Romeo leads. The account executive owns the proposal, pricing and negotiation.',
+     supportOk:'Maya supports him. The solution architect owns the integration, compliance and deployment fit.',
+     leadNo:{you:'You can prepare the brief, but you do not own pricing or negotiation. Romeo leads.', sdr:'Naomi qualifies and warms opportunities; the proposal is already at pricing and negotiation. Romeo leads.', sa:'Maya owns the technical answer, but not the proposal, pricing or terms. Romeo leads.', csm:'Talia leads after the sale. This deal is still going through procurement, so Romeo leads.'},
+     supportNo:{you:'Your research can help, but the missing expertise is the deployment fit. Maya supports.', sdr:'The lead is already qualified. The missing expertise is technical, so Maya supports.', ae:'Romeo is already leading. Choose the different role that supplies the deployment answer.', csm:'Customer success leads adoption after signature. Maya supplies the technical answer now.'}},
+    {from:'Halden Retail — adoption and integration',
+     text:'Halden Retail has signed, but its team is not using the product and now reports an integration problem. Who leads the response, and who supports them?',
+     lead:'csm', support:'sa',
+     leadOk:'Talia leads. The customer success manager owns adoption, training and value after the sale.',
+     supportOk:'Maya supports her. The solution architect brings the technical fit needed to resolve the integration problem.',
+     leadNo:{you:'You can help prepare information, but a signed customer that is not using the product belongs with Talia.', sdr:'This is a customer, not a lead. Talia leads the adoption response.', ae:'The contract is signed. Talia now leads the customer’s adoption and value.', sa:'Maya handles the integration expertise, but the wider adoption problem is led by Talia.'},
+     supportNo:{you:'Preparation may help, but the stated problem needs technical integration expertise. Maya supports.', sdr:'Lead generation cannot resolve an integration problem. Maya supports.', ae:'This is not a pricing or negotiation issue. Maya supplies the technical support.', csm:'Talia is already leading. Choose the different role that supplies the integration expertise.'}},
+    {from:'Blackwood Logistics — ready for discovery',
+     text:'The lead Naomi has been nurturing is ready for a proper conversation. Romeo also needs a one-page research brief and clean CRM notes before discovery. Who leads the handoff, and who supports it?',
+     lead:'sdr', support:'you',
+     leadOk:'Naomi leads this handoff. The SDR qualifies the warmed lead before it becomes Romeo’s opportunity.',
+     supportOk:'You support her. Research, meeting briefs and accurate CRM notes prepare the handoff for discovery.',
+     leadNo:{you:'You prepare the evidence, but Naomi owns qualification and the handoff. She leads.', ae:'Romeo takes the qualified opportunity next; Naomi must complete the qualification and handoff first.', sa:'There is no technical-design question yet. Naomi leads qualification.', csm:'There is no signed customer yet. Naomi leads the handoff from nurtured lead to qualified opportunity.'},
+     supportNo:{sdr:'Naomi is already leading. Choose the different role that prepares the brief and CRM notes.', ae:'Romeo receives the handoff, but the requested preparation work belongs to the sales associate.', sa:'No solution design is requested. The sales associate prepares the research and CRM record.', csm:'This is before the sale. The sales associate supplies the preparation support.'}}
+  ];
   var READ_MS = 9000;   // how long a right answer stays before auto-advancing (or press Next)
 
   var team = document.getElementById('team'), msg = document.getElementById('msg'),
@@ -203,7 +257,8 @@
       count = document.getElementById('count'), hint = document.getElementById('hint'),
       done = document.getElementById('done'), deal = document.getElementById('deal'), fx = document.getElementById('fx');
   var byId = {}; TEAM.forEach(function(t){ byId[t.id] = t; });
-  var order, i, solved, desks = {}, rowOrder = [], timer = null, suppressClick = false, busy = false;
+  var order, i, solved, desks = {}, rowOrder = [], timer = null, suppressClick = false, busy = false,
+      mode = 'route', twist = null;
 
   function shuffle(a){ for (var k=a.length-1;k>0;k--){ var j=Math.floor(Math.random()*(k+1)); var x=a[k]; a[k]=a[j]; a[j]=x; } return a; }
 
@@ -222,7 +277,10 @@
   }
 
   function start(){
-    order = shuffle(MSGS.map(function(_,k){return k;})); i = 0; solved = {}; busy = false;
+    order = shuffle(MSGS.map(function(_,k){return k;})); i = 0; solved = {}; busy = false; mode = 'route'; twist = null;
+    document.body.classList.remove('twist'); document.getElementById('twistBtn').hidden = false;
+    document.getElementById('doneText').innerHTML = '<b>That\'s the chain.</b> Every message you routed is a handover the deal passed through.';
+    nextBtn.textContent = 'Next →';
     buildDesks();
     team.querySelectorAll('.link').forEach(function(l){ l.classList.remove('joined'); });
     deal.classList.remove('go'); done.classList.remove('show'); hint.style.display=''; msg.style.display='';
@@ -237,10 +295,13 @@
   }
   function advance(){
     clearTimeout(timer);
+    if (mode === 'twist-lead'){ showTwistSupport(); return; }
+    if (mode === 'twist-support'){ finishTwist(); return; }
     if (i === 4){ finish(); } else { i++; show(); }
   }
   function route(id){
     if (busy || done.classList.contains('show')) return;
+    if (mode !== 'route'){ routeTwist(id); return; }
     var m = MSGS[order[i]];
     if (id === m.to){
       busy = true;
@@ -253,6 +314,41 @@
       desks[id].classList.remove('flash-no'); void desks[id].offsetWidth; desks[id].classList.add('flash-no');
       fb.className = 'fb show no'; fbtext.innerHTML = '<b>Bounced back.</b>' + m.no[id];
     }
+  }
+  function startTwist(){
+    clearTimeout(timer); busy = false; mode = 'twist-lead';
+    twist = TWISTS[Math.floor(Math.random()*TWISTS.length)];
+    document.body.classList.add('twist'); done.classList.remove('show'); deal.classList.remove('go');
+    Object.keys(desks).forEach(function(k){ desks[k].classList.remove('done'); });
+    team.querySelectorAll('.link').forEach(function(l){ l.classList.remove('joined'); });
+    msg.style.display='grid'; hint.style.display=''; msg.className='msg'; fb.className='fb';
+    fromEl.innerHTML = 'What changed: <b>' + twist.from + '</b>'; bodyEl.textContent = twist.text;
+    count.textContent = 'Pressure test · lead'; hint.textContent = 'Choose the role that leads this response.';
+    nextBtn.textContent = 'Choose support →'; msg.focus({preventScroll:true});
+  }
+  function routeTwist(id){
+    var leadStage = mode === 'twist-lead', answer = leadStage ? twist.lead : twist.support;
+    if (id === answer){
+      busy = true; msg.classList.add('right'); fb.className = 'fb show ok';
+      fbtext.innerHTML = '<b>' + (leadStage ? 'Right lead.' : 'Right support.') + '</b>' + (leadStage ? twist.leadOk : twist.supportOk);
+      desks[id].classList.add('done'); nextBtn.focus({preventScroll:true}); timer = setTimeout(advance, READ_MS);
+    } else {
+      msg.classList.remove('wrong'); void msg.offsetWidth; msg.classList.add('wrong');
+      desks[id].classList.remove('flash-no'); void desks[id].offsetWidth; desks[id].classList.add('flash-no');
+      fb.className = 'fb show no'; fbtext.innerHTML = '<b>Try another role.</b>' + (leadStage ? twist.leadNo[id] : twist.supportNo[id]);
+    }
+  }
+  function showTwistSupport(){
+    clearTimeout(timer); busy = false; mode = 'twist-support'; fb.className='fb'; msg.className='msg';
+    count.textContent = 'Pressure test · support';
+    fromEl.innerHTML = 'Lead: <b>' + byId[twist.lead].name + ', ' + byId[twist.lead].role + '</b>';
+    hint.textContent = 'Now choose the different role that supplies the missing expertise.';
+    nextBtn.textContent = 'Finish →'; msg.focus({preventScroll:true});
+  }
+  function finishTwist(){
+    clearTimeout(timer); busy = false; mode = 'twist-done'; msg.style.display='none'; hint.style.display='none'; fb.className='fb';
+    document.getElementById('doneText').innerHTML = '<b>One lead, one handoff.</b> ' + twist.leadOk + ' ' + twist.supportOk;
+    document.getElementById('twistBtn').hidden = true; done.classList.add('show'); document.getElementById('again').focus();
   }
   nextBtn.addEventListener('click', advance);
   function joinLinks(){
@@ -269,7 +365,7 @@
       return {x: r.left + r.width/2 - tr.left, y: r.top + r.height/2 - tr.top}; });
     deal.classList.add('go');
     if (REDUCED || !deal.animate){
-      deal.style.left = stops[4].x + 'px'; deal.style.top = stops[4].y + 'px'; done.classList.add('show'); document.getElementById('again').focus(); return;
+      deal.style.left = stops[4].x + 'px'; deal.style.top = stops[4].y + 'px'; done.classList.add('show'); document.getElementById('twistBtn').focus(); return;
     }
     var kf = stops.map(function(p){ return {left: p.x + 'px', top: p.y + 'px'}; });
     deal.style.left = kf[0].left; deal.style.top = kf[0].top;
@@ -277,7 +373,7 @@
     anim.onfinish = function(){
       var r = deal.getBoundingClientRect();
       fireworks(r.left + r.width/2, r.top + r.height/2);
-      setTimeout(function(){ done.classList.add('show'); document.getElementById('again').focus(); }, 900);
+      setTimeout(function(){ done.classList.add('show'); document.getElementById('twistBtn').focus(); }, 900);
     };
   }
   function fireworks(cx, cy){
@@ -303,6 +399,7 @@
     })(t0);
   }
   document.getElementById('again').addEventListener('click', start);
+  document.getElementById('twistBtn').addEventListener('click', startTwist);
   document.getElementById('startBtn').addEventListener('click', function(){ document.body.classList.add('playing'); start(); });
 
   // Keyboard: 1-5 routes to a desk in DISPLAYED order (matches the aria labels).
