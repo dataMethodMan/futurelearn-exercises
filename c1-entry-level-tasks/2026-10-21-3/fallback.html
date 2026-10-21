@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Route work across the B2B sales team - text version</title><style>
+.team-map{display:flex;align-items:center;gap:18px;margin:12px 0;padding:10px 14px;background:#f5f8f8;border-radius:12px;min-height:110px}
+.team-map svg{width:100px;height:100px;flex:none;overflow:visible}.team-map p{margin:0}.team-map strong{display:block}.team-map .map-line{stroke:#c5d0d8;stroke-width:3;transition:stroke .35s}.team-map .map-line.lit{stroke:#0a6b66}.team-node circle{fill:white;stroke:#82969c;stroke-width:2;transition:fill .3s,stroke .3s}.team-node text{font-size:9px;font-weight:700;text-anchor:middle;fill:#394d55}.team-node.solved circle{fill:#0a6b66;stroke:#0a6b66}.team-node.solved text{fill:white}.team-node.current circle{stroke:#172e39;stroke-width:3}.team-node.newly-solved{animation:confirm .45s ease-out}.exit-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:8px 16px;border:2px solid #0a6b66;border-radius:8px;font-weight:600;text-decoration:none}.success{color:#0a6b66}
+@keyframes confirm{50%{filter:drop-shadow(0 0 5px #58bfb5)}}
+@media(prefers-reduced-motion:reduce){.team-map *{animation:none!important;transition:none!important}}
+@media(max-width:560px){.team-map{gap:12px;padding:8px}.team-map svg{width:84px;height:84px}.team-map p{font-size:.9rem}}
+
+:root{--ink:#1b2733;--muted:#4a5866;--line:#c5d0d8;--accent:#0a6b66;--accent-soft:#eaf5f4;--right:#1c6b3a;--wrong:#9a3b12;--panel:#f5f7f8}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{height:100%;margin:0}body{overflow:hidden;background:#fff;color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.viewport{position:fixed;inset:0;overflow:auto;overscroll-behavior:contain}
+.viewport:focus{outline:none}.viewport:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+main{max-width:780px;margin:0 auto;padding:16px 20px 20px}
+h1{font-size:1.45rem;line-height:1.2;margin:0 0 6px}
+.intro p{margin:0 0 4px}.intro .boundary{color:var(--muted);font-size:.95rem}
+.card{margin-top:12px;border:1px solid var(--line);border-radius:14px;padding:14px 18px}
+.task-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}.task-head .stack{flex:1;min-width:0}
+.progress{margin:0;white-space:nowrap;font-size:.875rem;font-weight:700;color:var(--accent);letter-spacing:.02em}
+.stack{display:grid}.stack>*{grid-area:1/1}.sizer{visibility:hidden}
+.task-title{font-size:1.2rem;line-height:1.25;margin:0 0 8px}
+.task-title:focus{outline:none}.task-title:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:4px}
+.scenario{margin:0;padding:10px 14px;background:var(--panel);border-radius:10px}
+fieldset{border:0;margin:12px 0 0;padding:0;min-width:0}
+legend{font-weight:700;padding:0;margin-bottom:6px}
+#options{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.option{display:flex;align-items:center;gap:10px;min-height:48px;padding:8px 12px;border:1px solid #9aa8b3;border-radius:10px;cursor:pointer;line-height:1.25}
+.option input{flex:none;width:20px;height:20px;margin:0;accent-color:var(--accent)}
+.option:hover{border-color:var(--accent)}
+.option:has(input:checked){border:2px solid var(--accent);padding:7px 11px;background:var(--accent-soft)}
+.option:has(input:focus-visible){outline:3px solid var(--accent);outline-offset:2px}
+.role-name{font-weight:600}.role-abbr{flex:none;min-width:3.4em;padding:2px 6px;border-radius:6px;background:var(--panel);border:1px solid var(--line);font-size:.875rem;font-weight:700;text-align:center;color:var(--ink)}
+.feedback{display:flex;gap:10px;align-items:flex-start;margin-top:10px;padding:8px 12px;border-radius:10px;border:1px solid transparent;border-left-width:5px}
+.feedback p{margin:0}.feedback.neutral{background:var(--panel);border-color:var(--panel);color:var(--muted)}
+.feedback.right{background:#eef7f1;border-color:var(--right)}.feedback.right strong{color:var(--right)}
+.feedback.wrong{background:#fbf1ec;border-color:var(--wrong)}.feedback.wrong strong{color:var(--wrong)}
+.mark{flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;color:#fff;font-weight:700;line-height:1}
+.right .mark{background:var(--right)}.wrong .mark{background:var(--wrong)}
+.nav{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.nav .spacer{flex:1}
+button{font:inherit;font-weight:600;min-height:44px;padding:10px 18px;border-radius:8px;cursor:pointer;border:2px solid var(--accent)}
+button.primary{background:var(--accent);color:#fff}
+#next,#prev,#recapPrev{min-width:8.5em}
+button.secondary{background:#fff;color:var(--accent)}
+button:disabled,button[aria-disabled=true]{border-color:#b9c3ca;color:#6b7884;background:#fff;cursor:default}
+button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+#recapTitle{font-size:1.25rem;margin:0 0 6px}#recapTitle:focus{outline:none}
+#recapView>p{margin:0 0 10px}
+#recapList{list-style:none;margin:0;padding:0}
+#recapList li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:2px 16px;padding:10px 0;border-top:1px solid var(--line)}
+#recapList p{margin:0}.recap-task{font-weight:600}.recap-role{font-weight:700;color:var(--accent)}.recap-why{grid-column:2;color:var(--muted)}
+.recap-role{grid-column:2;grid-row:1}
+.journey{margin:10px 0 0;padding:10px 12px;background:var(--panel);border-radius:10px}
+.alt{margin:12px 0 0;font-size:.9rem;color:var(--muted)}a{color:var(--accent)}a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.textversion h2{font-size:1.15rem;margin:22px 0 6px}.textversion h3{font-size:1rem;margin:12px 0 4px}
+@media (max-width:560px){main{padding:14px 14px 20px}h1{font-size:1.3rem}.card{padding:14px}#options{grid-template-columns:1fr}
+.nav button{flex:1 1 calc(50% - 4px);min-width:0!important;padding:10px 8px}.nav .spacer{display:none}.nav #check{flex-basis:100%;order:-1}
+#recapList li{grid-template-columns:1fr}.recap-role,.recap-why{grid-column:1;grid-row:auto}}
+@media print{html,body{height:auto;overflow:visible}.viewport{position:static;overflow:visible}#interactive,.alt{display:none!important}}
+</style></head><body>
+<div id="activity-scroll" class="viewport" role="region" aria-label="Text version" tabindex="0"><main class="textversion" data-activity-id="w1-a2-s5" data-version="2026-10-21.3">
+<p><a href="index.html">Back to the interactive activity</a></p>
+<h1>Route work across the B2B sales team - complete text version</h1>
+<p>You&#x27;ll see four tasks from a B2B sales team. For each task, choose the role that should lead it. You&#x27;ll practise all four roles. This is ungraded practice, and you can try again.</p>
+<p>Colleagues may help, but choose the role with primary responsibility. All companies here are fictional.</p>
+<p>How to use this version: read each task and decide which role should lead it before you read the answer below it. Every option has its own explanation.</p>
+<p>The four roles are: Sales development representative, or SDR; Account executive, or AE; Solution architect, or SA; Customer success manager, or CSM.</p>
+<h2>Task 1 of 4: Staff are not using the platform</h2>
+<p>Brightwater Hotels signed with Jin two months ago. Many hotel staff have still not logged in to the platform, and the renewal is due later this year. Someone needs to arrange more training, check how the platform is used and keep in regular contact.</p>
+<p>Who should lead this task?</p>
+<h3>Answer to task 1</h3>
+<p>Lead role: Customer success manager, or CSM. After the sale, the CSM leads onboarding and training, keeps in regular contact and tracks how the product is used. That work supports the renewal.</p>
+<p>Why not the other roles:</p>
+<ul>
+<li>Sales development representative, or SDR: Brightwater is already a customer. The SDR finds and qualifies new leads before any sale.</li>
+<li>Account executive, or AE: The deal is already signed. Helping a customer get value from what they bought is not the AE&#x27;s to lead.</li>
+<li>Solution architect, or SA: Nothing here asks for the technical design to change. The problem is staff not using the platform.</li>
+</ul>
+<h2>Task 2 of 4: Turn a qualified lead into a deal</h2>
+<p>Lakemoor Clinics, a group of private health clinics, has been qualified and handed over with detailed notes. Someone now needs to run a deeper discovery call, write a proposal for the clinics&#x27; board and negotiate the price and contract terms.</p>
+<p>Who should lead this task?</p>
+<h3>Answer to task 2</h3>
+<p>Lead role: Account executive, or AE. The AE turns a qualified lead into a signed deal: a deeper discovery call, a proposal (the business case) and negotiating the terms.</p>
+<p>Why not the other roles:</p>
+<ul>
+<li>Sales development representative, or SDR: The SDR&#x27;s part is done: the lead is already qualified and handed over. Discovery, the proposal and the terms come next.</li>
+<li>Solution architect, or SA: An SA may check the technical side of the proposal, but discovery, price and contract terms are led by the AE.</li>
+<li>Customer success manager, or CSM: Nothing is signed yet, so there is nothing to onboard. The CSM&#x27;s work begins after the sale.</li>
+</ul>
+<h2>Task 3 of 4: A possible new customer</h2>
+<p>Fernway Outdoor, a sports-equipment chain, has just opened an online shop and looks like a good fit for Jin. Nobody at Jin has spoken to them yet. Someone needs to research the company, contact its head of technology and check interest, budget and who can decide.</p>
+<p>Who should lead this task?</p>
+<h3>Answer to task 3</h3>
+<p>Lead role: Sales development representative, or SDR. The SDR works at the front of the process: researching a possible customer, making first contact and checking interest, budget and authority.</p>
+<p>Why not the other roles:</p>
+<ul>
+<li>Account executive, or AE: Not yet. The AE takes over a lead once it is qualified, and nobody has spoken to Fernway.</li>
+<li>Solution architect, or SA: There is no proposal to check yet. First, someone must find out whether Fernway is a real opportunity.</li>
+<li>Customer success manager, or CSM: Fernway is not a customer. The CSM&#x27;s work starts after a sale.</li>
+</ul>
+<h2>Task 4 of 4: Will it work with their systems?</h2>
+<p>While the proposal for Lakemoor Clinics takes shape, the clinics ask whether the platform can connect to their patient-record system and meet the rules on health data. Someone needs to review their systems, check this is feasible and set out a deployment plan.</p>
+<p>Who should lead this task?</p>
+<h3>Answer to task 4</h3>
+<p>Lead role: Solution architect, or SA. The SA owns technical fit: reviewing the client&#x27;s systems, checking feasibility, integration and compliance, and setting out a deployment plan.</p>
+<p>Why not the other roles:</p>
+<ul>
+<li>Sales development representative, or SDR: Lakemoor was qualified some time ago. This question needs technical expertise about the clinics&#x27; systems.</li>
+<li>Account executive, or AE: The AE leads the proposal and its terms. Checking whether the solution will work with the clinics&#x27; systems is a colleague&#x27;s job.</li>
+<li>Customer success manager, or CSM: Nothing has been sold or set up yet. The CSM supports the customer after the sale.</li>
+</ul>
+<h2>Recap: who leads what</h2>
+<ul>
+<li>Staff are not using the platform: Customer success manager, or CSM. Adoption, training and regular contact after the sale, which support the renewal.</li>
+<li>Turn a qualified lead into a deal: Account executive, or AE. Discovery, the proposal and negotiating the terms of a qualified opportunity.</li>
+<li>A possible new customer: Sales development representative, or SDR. Research, first contact and checking interest, budget and authority before any handover.</li>
+<li>Will it work with their systems?: Solution architect, or SA. Technical fit: reviewing the client&#x27;s systems, checking feasibility and planning the deployment.</li>
+</ul>
+<p>Across the customer journey, the SDR finds and qualifies the opportunity, the AE wins the deal, the SA makes sure the solution fits and the CSM helps the customer get value from it.</p>
+</main></div></body></html>
