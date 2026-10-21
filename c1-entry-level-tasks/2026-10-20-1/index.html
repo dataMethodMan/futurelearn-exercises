@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Who should pick this up?</title><style>*{box-sizing:border-box} [hidden]{display:none!important} html{color-scheme:light;height:100%} body{height:100%;overflow:hidden} .viewport{position:fixed;inset:0;overflow:auto;overscroll-behavior:contain;scroll-padding:12px} body{margin:0;background:#f4f1e9;color:#172b36;font:16px/1.55 system-ui,sans-serif} main{max-width:1040px;margin:auto;padding:20px} h1{font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.1;margin:.15em 0} h2{font-size:1.35rem} h3,legend{font-size:1.1rem;font-weight:700} p{margin:.7em 0} a{color:#07516d} .eyebrow{text-transform:uppercase;letter-spacing:.13em;color:#007b74;font-weight:800;font-size:.83rem}.lead{font-size:1.1rem}.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:center;background:#fff;border:1px solid #b6c7ce;border-radius:18px;overflow:hidden;margin:8px 0 20px;box-shadow:0 12px 32px #17384616}.hero-copy{padding:28px}.hero img{display:block;width:100%;height:100%;min-height:300px;object-fit:cover}.mission{background:#e6f3f0;border-left:6px solid #007b74;padding:14px 18px;border-radius:8px}.journey{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.journey div{background:#173846;color:white;border-radius:10px;padding:14px}.journey b{display:block;color:#f4bd4a}.outcome-guide{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:12px 0 20px}.outcome-guide div{background:#fff;border:1px solid #b6c7ce;border-radius:9px;padding:12px}.outcome-guide b{display:block;color:#007b74}fieldset,.panel,details{min-width:0;border:1px solid #b6c7ce;border-radius:12px;padding:18px;margin:18px 0;background:white}#cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}#cards fieldset{margin:0;border-top:6px solid #e69b37}.task-icon{display:inline-grid;place-items:center;width:38px;height:38px;background:#e6f3f0;border-radius:50%;margin-right:10px;color:#07516d}.decision-hint{background:#f4f6f7;padding:8px 10px;border-radius:6px;font-size:.94rem}label{display:block;font-weight:600}select,textarea,button{font:inherit;max-width:100%;color:inherit}select,textarea{display:block;width:100%;padding:10px;border:1px solid #627784;border-radius:5px;background:white;min-height:48px}button,summary{min-height:48px;padding:12px;cursor:pointer}button{background:#07516d;color:white;border:2px solid #07516d;border-radius:6px;margin:8px 8px 8px 0}.pick{display:flex;align-items:center;gap:10px;min-height:48px;margin-top:8px;font-weight:600;cursor:pointer}input{width:24px;height:24px;flex-shrink:0;accent-color:#07516d}:focus-visible{outline:3px solid #9c3d00;outline-offset:4px}#used,#status{font-weight:650}#result{border-left:5px solid #07516d}li{margin-bottom:18px}.actions{display:flex;flex-wrap:wrap}textarea{min-height:130px}.skip{display:block;padding:8px}@media(max-width:760px){main{padding:12px}.hero{grid-template-columns:1fr}.hero img{min-height:220px}.journey,.outcome-guide,#cards{grid-template-columns:1fr}fieldset,.panel,details{padding:12px}}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}@media print{.viewport{position:static;overflow:visible}html,body{height:auto;overflow:visible}body{background:white}main{max-width:none}#interactive,.skip,.intro,nav{display:none}details>summary{display:none}}.visual-workboard{position:relative;aspect-ratio:16/9;border-radius:18px;overflow:hidden;border:1px solid #8da3ab;box-shadow:0 12px 30px #17384620;background:#d8c3a5}.visual-workboard>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.image-task{position:absolute;z-index:2;margin:0;padding:8px 12px;min-height:44px;background:#fffdf7;color:#173846;border:3px solid #07516d;border-radius:999px;box-shadow:0 4px 14px #0005;font-weight:800;line-height:1.15}.image-task span{margin-right:6px}.image-task:hover,.image-task:focus-visible{background:#fff3c9}.image-task.selected{background:#007b74;color:white;border-color:white}.image-task-0{left:5%;top:26%}.image-task-1{right:5%;top:25%}.image-task-2{left:6%;bottom:17%}.image-task-3{right:6%;bottom:16%}#boardSlots{position:absolute;z-index:2;left:35.7%;top:43%;width:28.6%;height:25%;display:grid;grid-template-columns:1fr 1fr;gap:3%}.board-slot{display:grid;place-content:center;text-align:center;min-width:0;width:100%;height:100%;margin:0;padding:8px;border-radius:12px;border:2px dashed #9b6b43;background:#fff9e8dd;color:#173846;font-weight:800;line-height:1.1}.board-slot span{display:block;font-size:1.4rem}.board-slot small{display:block;margin-top:6px;font-weight:600}.board-slot.filled{border-style:solid;background:#fff3c9ee}.board-slot.filled:hover{background:#ffe39a}.image-status{min-height:1.55em;background:#e6f3f0;border-radius:7px;padding:8px 12px}.task-card{display:none}.task-card.active{display:block;border-top:6px solid #e69b37}.card-state{font-weight:700;color:#07516d}@media(max-width:760px){.visual-workboard{aspect-ratio:auto;padding-top:56.25%;overflow:visible;margin-bottom:140px}.image-task{left:0!important;right:auto!important;top:calc(100% + 8px)!important;bottom:auto!important;width:calc(50% - 4px);border-radius:8px;font-size:.82rem}.image-task-1{left:calc(50% + 4px)!important}.image-task-2{top:calc(100% + 60px)!important}.image-task-3{top:calc(100% + 60px)!important;left:calc(50% + 4px)!important}.board-slot{font-size:.65rem;padding:2px}.board-slot small{display:none}}.task-card{display:block!important;opacity:.72}.task-card.active{opacity:1;box-shadow:0 0 0 3px #f4bd4a55}.studio{margin:28px 0;background:#071f2b;color:#f7fbfb;border-radius:24px;overflow:hidden;box-shadow:0 24px 70px #071f2b38}.studio-head{display:grid;grid-template-columns:1.2fr .8fr;gap:32px;align-items:end;padding:28px 32px 22px}.studio-head h2{font-size:clamp(1.5rem,3vw,2.25rem);line-height:1.1;margin:.25rem 0}.studio-head .eyebrow{color:#63e4cf}.studio-head>p{color:#c7d8de}.studio-stage{position:relative}.visual-workboard{border:0;border-radius:0;box-shadow:none;aspect-ratio:16/7.2;filter:saturate(.78) contrast(1.04)}.stage-shade{position:absolute;inset:0;background:linear-gradient(90deg,#061d29b8 0%,transparent 32%,transparent 68%,#061d29b8 100%)}.task-launcher{position:absolute;inset:auto 24px 22px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;z-index:4}.image-task{position:static!important;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;min-width:0;margin:0;padding:13px 14px;transform:none!important;border:1px solid #ffffff4a;border-radius:14px;background:#071f2bdc;backdrop-filter:blur(16px);color:white;box-shadow:0 8px 30px #0005;text-align:left}.image-task:hover,.image-task.current{background:#f7fbfb;color:#071f2b;border-color:#63e4cf}.image-task.selected{background:#0d766f;color:white;border-color:#63e4cf}.image-task.answered:not(.current){border-color:#63e4cf}.task-number{font:800 .72rem/1 system-ui;letter-spacing:.1em;color:#63e4cf}.task-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:750}.task-arrow{font-size:1.1rem}.plan-strip{display:grid;grid-template-columns:170px 1fr;gap:18px;align-items:center;padding:18px 26px;background:#0b2a38;border-top:1px solid #ffffff1a}.plan-label{font-size:.75rem;text-transform:uppercase;letter-spacing:.15em;color:#63e4cf;font-weight:800}.plan-strip p{margin:2px 0;color:white}.plan-strip #boardSlots{position:static;width:auto;height:auto;display:grid;grid-template-columns:1fr 1fr;gap:10px}.plan-strip .board-slot{min-height:68px;border:1px dashed #8aabb7;background:#ffffff0d;color:#dce9ed;border-radius:12px}.plan-strip .board-slot.filled{background:#f6bd4a;color:#071f2b;border-color:#f6bd4a}.image-status{margin:0;padding:10px 26px 16px;min-height:0;background:#0b2a38;color:#c7d8de;border-radius:0}.workspace{display:grid;grid-template-columns:280px minmax(0,1fr);gap:26px;align-items:start;margin:34px 0}.workspace-intro{position:sticky;top:20px;padding:22px;border-left:3px solid #007b74}.workspace-intro h2{font-size:1.7rem;line-height:1.15}.workspace #cards{display:block}.task-card{display:none!important;opacity:1;margin:0;padding:28px;border:1px solid #b6c7ce;border-radius:18px;background:white;box-shadow:0 16px 46px #17384618}.task-card.active{display:block!important;animation:reveal .35s ease both}.task-card legend{display:block;width:100%}.step-kicker{display:block;color:#007b74;text-transform:uppercase;letter-spacing:.13em;font-size:.75rem;margin-bottom:5px}.task-heading{display:block;font-size:clamp(1.45rem,3vw,2rem);line-height:1.15}.scenario{font-size:1.08rem;padding:16px 18px;background:#f4f1e9;border-radius:12px}.decision-panel{display:grid;grid-template-columns:42px 1fr;gap:13px;padding:18px 0;border-top:1px solid #d9e2e5}.decision-number{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#071f2b;color:#63e4cf;font-weight:800}.decision-panel .decision-hint{margin:0 0 12px;padding:0;background:none}.decision-panel .pick{display:inline-flex;padding:11px 16px;border:1px solid #8ba0aa;border-radius:9px;background:#f7fbfb}.next-task{float:right;background:transparent;color:#07516d;border-color:#07516d}.card-state{clear:both;padding:10px 12px;background:#e6f3f0;border-radius:8px}.task-icon{display:none}@keyframes reveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}@media(max-width:820px){.studio-head,.workspace{grid-template-columns:1fr}.studio-head{gap:4px;padding:22px}.visual-workboard{aspect-ratio:16/9}.task-launcher{position:static;grid-template-columns:1fr 1fr;padding:12px 14px 18px;background:#071f2b}.plan-strip{grid-template-columns:1fr;padding:16px}.workspace-intro{position:static}.task-card{padding:20px}}@media(max-width:480px){.task-launcher{grid-template-columns:1fr}.plan-strip #boardSlots{grid-template-columns:1fr}.decision-panel{grid-template-columns:34px 1fr}}@media(prefers-reduced-motion:reduce){.task-card.active{animation:none}}</style></head><body>
+<div id="activity-scroll" class="viewport" role="region" aria-label="Activity content" tabindex="0"><a class="skip" href="#text-version">Go to complete text version</a><main data-activity-id="w1-a2-s5" data-version="2026-10-20.1">
+<div class="intro"><section class="hero"><div class="hero-copy"><p class="eyebrow">The B2B sales-team handover</p><h1>Who should pick this up?</h1><p class="lead">Four pieces of customer work are waiting at Jin Cloud Solutions. Your manager has room for only two in today&#x27;s priority plan. Work out which sales-team role should lead each item, then choose the pair that best supports the team&#x27;s immediate focus.</p><p class="mission"><b>Your mission:</b> connect each work item to the role that should lead it, then build a two-item plan that responds to your manager's priority.</p></div><img src="assets/sales-workboard-v1.png" alt="Four pieces of sales work arranged around a planning board with two empty task slots."></section>
+<h2>How this activity works</h2><div class="journey"><div><b>1 · Match</b>Decide which role should lead each item.</div><div><b>2 · Plan</b>Choose exactly two items for today's workboard.</div><div><b>3 · Adapt</b>Respond when your manager changes the priority.</div></div>
+<p>For this planning exercise, your plan has two task slots. This is an exercise constraint, not an estimate of task duration or a rule for a real working day.</p><p>Choose the role that should lead each scenario. Other roles may support the work in practice, but one role owns the next action at this point in the customer journey.</p><h2>Role guide</h2><div class="outcome-guide"><div><b>Sales development representative (SDR)</b>Find, contact and qualify potential customers before handing a real opportunity over.</div><div><b>Account executive (AE)</b>Discover what a qualified prospect needs, shape the proposal and lead the commercial agreement.</div><div><b>Solution architect (SA)</b>Translate business needs into a secure, workable technical solution.</div><div><b>Customer success manager (CSM)</b>Help customers adopt the solution, realise value and build the relationship after the sale.</div></div></div>
+<nav aria-label="Alternative formats"><a href="fallback.html">Read the complete text version</a> · <a href="fallback.pdf">Download the complete text PDF</a></nav>
+<noscript><p>Use the complete text version below, or open the text or PDF link above. Every task, option, feedback path and plan selection is included.</p></noscript>
+<section id="interactive" hidden aria-label="Build a task plan">
+<div class="panel"><p class="eyebrow">Manager's brief</p><h2>Choose today's priority</h2><p>Your manager's priority requires two roles in the handover. Choose one to begin.</p><label for="priority">Handover priority</label><select id="priority"></select><p id="brief"></p></div>
+<section class="studio" aria-labelledby="studioTitle"><div class="studio-head"><div><p class="eyebrow">Interactive workbench</p><h2 id="studioTitle">Explore the work. Build your response.</h2></div><p>Open each item, connect it to an outcome, then decide whether it belongs in today’s two-place plan.</p></div><div class="studio-stage"><div class="visual-workboard" aria-label="Interactive sales desk"><img src="assets/sales-workboard-v1.png" alt="Four work folders surround a wooden workboard with two empty slots."><div class="stage-shade"></div></div><div id="imageTasks" class="task-launcher" aria-label="Open a work item"></div></div><div class="plan-strip"><div><span class="plan-label">Live plan</span><p id="used" role="status"></p></div><div id="boardSlots" aria-label="Selected workboard items"></div></div><p id="imageStatus" class="image-status" role="status">Select a work item to begin.</p></section>
+<section class="workspace" aria-labelledby="workspaceTitle"><div class="workspace-intro"><p class="eyebrow">Decision space</p><h2 id="workspaceTitle">Work through one item at a time</h2><p>There is no single perfect workday. Use the evidence in each scenario and make the most defensible choice.</p></div><div id="cards"></div></section>
+<div class="actions"><button id="review" type="button">Review my plan</button><button id="restart" type="button">Start again</button></div><p id="status" role="status"></p>
+<section id="result" class="panel" hidden aria-labelledby="reviewTitle"><h2 id="reviewTitle" tabindex="-1">3. Inspect the contributions and trade-offs</h2><div id="reviewText"></div><ul id="links"></ul></section>
+<button id="pressure" type="button" hidden>Try a changed priority</button>
+<section id="save" class="panel" hidden><h2>4. Explain your revised plan</h2><p id="reflection">Explain why each selected role should lead its work item, how the handover fits the priority and what you leave for later. Use only the fictional case; do not enter personal or customer information.</p><label for="rationale">My rationale</label><textarea id="rationale" aria-describedby="reflection" maxlength="2000"></textarea><button id="download" type="button">Save my plan</button><p id="downloadStatus" role="status"></p></section></section>
+<details id="text-version"><summary>Complete text version: all tasks, options and feedback</summary><h1>Who should pick this up? - complete text version</h1>
+<p>Follow work across the complete B2B sales team. Match each scenario to the role that should lead it: sales development representative, account executive, solution architect or customer success manager. Then choose two items for a priority plan, inspect the handovers you leave uncovered, and revise when the priority changes.</p>
+<p>Choose a priority. For every work item, select the role that should lead it and decide whether to include it in your two-item plan. Review the plan, revise any gaps, then try a changed priority. Finish by writing and saving a short rationale. Allow about 5–7 minutes.</p>
+<p>For this planning exercise, your plan has two task slots. This is an exercise constraint, not an estimate of task duration or a rule for a real working day.</p>
+<p>Choose the role that should lead each scenario. Other roles may support the work in practice, but one role owns the next action at this point in the customer journey.</p>
+<h2>How to use this version</h2>
+<p>On paper or in a document, choose one priority below. Match all four tasks to an outcome, then select two tasks for your plan. Compare your matches with the feedback. Use the selection guide to check capacity and coverage. Revise, then switch to the next priority and repeat. Write your rationale using the prompt at the end. This follows the same decisions as the interactive version.</p>
+<h2>Choose a priority</h2>
+<h3>Turn interest into a qualified opportunity</h3>
+<p>Your plan must cover the SDR-to-AE handover.</p>
+<h3>Confirm commercial and technical fit</h3>
+<p>Your plan must cover the AE working with the solution architect.</p>
+<h3>Move from solution fit to successful adoption</h3>
+<p>Your plan must cover the solution architect-to-CSM handover.</p>
+<h2>Match and select tasks</h2>
+<p>For each work item, choose the role that should lead it. Separately, choose whether to include it in the plan or leave it for later. Match every item, including those left for later.</p>
+<h3>Qualify a new lead</h3>
+<p>A new contact is interested in Jin Cloud Solutions. Research the company, make first contact and check whether there is genuine interest, a suitable budget and decision-making authority before a handover.</p>
+<p>Sales development representative (SDR): This is the most direct match: the SDR researches, contacts and qualifies the lead before handover.</p>
+<p>Account executive (AE): The account executive takes over once the opportunity is qualified. This item is still at the SDR stage.</p>
+<p>Solution architect (SA): Technical design comes later. The immediate need is to decide whether this lead is worth pursuing.</p>
+<p>Customer success manager (CSM): Customer success works after the sale. This contact has not yet become a qualified opportunity.</p>
+<p>Most direct match: Sales development representative (SDR). The SDR owns the front of the pipeline: finding, nurturing and qualifying potential customers before handing a real opportunity to the account executive.</p>
+<h3>Shape the commercial opportunity</h3>
+<p>A qualified prospect needs deeper discovery. Clarify its security needs, compliance requirements, budget and timeline, then turn those findings into a proposal and negotiate the agreement.</p>
+<p>Sales development representative (SDR): The lead is already qualified. The SDR hands it over rather than owning proposal and negotiation.</p>
+<p>Account executive (AE): This is the most direct match: the account executive leads discovery, the proposal and the commercial agreement.</p>
+<p>Solution architect (SA): The solution architect supports technical fit, but the account executive owns the commercial opportunity.</p>
+<p>Customer success manager (CSM): Customer success takes responsibility after the sale, not during proposal and negotiation.</p>
+<p>Most direct match: Account executive (AE). The account executive owns the qualified commercial opportunity: discovery, the business case, the proposal and negotiation, bringing in specialist support when needed.</p>
+<h3>Design the technical fit</h3>
+<p>The prospect needs the proposed cloud platform to integrate with existing systems and meet security and compliance requirements. Assess feasibility and translate the needs into a clear technical roadmap.</p>
+<p>Sales development representative (SDR): The lead is well beyond qualification. This item needs technical expertise rather than SDR ownership.</p>
+<p>Account executive (AE): The account executive owns the deal and works alongside this role, but the technical roadmap belongs to the solution architect.</p>
+<p>Solution architect (SA): This is the most direct match: the solution architect assesses feasibility and designs the technical fit.</p>
+<p>Customer success manager (CSM): Customer success may help after deployment, but the solution is still being designed before the sale.</p>
+<p>Most direct match: Solution architect (SA). The solution architect owns technical fit: assessing requirements, shaping the solution and explaining how it will work securely with the customer&#x27;s systems.</p>
+<h3>Drive adoption and value</h3>
+<p>The contract is signed and the solution has been deployed. Guide the customer&#x27;s team through onboarding and training, monitor usage, resolve adoption issues and identify ways to increase long-term value.</p>
+<p>Sales development representative (SDR): This is now a customer, not a lead. The SDR&#x27;s qualification work finished before the sale.</p>
+<p>Account executive (AE): The commercial agreement is signed. The account executive hands the customer into post-sale success.</p>
+<p>Solution architect (SA): The solution architect may support technical issues, but ongoing adoption and value are owned by customer success.</p>
+<p>Customer success manager (CSM): This is the most direct match: the customer success manager leads onboarding, adoption and long-term value.</p>
+<p>Most direct match: Customer success manager (CSM). The customer success manager owns the post-sale relationship: onboarding, adoption, value realisation, renewals and opportunities to deepen the partnership.</p>
+<h2>Review rules</h2>
+<p>Choose an outcome for every task, including tasks left for later.</p>
+<p>Revise the task–outcome links using the feedback below.</p>
+<p>All four work items are matched to the role that should lead them.</p>
+<p>The plan exceeds the two-task limit. Leave a task for later and review the effect on coverage.</p>
+<p>The plan has unused space. Choose two tasks and review their contributions.</p>
+<p>The plan fits the two-task limit.</p>
+<p>Both roles needed for this priority are represented.</p>
+<p>This plan meets the exercise constraints. Explain what it supports and what you defer.</p>
+<p>Revise the plan and review again. You can change any match or task selection.</p>
+<p>Your plan has changed. Review it again to update the feedback.</p>
+<p>Check outcome coverage using the tasks themselves, even if you matched them incorrectly. A viable plan needs all four matches revised, exactly two tasks selected, and direct support for both priority outcomes. The guide below covers every possible selection. For each priority, a listed gap means those outcomes have no selected task; no gaps means both outcomes have support.</p>
+<h2>Every possible task selection</h2>
+<h3>Include: None</h3>
+<p>The plan has unused space. Choose two tasks and review their contributions.</p>
+<p>Tasks left for later: Qualify a new lead; Shape the commercial opportunity; Design the technical fit; Drive adoption and value</p>
+<p>Turn interest into a qualified opportunity: Roles missing from this priority plan: Sales development representative (SDR); Account executive (AE).</p>
+<p>Confirm commercial and technical fit: Roles missing from this priority plan: Account executive (AE); Solution architect (SA).</p>
+<p>Move from solution fit to successful adoption: Roles missing from this priority plan: Solution architect (SA); Customer success manager (CSM).</p>
+<h3>Include: Drive adoption and value</h3>
+<p>The plan has unused space. Choose two tasks and review their contributions.</p>
+<p>Tasks left for later: Qualify a new lead; Shape the commercial opportunity; Design the technical fit</p>
+<p>Turn interest into a qualified opportunity: Roles missing from this priority plan: Sales development representative (SDR); Account executive (AE).</p>
+<p>Confirm commercial and technical fit: Roles missing from this priority plan: Account executive (AE); Solution architect (SA).</p>
+<p>Move from solution fit to successful adoption: Roles missing from this priority plan: Solution architect (SA).</p>
+<h3>Include: Design the technical fit</h3>
+<p>The plan has unused space. Choose two tasks and review their contributions.</p>
+<p>Tasks left for later: Qualify a new lead; Shape the commercial opportunity; Drive adoption and value</p>
+<p>Turn interest into a qualified opportunity: Roles missing from this priority plan: Sales development representative (SDR); Account executive (AE).</p>
+<p>Confirm commercial and technical fit: Roles missing from this priority plan: Account executive (AE).</p>
+<p>Move from solution fit to successful adoption: Roles missing from this priority plan: Customer success manager (CSM).</p>
+<h3>Include: Design the technical fit; Drive adoption and value</h3>
+<p>The plan fits the two-task limit.</p>
+<p>Tasks left for later: Qualify a new lead; Shape the commercial opportunity</p>
+<p>Turn interest into a qualified opportunity: Roles missing from this priority plan: Sales development representative (SDR); Account executive (AE).</p>
+<p>Confirm commercial and technical fit: Roles missing from this priority plan: Account executive (AE).</p>
+<p>Move from solution fit to successful adoption: Both roles needed for this priority are represented.</p>
+<h3>Include: Shape the commercial opportunity</h3>
+<p>The plan has unused space. Choose two tasks and review their contributions.</p>
+<p>Tasks left for later: Qualify a new lead; Design the technical fit; Drive adoption and value</p>
+<p>Turn interest into a qualified opportunity: Roles missing from this priority plan: Sales development representative (SDR).</p>
+<p>Confirm commercial and technical fit: Roles missing from this priority plan: Solution architect (SA).</p>
+<p>Move from solution fit to successful adoption: Roles missing from this priority plan: Solution architect (SA); Customer success manager (CSM).</p>
+<h3>Include: Shape the commercial opportunity; Drive adoption and value</h3>
+<p>The plan fits the two-task limit.</p>
+<p>Tasks left for later: Qualify a new lead; Design the technical fit</p>
+<p>Turn interest into a qualified opportunity: Roles missing from this priority plan: Sales development representative (SDR).</p>
+<p>Confirm commercial and technical fit: Roles missing from this priority plan: Solution architect (SA).</p>
+<p>Move from solution fit to successful adoption: Roles missing from this priority plan: Solution architect (SA).</p>
+<h3>Include: Shape the commercial opportunity; Design the technical fit</h3>
+<p>The plan fits the two-task limit.</p>
+<p>Tasks left for later: Qualify a new lead; Drive adoption and value</p>
+<p>Turn interest into a qualified opportunity: Roles missing from this priority plan: Sales development representative (SDR).</p>
+<p>Confirm commercial and technical fit: Both roles needed for this priority are represented.</p>
+<p>Move from solution fit to successful adoption: Roles missing from this priority plan: Customer success manager (CSM).</p>
+<h3>Include: Shape the commercial opportunity; Design the technical fit; Drive adoption and value</h3>
+<p>The plan exceeds the two-task limit. Leave a task for later and review the effect on coverage.</p>
+<p>Tasks left for later: Qualify a new lead</p>
+<p>Turn interest into a qualified opportunity: Roles missing from this priority plan: Sales development representative (SDR).</p>
+<p>Confirm commercial and technical fit: Both roles needed for this priority are represented.</p>
+<p>Move from solution fit to successful adoption: Both roles needed for this priority are represented.</p>
+<h3>Include: Qualify a new lead</h3>
+<p>The plan has unused space. Choose two tasks and review their contributions.</p>
+<p>Tasks left for later: Shape the commercial opportunity; Design the technical fit; Drive adoption and value</p>
+<p>Turn interest into a qualified opportunity: Roles missing from this priority plan: Account executive (AE).</p>
+<p>Confirm commercial and technical fit: Roles missing from this priority plan: Account executive (AE); Solution architect (SA).</p>
+<p>Move from solution fit to successful adoption: Roles missing from this priority plan: Solution architect (SA); Customer success manager (CSM).</p>
+<h3>Include: Qualify a new lead; Drive adoption and value</h3>
+<p>The plan fits the two-task limit.</p>
+<p>Tasks left for later: Shape the commercial opportunity; Design the technical fit</p>
+<p>Turn interest into a qualified opportunity: Roles missing from this priority plan: Account executive (AE).</p>
+<p>Confirm commercial and technical fit: Roles missing from this priority plan: Account executive (AE); Solution architect (SA).</p>
+<p>Move from solution fit to successful adoption: Roles missing from this priority plan: Solution architect (SA).</p>
+<h3>Include: Qualify a new lead; Design the technical fit</h3>
+<p>The plan fits the two-task limit.</p>
+<p>Tasks left for later: Shape the commercial opportunity; Drive adoption and value</p>
+<p>Turn interest into a qualified opportunity: Roles missing from this priority plan: Account executive (AE).</p>
+<p>Confirm commercial and technical fit: Roles missing from this priority plan: Account executive (AE).</p>
+<p>Move from solution fit to successful adoption: Roles missing from this priority plan: Customer success manager (CSM).</p>
+<h3>Include: Qualify a new lead; Design the technical fit; Drive adoption and value</h3>
+<p>The plan exceeds the two-task limit. Leave a task for later and review the effect on coverage.</p>
+<p>Tasks left for later: Shape the commercial opportunity</p>
+<p>Turn interest into a qualified opportunity: Roles missing from this priority plan: Account executive (AE).</p>
+<p>Confirm commercial and technical fit: Roles missing from this priority plan: Account executive (AE).</p>
+<p>Move from solution fit to successful adoption: Both roles needed for this priority are represented.</p>
+<h3>Include: Qualify a new lead; Shape the commercial opportunity</h3>
+<p>The plan fits the two-task limit.</p>
+<p>Tasks left for later: Design the technical fit; Drive adoption and value</p>
+<p>Turn interest into a qualified opportunity: Both roles needed for this priority are represented.</p>
+<p>Confirm commercial and technical fit: Roles missing from this priority plan: Solution architect (SA).</p>
+<p>Move from solution fit to successful adoption: Roles missing from this priority plan: Solution architect (SA); Customer success manager (CSM).</p>
+<h3>Include: Qualify a new lead; Shape the commercial opportunity; Drive adoption and value</h3>
+<p>The plan exceeds the two-task limit. Leave a task for later and review the effect on coverage.</p>
+<p>Tasks left for later: Design the technical fit</p>
+<p>Turn interest into a qualified opportunity: Both roles needed for this priority are represented.</p>
+<p>Confirm commercial and technical fit: Roles missing from this priority plan: Solution architect (SA).</p>
+<p>Move from solution fit to successful adoption: Roles missing from this priority plan: Solution architect (SA).</p>
+<h3>Include: Qualify a new lead; Shape the commercial opportunity; Design the technical fit</h3>
+<p>The plan exceeds the two-task limit. Leave a task for later and review the effect on coverage.</p>
+<p>Tasks left for later: Drive adoption and value</p>
+<p>Turn interest into a qualified opportunity: Both roles needed for this priority are represented.</p>
+<p>Confirm commercial and technical fit: Both roles needed for this priority are represented.</p>
+<p>Move from solution fit to successful adoption: Roles missing from this priority plan: Customer success manager (CSM).</p>
+<h3>Include: Qualify a new lead; Shape the commercial opportunity; Design the technical fit; Drive adoption and value</h3>
+<p>The plan exceeds the two-task limit. Leave a task for later and review the effect on coverage.</p>
+<p>Tasks left for later: None.</p>
+<p>Turn interest into a qualified opportunity: Both roles needed for this priority are represented.</p>
+<p>Confirm commercial and technical fit: Both roles needed for this priority are represented.</p>
+<p>Move from solution fit to successful adoption: Both roles needed for this priority are represented.</p>
+<h2>Change the priority and revise</h2>
+<p>The priority has changed. Your task choices are kept. Review the same plan, then revise it for the new outcomes.</p>
+<p>Choose a priority different from your first reviewed plan and change which tasks you include. Review the revised plan before saving.</p>
+<p>Move from the first priority to the second, from the second to the third, or from the third back to the first. Keep your task selection for an initial review, then revise. Keep every task–outcome link: changing the priority changes which work you select, not the contribution of each task.</p>
+<h2>Save your rationale</h2>
+<p>Explain why each selected role should lead its work item, how the handover fits the priority and what you leave for later. Use only the fictional case; do not enter personal or customer information.</p>
+<p>Write the priority, the two selected tasks with their outcome links, the tasks left for later, and your rationale. In the interactive version, Save my plan downloads these as a text file after you review a viable plan for a changed priority. An empty rationale prompts: Write a short rationale before saving. Start again clears your choices so you can repeat the exercise.</p>
+<p>You have routed work across all four sales-team roles and revised a plan for a changed handover priority.</p></details></main></div>
+<script>const DATA={"title": "Who should pick this up?", "eyebrow": "The B2B sales-team handover", "situation": "Four pieces of customer work are waiting at Jin Cloud Solutions. Your manager has room for only two in today's priority plan. Work out which sales-team role should lead each item, then choose the pair that best supports the team's immediate focus.", "intro": "Follow work across the complete B2B sales team. Match each scenario to the role that should lead it: sales development representative, account executive, solution architect or customer success manager. Then choose two items for a priority plan, inspect the handovers you leave uncovered, and revise when the priority changes.", "limit": "For this planning exercise, your plan has two task slots. This is an exercise constraint, not an estimate of task duration or a rule for a real working day.", "boundary": "Choose the role that should lead each scenario. Other roles may support the work in practice, but one role owns the next action at this point in the customer journey.", "instructions": "Choose a priority. For every work item, select the role that should lead it and decide whether to include it in your two-item plan. Review the plan, revise any gaps, then try a changed priority. Finish by writing and saving a short rationale. Allow about 5–7 minutes.", "goals": ["Sales development representative (SDR)", "Account executive (AE)", "Solution architect (SA)", "Customer success manager (CSM)"], "goalHelp": ["Find, contact and qualify potential customers before handing a real opportunity over.", "Discover what a qualified prospect needs, shape the proposal and lead the commercial agreement.", "Translate business needs into a secure, workable technical solution.", "Help customers adopt the solution, realise value and build the relationship after the sale."], "briefs": [{"title": "Turn interest into a qualified opportunity", "text": "Your plan must cover the SDR-to-AE handover.", "needs": [0, 1]}, {"title": "Confirm commercial and technical fit", "text": "Your plan must cover the AE working with the solution architect.", "needs": [1, 2]}, {"title": "Move from solution fit to successful adoption", "text": "Your plan must cover the solution architect-to-CSM handover.", "needs": [2, 3]}], "tasks": [{"title": "Qualify a new lead", "icon": "🔎", "body": "A new contact is interested in Jin Cloud Solutions. Research the company, make first contact and check whether there is genuine interest, a suitable budget and decision-making authority before a handover.", "goal": 0, "why": "The SDR owns the front of the pipeline: finding, nurturing and qualifying potential customers before handing a real opportunity to the account executive.", "feedback": ["This is the most direct match: the SDR researches, contacts and qualifies the lead before handover.", "The account executive takes over once the opportunity is qualified. This item is still at the SDR stage.", "Technical design comes later. The immediate need is to decide whether this lead is worth pursuing.", "Customer success works after the sale. This contact has not yet become a qualified opportunity."]}, {"title": "Shape the commercial opportunity", "icon": "▤", "body": "A qualified prospect needs deeper discovery. Clarify its security needs, compliance requirements, budget and timeline, then turn those findings into a proposal and negotiate the agreement.", "goal": 1, "why": "The account executive owns the qualified commercial opportunity: discovery, the business case, the proposal and negotiation, bringing in specialist support when needed.", "feedback": ["The lead is already qualified. The SDR hands it over rather than owning proposal and negotiation.", "This is the most direct match: the account executive leads discovery, the proposal and the commercial agreement.", "The solution architect supports technical fit, but the account executive owns the commercial opportunity.", "Customer success takes responsibility after the sale, not during proposal and negotiation."]}, {"title": "Design the technical fit", "icon": "▰", "body": "The prospect needs the proposed cloud platform to integrate with existing systems and meet security and compliance requirements. Assess feasibility and translate the needs into a clear technical roadmap.", "goal": 2, "why": "The solution architect owns technical fit: assessing requirements, shaping the solution and explaining how it will work securely with the customer's systems.", "feedback": ["The lead is well beyond qualification. This item needs technical expertise rather than SDR ownership.", "The account executive owns the deal and works alongside this role, but the technical roadmap belongs to the solution architect.", "This is the most direct match: the solution architect assesses feasibility and designs the technical fit.", "Customer success may help after deployment, but the solution is still being designed before the sale."]}, {"title": "Drive adoption and value", "icon": "✉", "body": "The contract is signed and the solution has been deployed. Guide the customer's team through onboarding and training, monitor usage, resolve adoption issues and identify ways to increase long-term value.", "goal": 3, "why": "The customer success manager owns the post-sale relationship: onboarding, adoption, value realisation, renewals and opportunities to deepen the partnership.", "feedback": ["This is now a customer, not a lead. The SDR's qualification work finished before the sale.", "The commercial agreement is signed. The account executive hands the customer into post-sale success.", "The solution architect may support technical issues, but ongoing adoption and value are owned by customer success.", "This is the most direct match: the customer success manager leads onboarding, adoption and long-term value."]}], "copy": {"unmatched": "Choose an outcome for every task, including tasks left for later.", "reviseMatches": "Revise the task–outcome links using the feedback below.", "matchesReady": "All four work items are matched to the role that should lead them.", "over": "The plan exceeds the two-task limit. Leave a task for later and review the effect on coverage.", "under": "The plan has unused space. Choose two tasks and review their contributions.", "fits": "The plan fits the two-task limit.", "covered": "Both roles needed for this priority are represented.", "gap": "Roles missing from this priority plan: ", "later": "Tasks left for later: ", "none": "None.", "ready": "This plan meets the exercise constraints. Explain what it supports and what you defer.", "revise": "Revise the plan and review again. You can change any match or task selection.", "stale": "Your plan has changed. Review it again to update the feedback.", "pressure": "The priority has changed. Your task choices are kept. Review the same plan, then revise it for the new outcomes.", "revisionNeeded": "Choose a priority different from your first reviewed plan and change which tasks you include. Review the revised plan before saving.", "reflection": "Explain why each selected role should lead its work item, how the handover fits the priority and what you leave for later. Use only the fictional case; do not enter personal or customer information.", "complete": "You have routed work across all four sales-team roles and revised a plan for a changed handover priority."}};
+const byId = id => document.getElementById(id);
+const safe = value => String(value).replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let baseline = null, reviewed = false;
+const priority = byId('priority');
+priority.innerHTML = `<option value="">Select your manager's priority</option>` + DATA.briefs.map((b,i) => `<option value="${i}">${safe(b.title)}</option>`).join('');
+byId('imageTasks').innerHTML = DATA.tasks.map((t,i) => `<button type="button" class="image-task image-task-${i}" data-task="${i}" aria-controls="task${i}" aria-expanded="false"><span class="task-number">0${i+1}</span><span class="task-name">${safe(t.title)}</span><span class="task-arrow" aria-hidden="true">↗</span></button>`).join('');
+byId('cards').innerHTML = DATA.tasks.map((t,i) => `<fieldset id="task${i}" class="task-card" tabindex="-1"><legend><span class="step-kicker">Work item 0${i+1}</span><span class="task-heading">${safe(t.title)}</span></legend><p class="scenario">${safe(t.body)}</p><div class="decision-panel"><span class="decision-number">1</span><div><p class="decision-hint"><b>Route the work</b><br>Choose the role that should lead this item.</p><label for="match${i}">Lead role</label><select id="match${i}"><option value="">Choose a role</option>${DATA.goals.map((g,j)=>`<option value="${j}">${safe(g)}</option>`).join('')}</select></div></div><div class="decision-panel"><span class="decision-number">2</span><div><p class="decision-hint"><b>Make the call</b><br>Decide whether this item earns one of today’s two places.</p><label class="pick"><input type="checkbox" id="pick${i}"> Add to today’s plan</label></div></div><p class="card-state" id="cardState${i}"></p><button type="button" class="next-task" data-next="${(i+1)%DATA.tasks.length}">${i===DATA.tasks.length-1?'Return to the first item':'Continue to the next item'} <span aria-hidden="true">→</span></button></fieldset>`).join('');
+function selections(){return DATA.tasks.map((_,i)=>byId('pick'+i).checked);}
+function revisedPlan(){return baseline !== null && priority.value !== '' && priority.value !== baseline.priority && selections().some((v,i)=>v !== baseline.selected[i]);}
+function viablePlan(){
+  const selected=selections();
+  return priority.value !== '' && DATA.tasks.every((t,i)=>byId('match'+i).value===String(t.goal)) && selected.filter(Boolean).length===2 && DATA.briefs[+priority.value].needs.every(g=>DATA.tasks.some((t,i)=>selected[i] && t.goal===g));
+}
+function refresh(){
+  byId('brief').textContent = priority.value === '' ? 'Choose the focus your manager has set. The two outcomes it requires will appear here.' : DATA.briefs[+priority.value].text;
+  byId('used').textContent = selections().filter(Boolean).length + ' of 2 task slots selected';
+  const chosen=DATA.tasks.map((t,i)=>byId('pick'+i).checked?{t,i}:null).filter(Boolean);
+  byId('boardSlots').innerHTML=[0,1].map(slot=>chosen[slot]?`<button type="button" class="board-slot filled" data-remove="${chosen[slot].i}" aria-label="Remove ${safe(chosen[slot].t.title)} from the workboard"><span>${safe(chosen[slot].t.icon)}</span>${safe(chosen[slot].t.title)}<small>Click to remove</small></button>`:`<div class="board-slot empty"><span>${slot+1}</span>Open slot</div>`).join('');
+  DATA.tasks.forEach((t,i)=>{
+    const selected=byId('pick'+i).checked;
+    const trigger=document.querySelector(`[data-task="${i}"]`);
+    trigger.classList.toggle('selected',selected);
+    trigger.classList.toggle('answered',byId('match'+i).value!=='');
+    byId('cardState'+i).textContent=selected?'Added to today’s plan. You can change this decision at any time.':'Not currently included in today’s plan.';
+  });
+  if(reviewed){ byId('result').hidden=true; byId('save').hidden=true; byId('pressure').hidden=true; byId('status').textContent=DATA.copy.stale; reviewed=false; }
+}
+function openTask(i){
+  document.querySelectorAll('.task-card').forEach((card,n)=>card.classList.toggle('active',n===i));
+  document.querySelectorAll('[data-task]').forEach((button,n)=>{button.classList.toggle('current',n===i);button.setAttribute('aria-expanded',String(n===i));});
+  const card=byId('task'+i);
+  card.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});
+  byId('match'+i).focus({preventScroll:true});
+}
+function addFromImage(i){
+  byId('imageStatus').textContent=DATA.tasks[i].title+' is open. Work through the two decisions below.';
+  openTask(i);
+}
+byId('imageTasks').addEventListener('click',e=>{const button=e.target.closest('[data-task]');if(button)addFromImage(+button.dataset.task);});
+byId('boardSlots').addEventListener('click',e=>{const button=e.target.closest('[data-remove]');if(!button)return;const i=+button.dataset.remove;byId('pick'+i).checked=false;byId('imageStatus').textContent=DATA.tasks[i].title+' removed. Choose another item from the picture.';refresh();const next=DATA.tasks.findIndex((_,n)=>!byId('pick'+n).checked);if(next>=0)document.querySelector(`[data-task="${next}"]`).focus();});
+byId('cards').addEventListener('click',e=>{const button=e.target.closest('[data-next]');if(button)addFromImage(+button.dataset.next);});
+function review(){
+  if(priority.value === ''){ byId('status').textContent="Choose your manager's priority before reviewing the plan."; priority.focus(); return; }
+  const selected=selections(), brief=DATA.briefs[+priority.value], C=DATA.copy;
+  const matches=DATA.tasks.map((t,i)=>byId('match'+i).value === String(t.goal));
+  const missing=brief.needs.filter(g=>!DATA.tasks.some((t,i)=>selected[i] && t.goal===g));
+  const n=selected.filter(Boolean).length;
+  const valid=viablePlan(), revised=revisedPlan();
+  const lines=[matches.every(Boolean)?C.matchesReady:(DATA.tasks.some((_,i)=>byId('match'+i).value==='')?C.unmatched:C.reviseMatches), n>2?C.over:n<2?C.under:C.fits, missing.length?C.gap+missing.map(g=>DATA.goals[g]).join('; ')+'.':C.covered, C.later+(DATA.tasks.filter((_,i)=>!selected[i]).map(t=>t.title).join('; ')||C.none),valid?C.ready:C.revise];
+  if(baseline && !revised) lines.push(C.revisionNeeded);
+  byId('reviewText').innerHTML=lines.map(t=>`<p>${safe(t)}</p>`).join('');
+  byId('links').innerHTML=DATA.tasks.map((t,i)=>{
+    const v=byId('match'+i).value;
+    return `<li><h3>${safe(t.title)} → ${safe(DATA.goals[t.goal])}</h3><p>${safe(v===''?C.unmatched:t.feedback[+v])}</p><p>${safe(t.why)}</p></li>`;
+  }).join('');
+  byId('result').hidden=false;
+  byId('pressure').hidden=!valid || baseline !== null;
+  byId('save').hidden=!valid || !revised;
+  byId('status').textContent=valid?'Plan reviewed. '+(baseline?(revised?'Write your rationale to finish.':C.revisionNeeded):'Try a changed priority next.'):'Plan reviewed. Revise the gaps below.';
+  byId('reviewTitle').focus();
+  reviewed=true;
+}
+priority.addEventListener('change',refresh);
+byId('cards').addEventListener('change',refresh);
+byId('review').addEventListener('click',review);
+byId('pressure').addEventListener('click',()=>{
+  if(!reviewed || !viablePlan() || baseline) return;
+  baseline={priority:priority.value,selected:selections()};
+  priority.value=String((+priority.value+1)%DATA.briefs.length);
+  refresh(); byId('status').textContent=DATA.copy.pressure; priority.focus();
+});
+byId('restart').addEventListener('click',()=>{
+  document.querySelectorAll('#cards select').forEach(s=>s.value='');
+  document.querySelectorAll('#cards input').forEach(s=>s.checked=false);
+  priority.value=''; baseline=null; byId('rationale').value=''; byId('downloadStatus').textContent=''; byId('imageStatus').textContent=''; document.querySelectorAll('.task-card').forEach(card=>card.classList.remove('active')); refresh(); priority.focus();
+});
+byId('download').addEventListener('click',()=>{
+  if(!reviewed || !viablePlan() || !revisedPlan()) return;
+  const rationale=byId('rationale');
+  if(!rationale.value.trim()){byId('downloadStatus').textContent='Write a short rationale before saving.'; rationale.focus(); return;}
+  const selected=selections();
+  const text=[DATA.title,DATA.briefs[+priority.value].title,DATA.briefs[+priority.value].text,...DATA.tasks.map((t,i)=>(selected[i]?'Include: ':'Later: ')+t.title+' → '+DATA.goals[t.goal]),'Rationale: '+rationale.value,DATA.copy.complete].join('\n\n');
+  const url=URL.createObjectURL(new Blob([text],{type:'text/plain;charset=utf-8'}));
+  const a=document.createElement('a'); a.href=url; a.download='my-task-outcome-plan.txt'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+  byId('downloadStatus').textContent=DATA.copy.complete+' Your plan is saved as a text file.';
+});
+byId('interactive').hidden=false;
+refresh();
+</script></body></html>
