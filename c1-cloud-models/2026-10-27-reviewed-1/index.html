@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Who looks after what?</title><style>*{box-sizing:border-box}[hidden]{display:none!important}
+:root{--navy:#14213d;--teal:#1fa3a3;--teal-d:#0b6b6b;--amber:#f4a261;--paper:#faf6ee;--coral:#e76f51;--ink:#172b36;--line:#c9d6da;--ok:#2f8f60}
+html{color-scheme:light}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 system-ui,sans-serif}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-9999px;top:0}.skip:focus{left:8px;z-index:100;background:white;padding:8px}
+a{color:#07516d}
+header.top{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--navy);color:white;height:64px}
+header.top h1{font-size:1.15rem;margin:0}
+header.top .tools{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+header.top button{background:transparent;color:white;border-color:white;margin:0}
+.app{display:grid;grid-template-columns:190px minmax(0,1fr) 190px;gap:14px;padding:14px 18px;height:calc(100vh - 64px);min-height:560px;position:relative}
+.rail,.card,.stage{background:white;border:1px solid var(--line);border-radius:14px;min-height:0}
+.rail{padding:10px;overflow:auto;display:flex;flex-direction:column;justify-content:center}.rail h2,.card h2{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:#35505e;margin:2px 4px 8px}
+ul.list{list-style:none;margin:0;padding:0}ul.list li{margin:0 0 8px}
+button{font:inherit;cursor:pointer;min-height:44px;padding:10px 14px;border-radius:8px;border:2px solid var(--teal-d);background:var(--teal-d);color:white}
+button.quiet{background:white;color:var(--teal-d)}button:disabled{opacity:.45;cursor:default}
+.tile{position:relative;display:grid;grid-template-columns:58px 1fr auto;align-items:center;gap:8px;width:100%;text-align:left;background:#eef1f2;color:#40545d;border:2px solid transparent;border-radius:12px;padding:6px;min-height:86px;transition:transform .2s,background .2s,box-shadow .2s}
+.rail-left .tile:hover{transform:translateX(3px)}.rail-right .tile:hover{transform:translateX(-3px)}
+.ico{display:block;width:58px;height:70px;border-radius:8px;overflow:hidden;background:#d7dfe2}.ico img{width:100%;height:100%;display:block;object-fit:cover}
+.tt{font-weight:700;line-height:1.15;font-size:.82rem}.state{font-size:1rem}
+.tile.current{background:white;color:var(--navy);border:2px solid var(--teal);box-shadow:0 0 0 4px #1fa3a329;animation:pulse 2.4s ease-in-out infinite}
+.tile.done{background:#e3f4ec;color:#154a33;border:2px solid var(--ok)}.tile.locked{opacity:.65}
+@keyframes pulse{50%{box-shadow:0 0 0 8px #1fa3a314}}
+.stage{display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 34px #14213d1f;position:relative}
+.shead{display:flex;gap:14px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,#e9f7f6,white)}
+#face img{display:block;width:72px;height:72px;object-fit:cover;border-radius:50%;border:4px solid var(--teal);transition:transform .25s}#face.p img{border-color:var(--amber)}#face.w img{border-color:var(--coral)}
+.shead .meta{flex:1}.shead .meta strong{display:block;font-size:1.05rem}.muted{color:#35505e}
+#stamp{border:3px solid var(--teal-d);color:var(--teal-d);font-weight:800;letter-spacing:.03em;font-size:1.05rem;padding:4px 10px;border-radius:6px;transform:rotate(-6deg);opacity:0;max-width:220px;text-align:center}
+#stamp.on{animation:stamp 1.1s ease-out forwards}
+@keyframes stamp{0%{opacity:0;transform:rotate(-6deg) scale(2.2)}25%{opacity:1;transform:rotate(-6deg) scale(1)}85%{opacity:1}100%{opacity:0}}
+#stage-scroll{flex:1;overflow-y:auto;padding:16px 22px;overscroll-behavior:contain}
+.pane h2{font-size:1.4rem;margin:.1em 0 .5em;outline-offset:6px}.kick{display:block;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-d)}
+fieldset{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0;min-width:0}fieldset.done{border:2px solid var(--ok)}legend{font-weight:700;padding:0 6px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px}.choices.one{grid-template-columns:1fr}
+.pick{display:flex;gap:10px;align-items:flex-start;min-height:44px;padding:8px;border:1px solid #dbe4e7;border-radius:8px;cursor:pointer}.pick input{width:22px;height:22px;flex:0 0 22px;margin-top:2px;accent-color:var(--teal-d)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.go{background:var(--amber);border-color:var(--amber);color:var(--navy);font-weight:700}
+.fb p{margin:.4em 0}.fb .ok{font-weight:700;color:#1d5a3c}.wob{animation:wob .35s}@keyframes wob{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.landing{display:grid;grid-template-columns:minmax(260px,1fr) minmax(300px,1fr);gap:22px;align-items:center}.landing>img{display:block;width:100%;max-height:330px;object-fit:cover;border-radius:14px}.landing h3{font-size:1.5rem;margin:.2em 0}
+.field{display:block;font-weight:600;margin-top:14px}input[type=text],textarea,select{font:inherit;display:block;width:100%;padding:10px;border:1px solid #627784;border-radius:6px;min-height:44px;background:white;color:inherit}textarea{min-height:120px}
+.panel{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:10px 0}
+.snav{display:flex;justify-content:space-between;gap:8px;padding:10px 20px;border-top:1px solid var(--line);background:#f6fafa}
+#lockmsg{padding:0 20px;margin:0;color:#8a3b1c}
+.card{position:absolute;right:222px;top:118px;z-index:20;width:min(390px,calc(100vw - 40px));max-height:calc(100% - 140px);padding:12px;overflow:auto;box-shadow:0 14px 42px #14213d44}
+.chead{display:flex;justify-content:space-between;align-items:center;gap:8px}.chead h2{margin:0 4px}
+.card .bar{height:10px;border-radius:6px;background:#e1e8ea;overflow:hidden;margin:10px 4px 12px}
+#bar{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--amber));transition:width .6s}
+#prog{margin:0 4px 8px;font-weight:600}
+.slot{display:block;width:100%;text-align:left;background:#f1f4f5;color:#5b6d76;border:2px dashed #b9c6cb;border-radius:12px;padding:10px 12px;min-height:60px}
+.slot strong{display:block;font-size:.9rem}.slot .body{display:block;font-size:.85rem;font-weight:400}.slot ul{margin:.3em 0 0;padding-left:1.1em}.slot li{margin:0 0 3px}
+.slot.filled{background:#e7f6f6;color:var(--ink);border:2px solid var(--teal)}.slot.pop{animation:pop .6s}
+@keyframes pop{40%{transform:scale(1.04);box-shadow:0 0 0 6px #1fa3a333}}
+.card.complete{box-shadow:0 0 0 3px var(--amber),0 8px 30px #f4a26166}
+.unlocked{display:flex;gap:12px;align-items:center;margin:4px 4px 10px;font-weight:700;color:#8a4a12}.unlocked img{width:56px;height:56px;border-radius:10px;object-fit:cover}
+.flyer{position:fixed;z-index:50;display:grid;place-items:center;border-radius:10px;background:var(--ok);color:white;font-weight:800;pointer-events:none}
+dialog{max-width:720px;border:1px solid var(--line);border-radius:14px;padding:20px}dialog::backdrop{background:#14213d88}
+:focus-visible{outline:3px solid #9c3d00;outline-offset:3px}
+#text-version{max-width:860px;margin:18px auto;padding:0 18px 24px}#text-version>summary{font:inherit;min-height:48px;padding:12px;cursor:pointer;font-weight:700}
+#text-version h1{font-size:clamp(1.5rem,4vw,2.3rem);line-height:1.2}#text-version h2{font-size:1.35rem}#text-version h3{font-size:1.1rem}
+.altlinks{text-align:center}
+.dossier{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:start}.dossier img{width:100%;border-radius:12px;display:block}.dossier .panel{margin:0}
+.scenario{font-size:1.05rem;margin:0}.quote{font-size:1.08rem;font-weight:600;border-left:5px solid var(--teal-d);padding-left:12px;margin:.4em 0}
+.pick:has(input:checked){border-color:var(--teal-d);background:#e7f6f6}
+@media(max-width:900px){.dossier{grid-template-columns:1fr}.dossier img{max-width:260px}.app{grid-template-columns:112px minmax(0,1fr) 112px;padding:8px;gap:8px}.rail{padding:5px}.rail h2{font-size:.68rem}.tile{grid-template-columns:1fr;min-height:92px;text-align:center}.ico{width:100%;height:54px}.tt{font-size:.72rem}.state{position:absolute;top:4px;right:6px}.card{right:128px}.shead{padding:8px 12px}#stage-scroll{padding:12px}.snav{padding:8px 12px}.choices{grid-template-columns:1fr}.landing{grid-template-columns:1fr}.landing>img{max-height:230px}}
+@media(max-width:620px){header.top{flex-wrap:wrap;height:auto;padding:10px 16px}.app{height:auto;min-height:0;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto}.rail{min-width:0;overflow-x:auto;justify-content:flex-start}.rail ul{display:flex;gap:8px}.rail li{flex:0 0 145px;margin:0}.tile{grid-template-columns:52px 1fr;text-align:left;min-height:72px}.ico{width:52px;height:58px}.rail-left{grid-row:1}.stage{grid-row:2;min-height:70vh}.rail-right{grid-row:3}.card{position:fixed;inset:80px 16px auto 16px;width:auto;max-height:70vh}.shead{flex-wrap:wrap}#face img{width:56px;height:56px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}#stamp.on{opacity:1}}
+@media print{.app,header.top .tools,.skip{display:none}#text-version{max-width:none}}
+
+.dossier{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:start}.dossier img{width:100%;border-radius:12px;display:block}.dossier .panel{margin:0}
+.scenario{font-size:1.05rem;margin:0}.quote{font-size:1.08rem;font-weight:600;border-left:5px solid var(--teal-d);padding-left:12px;margin:.4em 0}
+.pick:has(input:checked){border-color:var(--teal-d);background:#e7f6f6}
+.assign{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:18px;align-items:center}
+.stack{display:flex;flex-direction:column;gap:6px}.layer{border:2px dashed #b9c6cb;border-radius:10px;padding:10px 12px;background:#f6f8f8;min-height:62px;font-size:.88rem;transition:background .3s,border-color .3s}
+.layer span{display:block;font-weight:700}.layer em{display:block;font-style:normal;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.layer.by-provider{background:#dff3f2;border:2px solid var(--teal);color:#0b4f4f}.layer.by-team{background:#fff1de;border:2px solid var(--amber);color:#6b3a0d}
+.stack.settled .layer{box-shadow:0 0 0 3px #2f8f6033}
+.mbadge{display:inline-block;font-weight:800;font-size:.8rem;padding:1px 8px;border-radius:6px;color:white;background:var(--teal-d);margin-right:6px}.mbadge.m-paas{background:#b86a1e}.mbadge.m-saas{background:#a6402a}
+@media(max-width:900px){.dossier{grid-template-columns:1fr}.dossier img{max-width:260px}.assign{grid-template-columns:1fr}}
+</style></head><body>
+<a class="skip" href="#stage-scroll">Skip to the current step</a><a class="skip" href="#text-version">Go to complete text version</a>
+<header class="top"><div><h1 id="h-top" tabindex="-1">Who looks after what?</h1></div><div class="tools"><button type="button" id="restart" class="quiet">Start again</button></div></header>
+<noscript><p style="padding:12px 20px">Use the complete text version below, or <a href="fallback.html">open the text version</a> or <a href="fallback.pdf">the PDF</a>. Everything in the activity is included.</p></noscript>
+<div id="interactive" class="app" hidden>
+<nav class="rail rail-left" aria-label="Descriptions steps"><h2>Descriptions</h2><ul class="list" id="rail-left"></ul></nav>
+<main class="stage" aria-label="Current step" data-activity-id="w4-a4-s5" data-version="2026-10-26.1">
+<div class="shead"><div id="face"></div><div class="meta"><strong>Ask who looks after each layer, and the model follows.</strong><span class="muted">Select an item beside the screen to explore it.</span></div><div id="stamp" aria-hidden="true"></div><button type="button" id="toggle-card" class="quiet" aria-expanded="false" aria-controls="card">Progress</button></div>
+<div id="stage-scroll" tabindex="-1"><div id="stage-body"></div></div>
+<p id="lockmsg" role="status"></p>
+<div class="snav"><button type="button" id="prev" class="quiet">←</button><button type="button" id="next" class="quiet">Next →</button></div>
+</main>
+<nav class="rail rail-right" aria-label="Apply it steps"><h2>Apply it</h2><ul class="list" id="rail-right"></ul></nav>
+<aside class="card" id="card" aria-label="Models sorted" hidden><div class="chead"><h2>Models sorted</h2><button type="button" id="closecard" class="quiet">Close</button></div><div class="bar" aria-hidden="true"><div id="bar"></div></div><p id="prog"></p><div class="unlocked" id="unlocked" hidden><img src="assets/13a0b2ca2fc751667dd492e1.webp" alt="">All six sorted</div><ul class="list" id="slots"></ul></aside>
+</div>
+<div id="live" class="sr" role="status" aria-live="polite"></div>
+
+<details id="text-version"><summary>Complete text version: everything in the activity, including all feedback</summary><h1>Who looks after what? - complete text version</h1>
+<p>The three main cloud service models are Infrastructure as a Service, or IaaS, Platform as a Service, or PaaS, and Software as a Service, or SaaS. Each one is a different balance of control, convenience and responsibility. In this activity you will read six short descriptions of cloud tools and services. For each one, you will work out who looks after what, the provider or the customer’s own team, and then choose the service model it fits. You will finish by matching each model to the people who use it.</p>
+<p>For each description, first decide who looks after each of three layers. The pattern you find points to the model. Then choose the model. If a choice is not right, the feedback explains why and you can try again. At the end, match the three models to their typical users.</p>
+<p>The businesses are fictional. This activity is not scored, and nothing you choose or write is stored or sent anywhere unless you save a text file yourself. Allow about 20 minutes.</p>
+<h2>How to use this version</h2>
+<p>You can do every stage on paper or in a document. Read each description, decide for each of the three layers whether the provider or the customer’s own team looks after it, then choose the service model. Read the feedback for every option and compare it with your choices. If you chose differently, work out why before moving on. At the end, match the three models to their typical users.</p>
+<h2>The three service models</h2>
+<p>The three service models, and what each one means. Keep these in mind as you read.</p>
+<p>Infrastructure as a Service, or IaaS: The provider supplies virtual servers and storage. The customer’s team manages the operating systems, software and security settings.</p>
+<p>Platform as a Service, or PaaS: The provider supplies a managed platform, with the servers, tools and environment already set up. Developers write, test and run their own applications on it.</p>
+<p>Software as a Service, or SaaS: The provider supplies a finished application over the internet and operates the underlying service. Customers use the application while still managing their own data, identities, access and configuration within it.</p>
+<p>To tell the models apart, ask who operates each of three service layers.</p>
+<p>Physical servers and storage</p>
+<p>Operating systems, runtimes and development tools</p>
+<p>The application and its updates</p>
+<h2>Description 1 of 6: Virtual data-centre hosting</h2>
+<p>A mid-sized engineering firm wants to host its design files and internal applications without maintaining physical servers. Its technology team still needs to choose operating systems, install software and manage security settings. The firm only wants to rent the virtual machines and storage space needed to support its existing workflows.</p>
+<h3>A. Who looks after what?</h3>
+<p>Who looks after: Physical servers and storage? Options: The provider; The customer’s own team.</p>
+<p>Physical servers and storage, The provider - Best fit. Feedback: That fits. The firm wants to host its files and applications without maintaining physical servers, so the provider looks after the hardware.</p>
+<p>Physical servers and storage, The customer’s own team - Not the best fit. Feedback: Not quite. It is the provider. The firm wants to host its files and applications without maintaining physical servers, so the provider looks after the hardware.</p>
+<p>Who looks after: Operating systems, runtimes and development tools? Options: The provider; The customer’s own team.</p>
+<p>Operating systems, runtimes and development tools, The provider - Not the best fit. Feedback: Not quite. It is the customer’s own team. The firm’s technology team still chooses operating systems and manages security settings.</p>
+<p>Operating systems, runtimes and development tools, The customer’s own team - Best fit. Feedback: That fits. The firm’s technology team still chooses operating systems and manages security settings.</p>
+<p>Who looks after: The application and its updates? Options: The provider; The customer’s own team.</p>
+<p>The application and its updates, The provider - Not the best fit. Feedback: Not quite. It is the customer’s own team. The firm runs its own internal applications and installs its own software.</p>
+<p>The application and its updates, The customer’s own team - Best fit. Feedback: That fits. The firm runs its own internal applications and installs its own software.</p>
+<p>Look at what you decided. In the infrastructure model, the provider operates the infrastructure layer. In the platform model, it operates the infrastructure and platform layers. In the software model, it operates the infrastructure, platform and application service layers. In every model, customers still keep responsibility for their own data, identities, access and configuration.</p>
+<h3>B. Which service model fits?</h3>
+<p>Now choose the service model this description fits.</p>
+<p>IaaS - Best fit. Feedback: That fits. The cloud provides virtual servers and storage, so the firm manages its own systems and security settings while the provider handles the hardware.</p>
+<p>PaaS - Not the best fit. Feedback: Not quite. In PaaS, the customer deploys and maintains its own application on the provider&#x27;s managed OS and runtime. Here the firm mainly needs computing resources to host and control its existing systems.</p>
+<p>SaaS - Not the best fit. Feedback: Not quite. SaaS delivers complete applications to end users, not the server space and infrastructure this firm needs.</p>
+<h2>Description 2 of 6: Disaster-recovery environment</h2>
+<p>A financial institution needs a backup system that can mirror its own data centre in the event of a failure. The system must replicate network configurations and storage layers so operations can resume quickly. The company’s technology department will handle the operating systems and application recovery, but it does not want to maintain physical infrastructure.</p>
+<h3>A. Who looks after what?</h3>
+<p>Who looks after: Physical servers and storage? Options: The provider; The customer’s own team.</p>
+<p>Physical servers and storage, The provider - Best fit. Feedback: That fits. The institution does not want to maintain physical infrastructure, so the provider looks after the hardware.</p>
+<p>Physical servers and storage, The customer’s own team - Not the best fit. Feedback: Not quite. It is the provider. The institution does not want to maintain physical infrastructure, so the provider looks after the hardware.</p>
+<p>Who looks after: Operating systems, runtimes and development tools? Options: The provider; The customer’s own team.</p>
+<p>Operating systems, runtimes and development tools, The provider - Not the best fit. Feedback: Not quite. It is the customer’s own team. The institution’s technology department will handle the operating systems.</p>
+<p>Operating systems, runtimes and development tools, The customer’s own team - Best fit. Feedback: That fits. The institution’s technology department will handle the operating systems.</p>
+<p>Who looks after: The application and its updates? Options: The provider; The customer’s own team.</p>
+<p>The application and its updates, The provider - Not the best fit. Feedback: Not quite. It is the customer’s own team. The institution’s technology department will handle application recovery.</p>
+<p>The application and its updates, The customer’s own team - Best fit. Feedback: That fits. The institution’s technology department will handle application recovery.</p>
+<p>Look at what you decided. In the infrastructure model, the provider operates the infrastructure layer. In the platform model, it operates the infrastructure and platform layers. In the software model, it operates the infrastructure, platform and application service layers. In every model, customers still keep responsibility for their own data, identities, access and configuration.</p>
+<h3>B. Which service model fits?</h3>
+<p>Now choose the service model this description fits.</p>
+<p>IaaS - Best fit. Feedback: That fits. The cloud provides virtual data centres and backup storage that mirror the institution’s systems. The technology team still manages recovery and configuration, but not the physical hardware, which makes this a clear IaaS solution.</p>
+<p>PaaS - Not the best fit. Feedback: Not quite. PaaS would host a customer-deployed application on a managed OS and runtime. This scenario is about reproducing servers, storage and networking for disaster recovery, which is infrastructure control.</p>
+<p>SaaS - Not the best fit. Feedback: Not quite. SaaS means using the provider&#x27;s application. Here the organisation needs its own recovery environment with control over infrastructure resources, not just access to a provider application.</p>
+<h2>Description 3 of 6: Application-development workspace</h2>
+<p>A startup will deploy its own logistics application to a cloud environment where the provider operates the servers, operating system and runtime. The team manages the application code and data, but does not want to maintain the underlying platform.</p>
+<h3>A. Who looks after what?</h3>
+<p>Who looks after: Physical servers and storage? Options: The provider; The customer’s own team.</p>
+<p>Physical servers and storage, The provider - Best fit. Feedback: That fits. The developers do not want to set up or maintain servers, so the provider looks after the hardware.</p>
+<p>Physical servers and storage, The customer’s own team - Not the best fit. Feedback: Not quite. It is the provider. The developers do not want to set up or maintain servers, so the provider looks after the hardware.</p>
+<p>Who looks after: Operating systems, runtimes and development tools? Options: The provider; The customer’s own team.</p>
+<p>Operating systems, runtimes and development tools, The provider - Best fit. Feedback: That fits. The provider operates the servers, operating system and runtime that the startup deploys its application onto.</p>
+<p>Operating systems, runtimes and development tools, The customer’s own team - Not the best fit. Feedback: Not quite. It is the provider. The provider operates the servers, operating system and runtime that the startup deploys its application onto.</p>
+<p>Who looks after: The application and its updates? Options: The provider; The customer’s own team.</p>
+<p>The application and its updates, The provider - Not the best fit. Feedback: Not quite. It is the customer’s own team. The developers write and test the logistics app themselves.</p>
+<p>The application and its updates, The customer’s own team - Best fit. Feedback: That fits. The developers write and test the logistics app themselves.</p>
+<p>Look at what you decided. In the infrastructure model, the provider operates the infrastructure layer. In the platform model, it operates the infrastructure and platform layers. In the software model, it operates the infrastructure, platform and application service layers. In every model, customers still keep responsibility for their own data, identities, access and configuration.</p>
+<h3>B. Which service model fits?</h3>
+<p>Now choose the service model this description fits.</p>
+<p>IaaS - Not the best fit. Feedback: Not quite. In IaaS, the customer manages the operating system, runtime and deployed application. Here the provider runs the platform layer, while the startup manages only its application and data.</p>
+<p>PaaS - Best fit. Feedback: That fits. This is PaaS because the startup deploys and maintains its own application, while the provider operates the servers, operating system and runtime underneath.</p>
+<p>SaaS - Not the best fit. Feedback: Not quite. SaaS would mean using the provider&#x27;s application. Here the startup is deploying and managing its own logistics application on the provider&#x27;s managed platform.</p>
+<h2>Description 4 of 6: Business-analytics toolkit</h2>
+<p>An analytics team deploys its own analytics application to an online environment. The provider operates the servers, operating system and runtime, and scales capacity automatically. The team maintains the analytics application, connections and dashboards without managing the underlying platform.</p>
+<h3>A. Who looks after what?</h3>
+<p>Who looks after: Physical servers and storage? Options: The provider; The customer’s own team.</p>
+<p>Physical servers and storage, The provider - Best fit. Feedback: That fits. The provider manages the infrastructure.</p>
+<p>Physical servers and storage, The customer’s own team - Not the best fit. Feedback: Not quite. It is the provider. The provider manages the infrastructure.</p>
+<p>Who looks after: Operating systems, runtimes and development tools? Options: The provider; The customer’s own team.</p>
+<p>Operating systems, runtimes and development tools, The provider - Best fit. Feedback: That fits. The provider operates the servers, operating system and runtime, and scales the platform for the deployed analytics application.</p>
+<p>Operating systems, runtimes and development tools, The customer’s own team - Not the best fit. Feedback: Not quite. It is the provider. The provider operates the servers, operating system and runtime, and scales the platform for the deployed analytics application.</p>
+<p>Who looks after: The application and its updates? Options: The provider; The customer’s own team.</p>
+<p>The application and its updates, The provider - Not the best fit. Feedback: Not quite. It is the customer’s own team. The team maintains its analytics application, including its connections, analyses and dashboards, while the provider runs the underlying platform.</p>
+<p>The application and its updates, The customer’s own team - Best fit. Feedback: That fits. The team maintains its analytics application, including its connections, analyses and dashboards, while the provider runs the underlying platform.</p>
+<p>Look at what you decided. In the infrastructure model, the provider operates the infrastructure layer. In the platform model, it operates the infrastructure and platform layers. In the software model, it operates the infrastructure, platform and application service layers. In every model, customers still keep responsibility for their own data, identities, access and configuration.</p>
+<h3>B. Which service model fits?</h3>
+<p>Now choose the service model this description fits.</p>
+<p>IaaS - Not the best fit. Feedback: Not quite. In IaaS, the team would manage the operating system, runtime and analytics application itself. Here the provider operates that platform layer, while the team maintains only its analytics application.</p>
+<p>PaaS - Best fit. Feedback: That fits. This is PaaS because the team deploys and maintains its analytics application, while the provider operates the servers, operating system and runtime and handles scaling.</p>
+<p>SaaS - Not the best fit. Feedback: Not quite. SaaS would mean using the provider&#x27;s analytics application. Here the team maintains its own analytics application on a provider-operated platform.</p>
+<h2>Description 5 of 6: Customer-relationship management tool</h2>
+<p>A regional sales company adopts an online customer-management system where employees log in through a browser to manage leads, track communications and generate reports. The vendor operates and maintains the application service and its underlying cloud components, while the company manages its own customer data, user access and configuration.</p>
+<h3>A. Who looks after what?</h3>
+<p>Who looks after: Physical servers and storage? Options: The provider; The customer’s own team.</p>
+<p>Physical servers and storage, The provider - Best fit. Feedback: That fits. The system is fully managed by the vendor, so the vendor looks after the hardware.</p>
+<p>Physical servers and storage, The customer’s own team - Not the best fit. Feedback: Not quite. It is the provider. The system is fully managed by the vendor, so the vendor looks after the hardware.</p>
+<p>Who looks after: Operating systems, runtimes and development tools? Options: The provider; The customer’s own team.</p>
+<p>Operating systems, runtimes and development tools, The provider - Best fit. Feedback: That fits. The vendor operates the platform components that support the customer-management application.</p>
+<p>Operating systems, runtimes and development tools, The customer’s own team - Not the best fit. Feedback: Not quite. It is the provider. The vendor operates the platform components that support the customer-management application.</p>
+<p>Who looks after: The application and its updates? Options: The provider; The customer’s own team.</p>
+<p>The application and its updates, The provider - Best fit. Feedback: That fits. The vendor handles updates, and employees simply log in through a browser.</p>
+<p>The application and its updates, The customer’s own team - Not the best fit. Feedback: Not quite. It is the provider. The vendor handles updates, and employees simply log in through a browser.</p>
+<p>Look at what you decided. In the infrastructure model, the provider operates the infrastructure layer. In the platform model, it operates the infrastructure and platform layers. In the software model, it operates the infrastructure, platform and application service layers. In every model, customers still keep responsibility for their own data, identities, access and configuration.</p>
+<h3>B. Which service model fits?</h3>
+<p>Now choose the service model this description fits.</p>
+<p>IaaS - Not the best fit. Feedback: Not quite. IaaS would require the sales team to install and maintain their own software, which they are not doing here.</p>
+<p>PaaS - Not the best fit. Feedback: Not quite. This scenario describes the company using the vendor&#x27;s finished customer-management application. With PaaS, the customer would deploy its own application onto a provider-managed runtime instead.</p>
+<p>SaaS - Best fit. Feedback: That fits. The company is using a finished customer-management application operated by the vendor. Staff access the tool through a browser, while the company still manages its own data, user access and configuration within it.</p>
+<h2>Description 6 of 6: HR and payroll suite</h2>
+<p>A human-resources department uses a subscription-based HR application to manage employee records, payroll and performance reviews. Staff access the system online, while the provider maintains the application service and rolls out updates; the organisation still manages its own employee data, user access and configuration.</p>
+<h3>A. Who looks after what?</h3>
+<p>Who looks after: Physical servers and storage? Options: The provider; The customer’s own team.</p>
+<p>Physical servers and storage, The provider - Best fit. Feedback: That fits. The provider operates the underlying computing infrastructure that the HR application runs on.</p>
+<p>Physical servers and storage, The customer’s own team - Not the best fit. Feedback: Not quite. It is the provider. The provider operates the underlying computing infrastructure that the HR application runs on.</p>
+<p>Who looks after: Operating systems, runtimes and development tools? Options: The provider; The customer’s own team.</p>
+<p>Operating systems, runtimes and development tools, The provider - Best fit. Feedback: That fits. The provider operates the platform components that support the HR application service.</p>
+<p>Operating systems, runtimes and development tools, The customer’s own team - Not the best fit. Feedback: Not quite. It is the provider. The provider operates the platform components that support the HR application service.</p>
+<p>Who looks after: The application and its updates? Options: The provider; The customer’s own team.</p>
+<p>The application and its updates, The provider - Best fit. Feedback: That fits. The provider rolls out new features automatically.</p>
+<p>The application and its updates, The customer’s own team - Not the best fit. Feedback: Not quite. It is the provider. The provider rolls out new features automatically.</p>
+<p>Look at what you decided. In the infrastructure model, the provider operates the infrastructure layer. In the platform model, it operates the infrastructure and platform layers. In the software model, it operates the infrastructure, platform and application service layers. In every model, customers still keep responsibility for their own data, identities, access and configuration.</p>
+<h3>B. Which service model fits?</h3>
+<p>Now choose the service model this description fits.</p>
+<p>IaaS - Not the best fit. Feedback: Not quite. This scenario is about using a finished HR application. With IaaS, the organisation would rent computing resources and still manage its own operating systems and applications on them.</p>
+<p>PaaS - Not the best fit. Feedback: Not quite. PaaS would mean the organisation deploys its own HR application onto a provider-managed runtime. Here, the provider is maintaining the HR application itself for staff to use.</p>
+<p>SaaS - Best fit. Feedback: That fits. The cloud delivers a ready-to-use HR and payroll application that staff use online. The provider maintains the service, while the organisation still manages its own employee data, user access and configuration within the application.</p>
+<h2>Match the model to its users</h2>
+<p>Each model suits a different kind of user. Choose the service model that fits each group.</p>
+<h3>Group 1 of 3</h3>
+<p>Technology teams that need to manage their own systems and security, but not the hardware.</p>
+<p>IaaS - Best fit. Feedback: That fits. Infrastructure as a Service: The provider supplies virtual servers and storage. The customer’s team manages the operating systems, software and security settings.</p>
+<p>PaaS - Not the best fit. Feedback: Not quite. Platform as a Service: The provider supplies a managed platform, with the servers, tools and environment already set up. Developers write, test and run their own applications on it. This group is teams that manage systems themselves.</p>
+<p>SaaS - Not the best fit. Feedback: Not quite. Software as a Service: The provider supplies a finished application over the internet and operates the underlying service. Customers use the application while still managing their own data, identities, access and configuration within it. This group is teams that manage systems themselves.</p>
+<h3>Group 2 of 3</h3>
+<p>Teams who want to deploy and run their own application on a provider-managed runtime without managing the underlying servers and platform software.</p>
+<p>IaaS - Not the best fit. Feedback: Not quite. Infrastructure as a Service: The provider supplies virtual servers and storage. The customer’s team manages the operating systems, software and security settings. This group is building applications on a managed platform.</p>
+<p>PaaS - Best fit. Feedback: That fits. Platform as a Service: The provider supplies a managed platform, with the servers, tools and environment already set up. Developers write, test and run their own applications on it.</p>
+<p>SaaS - Not the best fit. Feedback: Not quite. Software as a Service: The provider supplies a finished application over the internet and operates the underlying service. Customers use the application while still managing their own data, identities, access and configuration within it. This group is building applications on a managed platform.</p>
+<h3>Group 3 of 3</h3>
+<p>People who want to use a finished application provided by the vendor, while their organisation still manages its own data, access and configuration in that tool.</p>
+<p>IaaS - Not the best fit. Feedback: Not quite. Infrastructure as a Service: The provider supplies virtual servers and storage. The customer’s team manages the operating systems, software and security settings. This group is using a finished application.</p>
+<p>PaaS - Not the best fit. Feedback: Not quite. Platform as a Service: The provider supplies a managed platform, with the servers, tools and environment already set up. Developers write, test and run their own applications on it. This group is using a finished application.</p>
+<p>SaaS - Best fit. Feedback: That fits. Software as a Service: The provider supplies a finished application over the internet and operates the underlying service. Customers use the application while still managing their own data, identities, access and configuration within it.</p>
+<h2>Reflect and save</h2>
+<p>You sorted six descriptions into service models. Here is a summary of the model you chose for each.</p>
+<p>Virtual data-centre hosting: Infrastructure as a Service, or IaaS.</p>
+<p>Disaster-recovery environment: Infrastructure as a Service, or IaaS.</p>
+<p>Application-development workspace: Platform as a Service, or PaaS.</p>
+<p>Business-analytics toolkit: Platform as a Service, or PaaS.</p>
+<p>Customer-relationship management tool: Software as a Service, or SaaS.</p>
+<p>HR and payroll suite: Software as a Service, or SaaS.</p>
+<p>Optional reflection: Choose one pair of models that is easy to confuse, such as platform and software. What question could you ask a customer to find out which one they need?</p>
+<p>Reflection and saving a copy are optional. You have completed the activity after sorting all six descriptions and matching all three user groups. In the interactive version, Save my summary downloads the six models and typical user groups; it includes your reflection if you added one.</p>
+<p>The service models differ in how much the customer manages and who uses the result. Knowing that lets you match each model to the level of control and convenience a customer needs.</p></details>
+<p class="altlinks"><a href="fallback.html">Open the text version</a> · <a href="fallback.pdf">Download the text version as a PDF</a></p>
+<script>const DATA={"id": "w4-a4-s5", "title": "Who looks after what?", "intro": "The three main cloud service models are Infrastructure as a Service, or IaaS, Platform as a Service, or PaaS, and Software as a Service, or SaaS. Each one is a different balance of control, convenience and responsibility. In this activity you will read six short descriptions of cloud tools and services. For each one, you will work out who looks after what, the provider or the customer’s own team, and then choose the service model it fits. You will finish by matching each model to the people who use it.", "instructions": "For each description, first decide who looks after each of three layers. The pattern you find points to the model. Then choose the model. If a choice is not right, the feedback explains why and you can try again. At the end, match the three models to their typical users.", "boundary": "The businesses are fictional. This activity is not scored, and nothing you choose or write is stored or sent anywhere unless you save a text file yourself. Allow about 20 minutes.", "modelsIntro": "The three service models, and what each one means. Keep these in mind as you read.", "models": [{"id": "iaas", "name": "IaaS", "full": "Infrastructure as a Service", "meaning": "The provider supplies virtual servers and storage. The customer’s team manages the operating systems, software and security settings.", "user": "technology teams managing infrastructure"}, {"id": "paas", "name": "PaaS", "full": "Platform as a Service", "meaning": "The provider supplies a managed platform, with the servers, tools and environment already set up. Developers write, test and run their own applications on it.", "user": "developers building applications"}, {"id": "saas", "name": "SaaS", "full": "Software as a Service", "meaning": "The provider supplies a finished application over the internet and operates the underlying service. Customers use the application while still managing their own data, identities, access and configuration within it.", "user": "business users working in ready-made software"}], "layersIntro": "To tell the models apart, ask who operates each of three service layers.", "layers": [{"id": "hw", "name": "Physical servers and storage"}, {"id": "plat", "name": "Operating systems, runtimes and development tools"}, {"id": "app", "name": "The application and its updates"}], "whoOptions": [{"id": "provider", "text": "The provider"}, {"id": "team", "text": "The customer’s own team"}], "scenarios": [{"id": "s1", "title": "Virtual data-centre hosting", "text": "A mid-sized engineering firm wants to host its design files and internal applications without maintaining physical servers. Its technology team still needs to choose operating systems, install software and manage security settings. The firm only wants to rent the virtual machines and storage space needed to support its existing workflows.", "layers": {"hw": {"who": "provider", "why": "The firm wants to host its files and applications without maintaining physical servers, so the provider looks after the hardware."}, "plat": {"who": "team", "why": "The firm’s technology team still chooses operating systems and manages security settings."}, "app": {"who": "team", "why": "The firm runs its own internal applications and installs its own software."}}, "answer": "iaas", "feedback": {"iaas": "That fits. The cloud provides virtual servers and storage, so the firm manages its own systems and security settings while the provider handles the hardware.", "paas": "Not quite. In PaaS, the customer deploys and maintains its own application on the provider's managed OS and runtime. Here the firm mainly needs computing resources to host and control its existing systems.", "saas": "Not quite. SaaS delivers complete applications to end users, not the server space and infrastructure this firm needs."}}, {"id": "s2", "title": "Disaster-recovery environment", "text": "A financial institution needs a backup system that can mirror its own data centre in the event of a failure. The system must replicate network configurations and storage layers so operations can resume quickly. The company’s technology department will handle the operating systems and application recovery, but it does not want to maintain physical infrastructure.", "layers": {"hw": {"who": "provider", "why": "The institution does not want to maintain physical infrastructure, so the provider looks after the hardware."}, "plat": {"who": "team", "why": "The institution’s technology department will handle the operating systems."}, "app": {"who": "team", "why": "The institution’s technology department will handle application recovery."}}, "answer": "iaas", "feedback": {"iaas": "That fits. The cloud provides virtual data centres and backup storage that mirror the institution’s systems. The technology team still manages recovery and configuration, but not the physical hardware, which makes this a clear IaaS solution.", "paas": "Not quite. PaaS would host a customer-deployed application on a managed OS and runtime. This scenario is about reproducing servers, storage and networking for disaster recovery, which is infrastructure control.", "saas": "Not quite. SaaS means using the provider's application. Here the organisation needs its own recovery environment with control over infrastructure resources, not just access to a provider application."}}, {"id": "s3", "title": "Application-development workspace", "text": "A startup will deploy its own logistics application to a cloud environment where the provider operates the servers, operating system and runtime. The team manages the application code and data, but does not want to maintain the underlying platform.", "layers": {"hw": {"who": "provider", "why": "The developers do not want to set up or maintain servers, so the provider looks after the hardware."}, "plat": {"who": "provider", "why": "The provider operates the servers, operating system and runtime that the startup deploys its application onto."}, "app": {"who": "team", "why": "The developers write and test the logistics app themselves."}}, "answer": "paas", "feedback": {"iaas": "Not quite. In IaaS, the customer manages the operating system, runtime and deployed application. Here the provider runs the platform layer, while the startup manages only its application and data.", "paas": "That fits. This is PaaS because the startup deploys and maintains its own application, while the provider operates the servers, operating system and runtime underneath.", "saas": "Not quite. SaaS would mean using the provider's application. Here the startup is deploying and managing its own logistics application on the provider's managed platform."}}, {"id": "s4", "title": "Business-analytics toolkit", "text": "An analytics team deploys its own analytics application to an online environment. The provider operates the servers, operating system and runtime, and scales capacity automatically. The team maintains the analytics application, connections and dashboards without managing the underlying platform.", "layers": {"hw": {"who": "provider", "why": "The provider manages the infrastructure."}, "plat": {"who": "provider", "why": "The provider operates the servers, operating system and runtime, and scales the platform for the deployed analytics application."}, "app": {"who": "team", "why": "The team maintains its analytics application, including its connections, analyses and dashboards, while the provider runs the underlying platform."}}, "answer": "paas", "feedback": {"iaas": "Not quite. In IaaS, the team would manage the operating system, runtime and analytics application itself. Here the provider operates that platform layer, while the team maintains only its analytics application.", "paas": "That fits. This is PaaS because the team deploys and maintains its analytics application, while the provider operates the servers, operating system and runtime and handles scaling.", "saas": "Not quite. SaaS would mean using the provider's analytics application. Here the team maintains its own analytics application on a provider-operated platform."}}, {"id": "s5", "title": "Customer-relationship management tool", "text": "A regional sales company adopts an online customer-management system where employees log in through a browser to manage leads, track communications and generate reports. The vendor operates and maintains the application service and its underlying cloud components, while the company manages its own customer data, user access and configuration.", "layers": {"hw": {"who": "provider", "why": "The system is fully managed by the vendor, so the vendor looks after the hardware."}, "plat": {"who": "provider", "why": "The vendor operates the platform components that support the customer-management application."}, "app": {"who": "provider", "why": "The vendor handles updates, and employees simply log in through a browser."}}, "answer": "saas", "feedback": {"iaas": "Not quite. IaaS would require the sales team to install and maintain their own software, which they are not doing here.", "paas": "Not quite. This scenario describes the company using the vendor's finished customer-management application. With PaaS, the customer would deploy its own application onto a provider-managed runtime instead.", "saas": "That fits. The company is using a finished customer-management application operated by the vendor. Staff access the tool through a browser, while the company still manages its own data, user access and configuration within it."}}, {"id": "s6", "title": "HR and payroll suite", "text": "A human-resources department uses a subscription-based HR application to manage employee records, payroll and performance reviews. Staff access the system online, while the provider maintains the application service and rolls out updates; the organisation still manages its own employee data, user access and configuration.", "layers": {"hw": {"who": "provider", "why": "The provider operates the underlying computing infrastructure that the HR application runs on."}, "plat": {"who": "provider", "why": "The provider operates the platform components that support the HR application service."}, "app": {"who": "provider", "why": "The provider rolls out new features automatically."}}, "answer": "saas", "feedback": {"iaas": "Not quite. This scenario is about using a finished HR application. With IaaS, the organisation would rent computing resources and still manage its own operating systems and applications on them.", "paas": "Not quite. PaaS would mean the organisation deploys its own HR application onto a provider-managed runtime. Here, the provider is maintaining the HR application itself for staff to use.", "saas": "That fits. The cloud delivers a ready-to-use HR and payroll application that staff use online. The provider maintains the service, while the organisation still manages its own employee data, user access and configuration within the application."}}], "pattern": "Look at what you decided. In the infrastructure model, the provider operates the infrastructure layer. In the platform model, it operates the infrastructure and platform layers. In the software model, it operates the infrastructure, platform and application service layers. In every model, customers still keep responsibility for their own data, identities, access and configuration.", "users": {"title": "Match the model to its users", "text": "Each model suits a different kind of user. Choose the service model that fits each group.", "items": [{"id": "u1", "quote": "Technology teams that need to manage their own systems and security, but not the hardware.", "answer": "iaas", "focus": "teams that manage systems themselves"}, {"id": "u2", "quote": "Teams who want to deploy and run their own application on a provider-managed runtime without managing the underlying servers and platform software.", "answer": "paas", "focus": "building applications on a managed platform"}, {"id": "u3", "quote": "People who want to use a finished application provided by the vendor, while their organisation still manages its own data, access and configuration in that tool.", "answer": "saas", "focus": "using a finished application"}], "correct": "That fits. {full}: {meaning}", "generic": "Not quite. {full}: {meaning} This group is {focus}."}, "reflect": {"title": "Reflect and save", "text": "You sorted six descriptions into service models. Here is a summary of the model you chose for each.", "prompt": "Choose one pair of models that is easy to confuse, such as platform and software. What question could you ask a customer to find out which one they need?"}, "copy": {"chooseAll": "Choose who looks after each layer before checking.", "choose": "Make a choice before checking.", "tryAgain": "Change your choice and check again.", "confirmed": "That part is complete.", "shown": "Answer shown.", "modelIntro": "Now choose the service model this description fits.", "noteEmpty": "Write a short reflection before saving.", "saved": "Your summary is saved as a text file.", "complete": "The service models differ in how much the customer manages and who uses the result. Knowing that lets you match each model to the level of control and convenience a customer needs."}};
+const IMG={"stack": "assets/13a0b2ca2fc751667dd492e1.webp", "datacentre": "assets/7828201ea4b9ce354a1ed9e7.webp", "recovery": "assets/a11406b672141039339f1a3f.webp", "devspace": "assets/fdb934598d58d5c7eb011833.webp", "analytics": "assets/c37d94330695a3024e7f85c4.webp", "crmtool": "assets/08bc623366428d5e1049bd76.webp", "payroll": "assets/8ede2437ca04ecf483b3149b.webp", "users": "assets/ce377b9adf2ab228841dce18.webp"};
+// Shared board engine for the C1 activities: one fixed screen, illustrated tiles left and right open their step in the
+// centre stage. The activity's app.js fills in Board.tiles and the hooks below, then calls Board.start().
+// Tile: { id, title, short, image, side: 'left'|'right', render: () => html, slot: bool }
+const byId = id => document.getElementById(id);
+const safe = v => String(v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const Board = {
+  tiles: [],
+  faces: null,                              // { n, p, w } images for a reacting character; null = the current tile's picture
+  mood: { n: 'Focused.', p: 'Done.', w: 'Not yet.' },
+  cardLabel: (n, total) => `Progress ${n}/${total}`,
+  unlocked: () => true,
+  lockedMsg: () => '',
+  onOpen: () => {},
+  onClick: () => false,                     // return true when the activity handled the click
+  onReset: () => {},
+  st: null,
+  cur: 0,
+
+  idx(id) { return this.tiles.findIndex(t => t.id === id); },
+  slots() { return this.tiles.filter(t => t.slot).map(t => t.id); },
+  say(msg) { byId('live').textContent = ''; setTimeout(() => { byId('live').textContent = msg; }, 30); },
+  face(m) {
+    const f = byId('face'); f.className = m;
+    const src = this.faces ? this.faces[m] : this.tiles[this.cur].image;
+    f.innerHTML = `<img src="${src}" width="72" height="72" alt=""><span class="sr">${safe(this.mood[m])}</span>`;
+  },
+
+  start() {
+    byId('interactive').hidden = false;
+    this.build();
+    this.wire();
+  },
+  build() {
+    this.st = { done: {}, tries: {} };
+    this.onReset();
+    byId('stage-body').innerHTML = this.tiles.map((t, i) => `<section class="pane" id="pane-${t.id}" hidden aria-labelledby="ph-${t.id}">
+      <h2 id="ph-${t.id}" tabindex="-1"><span class="kick">Step ${i + 1} of ${this.tiles.length}</span> ${safe(t.title)}</h2>${t.render()}</section>`).join('');
+    const tile = t => `<li><button type="button" class="tile" data-tile="${t.id}" id="tile-${t.id}">
+      <span class="ico" aria-hidden="true"><img src="${t.image}" alt=""></span><span class="tt">${safe(t.short)}</span><span class="state" aria-hidden="true"></span><span class="sr st-text"></span></button></li>`;
+    byId('rail-left').innerHTML = this.tiles.filter(t => t.side === 'left').map(tile).join('');
+    byId('rail-right').innerHTML = this.tiles.filter(t => t.side === 'right').map(tile).join('');
+    byId('slots').innerHTML = this.slots().map(id => `<li><button type="button" class="slot" data-tile="${id}" id="slot-${id}"><strong>${safe(this.tiles[this.idx(id)].title)}</strong><span class="body muted">Not yet done.</span></button></li>`).join('');
+    this.open(0, true);
+  },
+
+  open(i, silent) {
+    const t = this.tiles[i];
+    if (!this.unlocked(t.id)) { const m = this.lockedMsg(t.id); this.say(m); byId('lockmsg').textContent = m; return; }
+    byId('lockmsg').textContent = '';
+    this.cur = i;
+    this.tiles.forEach(x => { byId('pane-' + x.id).hidden = x.id !== t.id; });
+    this.onOpen(t.id);
+    this.face(this.st.done[t.id] ? 'p' : 'n');
+    this.paint();
+    byId('stage-scroll').scrollTop = 0;
+    if (!silent) byId('ph-' + t.id).focus();
+  },
+  paint() {
+    this.tiles.forEach((t, i) => {
+      const b = byId('tile-' + t.id), done = !!this.st.done[t.id], lock = !this.unlocked(t.id);
+      b.className = 'tile' + (done ? ' done' : '') + (i === this.cur ? ' current' : '') + (lock ? ' locked' : '');
+      b.setAttribute('aria-current', i === this.cur ? 'step' : 'false');
+      b.querySelector('.state').textContent = done ? '✓' : lock ? '🔒' : '';
+      b.querySelector('.st-text').textContent = done ? ' (done)' : lock ? ' (locked)' : i === this.cur ? ' (current)' : ' (not started)';
+    });
+    const s = this.slots(), n = s.filter(id => this.st.done[id]).length;
+    byId('prog').textContent = `${n} of ${s.length} done`;
+    byId('bar').style.width = (s.length ? n / s.length * 100 : 0) + '%';
+    byId('card').classList.toggle('complete', n === s.length);
+    byId('unlocked').hidden = n !== s.length;
+    byId('toggle-card').textContent = this.cardLabel(n, s.length);
+    const last = this.tiles.length - 1, nx = byId('next'), pv = byId('prev');
+    pv.disabled = this.cur === 0; nx.disabled = this.cur === last;
+    nx.textContent = this.cur < last ? 'Next: ' + this.tiles[this.cur + 1].short + ' →' : 'Last step';
+    pv.textContent = this.cur ? '← ' + this.tiles[this.cur - 1].short : '←';
+  },
+  nextOpen() {
+    for (let k = 1; k <= this.tiles.length; k++) {
+      const j = (this.cur + k) % this.tiles.length, t = this.tiles[j];
+      if (!this.st.done[t.id] && this.unlocked(t.id)) return j;
+    }
+    return -1;
+  },
+
+  // Reactions
+  stamp(text) { const s = byId('stamp'); s.textContent = text; s.classList.remove('on'); void s.offsetWidth; s.classList.add('on'); },
+  wrong(fb) { this.face('w'); fb.classList.remove('wob'); void fb.offsetWidth; fb.classList.add('wob'); this.say(this.mood.w); },
+  fill(id, html) { const s = byId('slot-' + id); if (!s) return; const b = s.querySelector('.body'); b.className = 'body'; b.innerHTML = html; },
+  fly(id) {
+    const slot = byId('slot-' + id);
+    const pop = () => { if (slot) { slot.classList.add('filled', 'pop'); setTimeout(() => slot.classList.remove('pop'), 700); } };
+    if (!slot || reduced()) { pop(); return; }
+    const from = byId('tile-' + id).querySelector('.ico').getBoundingClientRect();
+    const to = (byId('card').hidden ? byId('toggle-card') : slot).getBoundingClientRect();
+    const c = document.createElement('div'); c.className = 'flyer'; c.textContent = '✓';
+    Object.assign(c.style, { left: from.left + 'px', top: from.top + 'px', width: from.width + 'px', height: from.height + 'px' });
+    document.body.appendChild(c);
+    const a = c.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${to.left + 12 - from.left}px,${to.top + 12 - from.top}px) scale(1.4)`, opacity: .2 }], { duration: 650, easing: 'cubic-bezier(.3,.7,.2,1)' });
+    a.onfinish = () => { c.remove(); pop(); };
+  },
+  // A step is finished: tick its tile, fill its slot, react, and offer the next open step inside `holder`.
+  complete(id, holder, stampText, slotHtml) {
+    this.st.done[id] = true;
+    if (slotHtml !== undefined) { this.fill(id, slotHtml); this.fly(id); }
+    this.face('p');
+    if (stampText) this.stamp(stampText);
+    const j = this.nextOpen();
+    if (holder && !holder.querySelector('[data-advance]')) {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'go'; b.dataset.advance = '1';
+      b.textContent = j >= 0 ? 'Continue to ' + this.tiles[j].short : 'All done';
+      holder.appendChild(b);
+    }
+    this.paint();
+    this.say(this.mood.p);
+  },
+  // Count a failed check; true once the "Show me the answer" escape should appear (after two).
+  failed(id) { this.st.tries[id] = (this.st.tries[id] || 0) + 1; return this.st.tries[id] >= 2; },
+
+  showCard(on) {
+    byId('card').hidden = !on;
+    byId('toggle-card').setAttribute('aria-expanded', String(on));
+    if (on) byId('closecard').focus();
+  },
+  wire() {
+    document.addEventListener('click', e => {
+      const t = e.target.closest('button');
+      if (!t || this.onClick(t)) return;
+      if (t.dataset.tile) this.open(this.idx(t.dataset.tile));
+      else if (t.dataset.advance) { const j = this.nextOpen(); if (j >= 0) this.open(j); else this.say('Every step is done.'); }
+      else if (t.id === 'prev') this.open(this.cur - 1);
+      else if (t.id === 'next') this.open(this.cur + 1);
+      else if (t.id === 'restart') { this.build(); byId('h-top').focus(); }
+      else if (t.id === 'toggle-card') this.showCard(byId('card').hidden);
+      else if (t.id === 'closecard') { this.showCard(false); byId('toggle-card').focus(); }
+      else if (t.id === 'casefile' && byId('casedlg')) byId('casedlg').showModal();
+      else if (t.id === 'closecase') byId('casedlg').close();
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !byId('card').hidden) { this.showCard(false); byId('toggle-card').focus(); } });
+  }
+};
+
+// Who looks after what? Six descriptions as a layer stack on the shared board (exercises/_board). Data: content.json; pictures: IMG.
+const MODELS = DATA.models;
+const LAYERS = DATA.layers;
+const WHO = DATA.whoOptions;
+const SCEN = DATA.scenarios;
+const ITEMS = DATA.users.items;
+const SCEN_IMG = { s1: 'datacentre', s2: 'recovery', s3: 'devspace', s4: 'analytics', s5: 'crmtool', s6: 'payroll' };
+const model = id => MODELS.find(m => m.id === id);
+const whoText = id => WHO.find(w => w.id === id).text;
+const picked = name => { const c = document.querySelector(`input[name="${name}"]:checked`); return c ? c.value : null; };
+const radios = (name, labels) => labels.map((t, i) => `<label class="pick"><input type="radio" name="${name}" value="${i}"> <span>${safe(t)}</span></label>`).join('');
+const actions = (id, label) => `<div class="actions"><button type="button" data-check="${id}">${label || 'Check my choice'}</button><button type="button" class="quiet" data-show="${id}" hidden>Show me the answer</button></div><div class="fb" id="fb-${id}" role="status" aria-live="polite"></div>`;
+
+/* ---------- panes ---------- */
+// A three-layer stack, top layer first; each layer colours itself by who looks after it.
+function stack(sc) {
+  return `<div class="stack" id="stack-${sc.id}" aria-hidden="true">${LAYERS.slice().reverse().map(l => `<div class="layer" id="ly-${sc.id}-${l.id}"><span>${safe(l.name)}</span><em></em></div>`).join('')}</div>`;
+}
+function introPane() {
+  const list = MODELS.map(m => `<li><strong>${safe(m.full)}, or ${safe(m.name)}</strong>: ${safe(m.meaning)}</li>`).join('');
+  const layers = LAYERS.map(l => `<li>${safe(l.name)}</li>`).join('');
+  return `<div class="landing"><img src="${IMG.stack}" alt="A three-layer stack: hardware at the bottom, platform in the middle, the application on top"><div>
+  <span class="kick">Three layers, three models</span><h3>Who looks after what?</h3><p>${safe(DATA.intro)}</p><p>${safe(DATA.instructions)}</p><p class="muted">${safe(DATA.boundary)}</p></div></div>
+  <div class="panel"><h3>The three service models</h3><p>${safe(DATA.modelsIntro)}</p><ul>${list}</ul><p>${safe(DATA.layersIntro)}</p><ul>${layers}</ul></div>
+  <div class="actions"><button type="button" class="go" id="go0" data-advance="1">Open the first description</button></div>`;
+}
+function scenarioPane(sc) {
+  const sels = LAYERS.map(l => `<label class="field" for="${sc.id}-${l.id}">Who looks after: ${safe(l.name)}?</label><select id="${sc.id}-${l.id}" data-layer="${sc.id}"><option value="">Choose</option>${WHO.map(w => `<option value="${w.id}">${safe(w.text)}</option>`).join('')}</select>`).join('');
+  return `<div class="dossier"><img src="${IMG[SCEN_IMG[sc.id]]}" alt="${safe(sc.title)}"><div class="panel"><p class="scenario">${safe(sc.text)}</p></div></div>
+  <fieldset id="fs-${sc.id}-l"><legend>A. Who looks after what?</legend><div class="assign"><div>${sels}</div>${stack(sc)}</div>
+    <div class="actions"><button type="button" data-check="${sc.id}-l">Check who looks after what</button><button type="button" class="quiet" data-show="${sc.id}-l" hidden>Show me the answers</button></div><div class="fb" id="fb-${sc.id}-l" role="status" aria-live="polite"></div></fieldset>
+  <fieldset id="fs-${sc.id}-m" hidden><legend>B. Which service model fits?</legend><p>${safe(DATA.copy.modelIntro)}</p><div class="choices">${radios(sc.id + '-m', MODELS.map(m => m.name))}</div>${actions(sc.id + '-m')}</fieldset>`;
+}
+function usersPane() {
+  return `<p>${safe(DATA.users.text)}</p>` + ITEMS.map((n, j) => `<fieldset id="fs-${n.id}"><legend>Group ${j + 1} of ${ITEMS.length}</legend><p class="quote">${safe(n.quote)}</p><div class="choices">${radios(n.id, MODELS.map(m => m.name))}</div>${actions(n.id)}</fieldset>`).join('');
+}
+function reflectPane() {
+  return `<div id="completeBanner" class="panel" hidden><strong>Activity complete</strong><p>${safe(DATA.copy.complete)}</p><p><a href="${safe(WEEK4_URL)}" target="_top" rel="noopener">Return to Week 4</a></p></div><p>${safe(DATA.reflect.text)}</p><div id="summary"></div>
+  <div class="panel"><label class="field" for="reflect">${safe(DATA.reflect.prompt)}</label><textarea id="reflect" maxlength="1500"></textarea>
+  <button type="button" id="download">Save my summary</button><p id="saveStatus" role="status"></p></div>`;
+}
+
+/* ---------- behaviour ---------- */
+let doneItems;
+function lock(id) {
+  document.querySelectorAll(`#fs-${id} input, #fs-${id} select`).forEach(x => { x.disabled = true; });
+  byId('fs-' + id).classList.add('done');
+  document.querySelector(`[data-check="${id}"]`).hidden = true;
+  document.querySelector(`[data-show="${id}"]`).hidden = true;
+}
+function fail(id, fb) { Board.wrong(fb); if (Board.failed(id)) document.querySelector(`[data-show="${id}"]`).hidden = false; }
+function paintStack(sc) {
+  LAYERS.forEach(l => {
+    const v = byId(`${sc.id}-${l.id}`).value, el = byId(`ly-${sc.id}-${l.id}`);
+    el.className = 'layer' + (v ? ' by-' + v : '');
+    el.querySelector('em').textContent = v ? whoText(v) : '';
+  });
+}
+const fill = (tpl, m, n) => tpl.replace('{full}', m.full).replace('{meaning}', m.meaning).replace('{focus}', n ? n.focus : '');
+const layerLine = (l, text) => `<p><strong>${safe(l.name)}:</strong> ${safe(text)}</p>`;
+const layerFeedback = (sc, l, chosen) => (chosen === sc.layers[l.id].who ? 'That fits. ' : `Not quite. It is ${whoText(sc.layers[l.id].who).toLowerCase()}. `) + sc.layers[l.id].why;
+function layersDone(sc) { lock(sc.id + '-l'); byId(`stack-${sc.id}`).classList.add('settled'); byId(`fs-${sc.id}-m`).hidden = false; Board.face('p'); }
+function checkLayers(sc) {
+  const fb = byId('fb-' + sc.id + '-l'), vals = LAYERS.map(l => byId(`${sc.id}-${l.id}`).value);
+  if (vals.some(v => !v)) { fb.innerHTML = `<p>${safe(DATA.copy.chooseAll)}</p>`; return; }
+  const ok = LAYERS.every((l, j) => vals[j] === sc.layers[l.id].who);
+  const lines = LAYERS.map((l, j) => layerLine(l, layerFeedback(sc, l, vals[j]))).join('');
+  if (ok) { fb.innerHTML = `<p class="ok">${safe(DATA.copy.confirmed)}</p>` + lines + `<p>${safe(DATA.pattern)}</p>`; layersDone(sc); }
+  else { fb.innerHTML = lines + `<p>${safe(DATA.copy.tryAgain)}</p>`; fail(sc.id + '-l', fb); }
+}
+function showLayers(sc) {
+  LAYERS.forEach(l => { byId(`${sc.id}-${l.id}`).value = sc.layers[l.id].who; });
+  paintStack(sc);
+  byId('fb-' + sc.id + '-l').innerHTML = `<p class="ok">${safe(DATA.copy.shown)}</p>` + LAYERS.map(l => layerLine(l, layerFeedback(sc, l, sc.layers[l.id].who))).join('') + `<p>${safe(DATA.pattern)}</p>`;
+  layersDone(sc);
+}
+function spec(id) {
+  const sc = SCEN.find(s => id === s.id + '-m');
+  if (sc) {
+    return { ci: MODELS.findIndex(m => m.id === sc.answer), html: v => `<p>${safe(sc.feedback[MODELS[v].id])}</p>`,
+      done: () => Board.complete(sc.id, byId('fs-' + sc.id + '-m').querySelector('.actions'), model(sc.answer).name, `<span class="mbadge m-${sc.answer}">${safe(model(sc.answer).name)}</span> ${safe(sc.title)}`) };
+  }
+  const n = ITEMS.find(x => x.id === id);
+  return { ci: MODELS.findIndex(m => m.id === n.answer), html: v => `<p>${safe(fill(MODELS[v].id === n.answer ? DATA.users.correct : DATA.users.generic, MODELS[v], n))}</p>`,
+    done: () => {
+      doneItems[n.id] = true;
+      if (ITEMS.every(x => doneItems[x.id])) Board.complete('users', byId('fs-' + ITEMS[ITEMS.length - 1].id).querySelector('.actions'), 'Users matched');
+      else Board.face('p');
+    } };
+}
+function check(id) {
+  const s = spec(id), fb = byId('fb-' + id), v = picked(id);
+  if (v === null) { fb.innerHTML = `<p>${safe(DATA.copy.choose)}</p>`; return; }
+  if (+v === s.ci) { fb.innerHTML = `<p class="ok">${safe(DATA.copy.confirmed)}</p>` + s.html(+v); lock(id); s.done(); }
+  else { fb.innerHTML = s.html(+v) + `<p>${safe(DATA.copy.tryAgain)}</p>`; fail(id, fb); }
+}
+function show(id) {
+  const s = spec(id);
+  document.querySelector(`input[name="${id}"][value="${s.ci}"]`).checked = true;
+  byId('fb-' + id).innerHTML = `<p class="ok">${safe(DATA.copy.shown)}</p>` + s.html(s.ci);
+  lock(id); s.done();
+}
+function renderSummary() {
+  byId('summary').innerHTML = SCEN.map(sc => `<div class="panel"><h3>${safe(sc.title)}</h3><p>${safe(model(sc.answer).full)}, or ${safe(model(sc.answer).name)}</p></div>`).join('');
+}
+const WEEK4_URL = 'https://www.futurelearn.com/courses/introduction-to-sales-and-cloud-enabled-customer-engagement/1/todo/213803';
+
+function saveText() {
+  const reflect = byId('reflect'), status = byId('saveStatus');
+  const note = reflect.value.trim();
+  const lines = [DATA.title, ''];
+  SCEN.forEach(sc => lines.push(sc.title + ': ' + model(sc.answer).full));
+  lines.push('', 'Typical users', ...ITEMS.map(n => '  - ' + model(n.answer).name + ': ' + n.quote));
+  if (note) lines.push('', 'Reflection:', note);
+  lines.push('', DATA.copy.complete);
+  const url = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' }));
+  const a = document.createElement('a'); a.href = url; a.download = 'my-service-models-summary.txt'; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  status.textContent = DATA.copy.saved + ' ' + DATA.copy.complete;
+  Board.face('p');
+}
+
+/* ---------- board ---------- */
+Board.tiles = [
+  { id: 'intro', title: 'The three service models', short: 'The models', image: IMG.stack, side: 'left', render: introPane },
+  ...SCEN.map((sc, k) => ({ id: sc.id, title: `Description ${k + 1} of ${SCEN.length}: ${sc.title}`, short: sc.title, image: IMG[SCEN_IMG[sc.id]], side: k < 4 ? 'left' : 'right', slot: true, render: () => scenarioPane(sc) })),
+  { id: 'users', title: DATA.users.title, short: 'Match the users', image: IMG.users, side: 'right', render: usersPane },
+  { id: 'reflect', title: DATA.reflect.title, short: 'Reflect and save', image: IMG.stack, side: 'right', render: reflectPane }
+];
+Board.mood = { n: 'Reading the description.', p: 'That fits.', w: 'Not quite yet.' };
+Board.cardLabel = (n, t) => `Models sorted ${n}/${t}`;
+Board.unlocked = id => id === 'users' ? SCEN.every(s => Board.st.done[s.id]) : id === 'reflect' ? !!Board.st.done.users : true;
+Board.lockedMsg = id => id === 'users' ? 'Sort the six descriptions first.' : 'Match the users first.';
+Board.onReset = () => { doneItems = {}; };
+Board.onOpen = id => {
+  if (id === 'intro') Board.st.done.intro = true;
+  if (id === 'reflect') {
+    renderSummary();
+    const earned = SCEN.every(s => Board.st.done[s.id]) && !!Board.st.done.users;
+    Board.st.done.reflect = earned;
+    const banner = byId('completeBanner');
+    if (banner) banner.hidden = !earned;
+  }
+};
+Board.onClick = t => {
+  const id = t.dataset.check || t.dataset.show;
+  if (id) {
+    const lay = SCEN.find(s => id === s.id + '-l');
+    if (lay) (t.dataset.check ? checkLayers : showLayers)(lay);
+    else (t.dataset.check ? check : show)(id);
+    return true;
+  }
+  if (t.id === 'download') { saveText(); return true; }
+  return false;
+};
+document.addEventListener('change', e => { if (e.target.dataset && e.target.dataset.layer) paintStack(SCEN.find(s => s.id === e.target.dataset.layer)); });
+Board.start();
+</script></body></html>
