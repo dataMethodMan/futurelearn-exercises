@@ -1,0 +1,47 @@
+{
+  "syllabus_id": "w4-a3-s5",
+  "version": "2026-10-28.1",
+  "syllabus_title": "Activity: Matching business benefits with business goals",
+  "outcome": "Match a business goal to a benefit and choose an evidence-based on-premises, cloud or hybrid recommendation.",
+  "type": "exercise",
+  "pattern": "pitch-room board: match goals to benefits, reveal the signal sentence, choose what to say, transfer to changed goals",
+  "status": "local-build",
+  "entrypoint": "index.html",
+  "fallbacks": [
+    "fallback.html",
+    "fallback.md",
+    "fallback.pdf"
+  ],
+  "source": {
+    "path": "_intake/source-text/aws-cloud-sales-intern-c1/1ZgDjO0Pgsvl2ETe9kfY9DHcLRCIZiYKyT3qnVP1Hu2Y.md",
+    "sha256": "b0018d971a15fd57951ed0f5ae89a42bd9f491ffec6dd9f6793d3f1312ef5469"
+  },
+  "artifacts": {
+    "exercises/c1-benefits-to-goals/content.json": "d1fe8eb9fc5085604f8b830fbf137ecfa20fe40f9d0112bce4f31ff5360777b3",
+    "exercises/c1-benefits-to-goals/app.js": "be40a65ae1816fae89069c32797aeb83463cc2bbb1a5d89f230c5c3032692b0b",
+    "exercises/c1-benefits-to-goals/build.py": "0854242b8ba5a0e957928e91d09240ccc06b042a5446c2ad62dec097ff45562e",
+    "exercises/c1-benefits-to-goals/build_pdf.py": "59a4ef5f9e806f32b87808eec3d3fd038c46f0d55d3c10a514041f421d51f2ec",
+    "exercises/c1-benefits-to-goals/index.html": "42c0bbe3c899db54150c5be930e70bfaaa1c9b2fa454becd582d2d167db30644",
+    "exercises/c1-benefits-to-goals/fallback.md": "9758550a88e4ea0da674a0efa4a9a6b504d87b65082235f8128b3125ee31ac65",
+    "exercises/c1-benefits-to-goals/fallback.html": "36f9785cb78b9236be1ffe15cbeaa495a2e6d0b20e4fe99c637d6eca2f6255f5",
+    "exercises/c1-benefits-to-goals/fallback.pdf": "f0f98993b62a8f43db8fd34a33c58d693b2ecab88bebb3c6ba3ec01e1eafcb6f",
+    "drafts/w4-a3-s5.md": "fb75aa9ba9a0a46c57c61c2499c9992fe6aa1f9b299468b553d5e698b0b3e4e4",
+    "exercises/_board/board.css": "3e3d1913f6e999aef26ec3c15cef9c600ae88bef45f55f3b595845ebd832dcfe",
+    "exercises/_board/board-core.js": "ec92cbf941244ca3d9adf529870ca4c2cb6e3bd1dfd34ae1302cfe8f85b97185",
+    "exercises/_board/kit.py": "21d88aebff8b0731786e2d033e88ab8430897b142082a73d8f61d48fb00a64ec",
+    "exercises/c1-benefits-to-goals/assets/3983cca43745b8b60809edc3.webp": "3983cca43745b8b60809edc3893cfcba28d39fd84a3bc77d29a0049f6f632d1a",
+    "exercises/c1-benefits-to-goals/assets/631131ee5945cf531291c92d.webp": "631131ee5945cf531291c92da96f63965000bf90771eec3f88deabc62df81b6d",
+    "exercises/c1-benefits-to-goals/assets/688178aac9609683aa8fe47f.webp": "688178aac9609683aa8fe47fff3c6e520f56f0e0cb3eae0d68ae4d85da2d2501",
+    "exercises/c1-benefits-to-goals/assets/72b268f56b44a28e608d3f00.webp": "72b268f56b44a28e608d3f0035147f18343c8198c8229d3fb9a0654261f038b3",
+    "exercises/c1-benefits-to-goals/assets/8c3802be5d8fa4ceb1aa49b0.webp": "8c3802be5d8fa4ceb1aa49b0908929e4ef36ae5c2a222244307319596015bdd8",
+    "exercises/c1-benefits-to-goals/assets/cdf6684872cc2534ab50989d.webp": "cdf6684872cc2534ab50989d61c8d9bb97e5636e1c7edd0f1aaa395addc7f758"
+  },
+  "previous_version": "v1-20261019/",
+  "art_missing": [],
+  "publish": false,
+  "host": false,
+  "push": false,
+  "verification": "CHECKS.md",
+  "packaging_review": "2026-10-22: exact local image assets, LF HTML, unchanged learner content and interaction; no publishing performed",
+  "editorial_review": "Stephen-requested on-premises/hybrid balance; see activity-review.json in the Week 4 review record. Functional checks passed; user approval pending."
+}
