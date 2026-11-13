@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Interpreting the pipeline</title><style>*{box-sizing:border-box}[hidden]{display:none!important}
+:root{--navy:#14213d;--teal:#1fa3a3;--teal-d:#0b6b6b;--amber:#f4a261;--paper:#faf6ee;--coral:#e76f51;--ink:#172b36;--line:#c9d6da;--ok:#2f8f60}
+html{color-scheme:light}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 system-ui,sans-serif}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-9999px;top:0}.skip:focus{left:8px;z-index:100;background:white;padding:8px}
+a{color:#07516d}
+header.top{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--navy);color:white;height:64px}
+header.top h1{font-size:1.15rem;margin:0}
+header.top .tools{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+header.top button{background:transparent;color:white;border-color:white;margin:0}
+.app{display:grid;grid-template-columns:190px minmax(0,1fr) 190px;gap:14px;padding:14px 18px;height:calc(100vh - 64px);min-height:560px;position:relative}
+.rail,.card,.stage{background:white;border:1px solid var(--line);border-radius:14px;min-height:0}
+.rail{padding:10px;overflow:auto;display:flex;flex-direction:column;justify-content:center}.rail h2,.card h2{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:#35505e;margin:2px 4px 8px}
+ul.list{list-style:none;margin:0;padding:0}ul.list li{margin:0 0 8px}
+button{font:inherit;cursor:pointer;min-height:44px;padding:10px 14px;border-radius:8px;border:2px solid var(--teal-d);background:var(--teal-d);color:white}
+button.quiet{background:white;color:var(--teal-d)}button:disabled{opacity:.45;cursor:default}
+.tile{position:relative;display:grid;grid-template-columns:58px 1fr auto;align-items:center;gap:8px;width:100%;text-align:left;background:#eef1f2;color:#40545d;border:2px solid transparent;border-radius:12px;padding:6px;min-height:86px;transition:transform .2s,background .2s,box-shadow .2s}
+.rail-left .tile:hover{transform:translateX(3px)}.rail-right .tile:hover{transform:translateX(-3px)}
+.ico{display:block;width:58px;height:70px;border-radius:8px;overflow:hidden;background:#d7dfe2}.ico img{width:100%;height:100%;display:block;object-fit:cover}
+.tt{font-weight:700;line-height:1.15;font-size:.82rem}.state{font-size:1rem}
+.tile.current{background:white;color:var(--navy);border:2px solid var(--teal);box-shadow:0 0 0 4px #1fa3a329;animation:pulse 2.4s ease-in-out infinite}
+.tile.done{background:#e3f4ec;color:#154a33;border:2px solid var(--ok)}.tile.locked{opacity:.65}
+@keyframes pulse{50%{box-shadow:0 0 0 8px #1fa3a314}}
+.stage{display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 34px #14213d1f;position:relative}
+.shead{display:flex;gap:14px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,#e9f7f6,white)}
+#face img{display:block;width:72px;height:72px;object-fit:cover;border-radius:50%;border:4px solid var(--teal);transition:transform .25s}#face.p img{border-color:var(--amber)}#face.w img{border-color:var(--coral)}
+.shead .meta{flex:1}.shead .meta strong{display:block;font-size:1.05rem}.muted{color:#35505e}
+#stamp{border:3px solid var(--teal-d);color:var(--teal-d);font-weight:800;letter-spacing:.03em;font-size:1.05rem;padding:4px 10px;border-radius:6px;transform:rotate(-6deg);opacity:0;max-width:220px;text-align:center}
+#stamp.on{animation:stamp 1.1s ease-out forwards}
+@keyframes stamp{0%{opacity:0;transform:rotate(-6deg) scale(2.2)}25%{opacity:1;transform:rotate(-6deg) scale(1)}85%{opacity:1}100%{opacity:0}}
+#stage-scroll{flex:1;overflow-y:auto;padding:16px 22px;overscroll-behavior:contain}
+.pane h2{font-size:1.4rem;margin:.1em 0 .5em;outline-offset:6px}.kick{display:block;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-d)}
+fieldset{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0;min-width:0}fieldset.done{border:2px solid var(--ok)}legend{font-weight:700;padding:0 6px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px}.choices.one{grid-template-columns:1fr}
+.pick{display:flex;gap:10px;align-items:flex-start;min-height:44px;padding:8px;border:1px solid #dbe4e7;border-radius:8px;cursor:pointer}.pick input{width:22px;height:22px;flex:0 0 22px;margin-top:2px;accent-color:var(--teal-d)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.go{background:var(--amber);border-color:var(--amber);color:var(--navy);font-weight:700}
+.fb p{margin:.4em 0}.fb .ok{font-weight:700;color:#1d5a3c}.wob{animation:wob .35s}@keyframes wob{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.landing{display:grid;grid-template-columns:minmax(260px,1fr) minmax(300px,1fr);gap:22px;align-items:center}.landing>img{display:block;width:100%;max-height:330px;object-fit:cover;border-radius:14px}.landing h3{font-size:1.5rem;margin:.2em 0}
+.field{display:block;font-weight:600;margin-top:14px}input[type=text],textarea,select{font:inherit;display:block;width:100%;padding:10px;border:1px solid #627784;border-radius:6px;min-height:44px;background:white;color:inherit}textarea{min-height:120px}
+.panel{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:10px 0}
+.snav{display:flex;justify-content:space-between;gap:8px;padding:10px 20px;border-top:1px solid var(--line);background:#f6fafa}
+#lockmsg{padding:0 20px;margin:0;color:#8a3b1c}
+.card{position:absolute;right:222px;top:118px;z-index:20;width:min(390px,calc(100vw - 40px));max-height:calc(100% - 140px);padding:12px;overflow:auto;box-shadow:0 14px 42px #14213d44}
+.chead{display:flex;justify-content:space-between;align-items:center;gap:8px}.chead h2{margin:0 4px}
+.card .bar{height:10px;border-radius:6px;background:#e1e8ea;overflow:hidden;margin:10px 4px 12px}
+#bar{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--amber));transition:width .6s}
+#prog{margin:0 4px 8px;font-weight:600}
+.slot{display:block;width:100%;text-align:left;background:#f1f4f5;color:#5b6d76;border:2px dashed #b9c6cb;border-radius:12px;padding:10px 12px;min-height:60px}
+.slot strong{display:block;font-size:.9rem}.slot .body{display:block;font-size:.85rem;font-weight:400}.slot ul{margin:.3em 0 0;padding-left:1.1em}.slot li{margin:0 0 3px}
+.slot.filled{background:#e7f6f6;color:var(--ink);border:2px solid var(--teal)}.slot.pop{animation:pop .6s}
+@keyframes pop{40%{transform:scale(1.04);box-shadow:0 0 0 6px #1fa3a333}}
+.card.complete{box-shadow:0 0 0 3px var(--amber),0 8px 30px #f4a26166}
+.unlocked{display:flex;gap:12px;align-items:center;margin:4px 4px 10px;font-weight:700;color:#8a4a12}.unlocked img{width:56px;height:56px;border-radius:10px;object-fit:cover}
+.flyer{position:fixed;z-index:50;display:grid;place-items:center;border-radius:10px;background:var(--ok);color:white;font-weight:800;pointer-events:none}
+dialog{max-width:720px;border:1px solid var(--line);border-radius:14px;padding:20px}dialog::backdrop{background:#14213d88}
+:focus-visible{outline:3px solid #9c3d00;outline-offset:3px}
+#text-version{max-width:860px;margin:18px auto;padding:0 18px 24px}#text-version>summary{font:inherit;min-height:48px;padding:12px;cursor:pointer;font-weight:700}
+#text-version h1{font-size:clamp(1.5rem,4vw,2.3rem);line-height:1.2}#text-version h2{font-size:1.35rem}#text-version h3{font-size:1.1rem}
+.altlinks{text-align:center}
+.dossier{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:start}.dossier img{width:100%;border-radius:12px;display:block}.dossier .panel{margin:0}
+.scenario{font-size:1.05rem;margin:0}.quote{font-size:1.08rem;font-weight:600;border-left:5px solid var(--teal-d);padding-left:12px;margin:.4em 0}
+.pick:has(input:checked){border-color:var(--teal-d);background:#e7f6f6}
+@media(max-width:900px){.dossier{grid-template-columns:1fr}.dossier img{max-width:260px}.app{grid-template-columns:112px minmax(0,1fr) 112px;padding:8px;gap:8px}.rail{padding:5px}.rail h2{font-size:.68rem}.tile{grid-template-columns:1fr;min-height:92px;text-align:center}.ico{width:100%;height:54px}.tt{font-size:.72rem}.state{position:absolute;top:4px;right:6px}.card{right:128px}.shead{padding:8px 12px}#stage-scroll{padding:12px}.snav{padding:8px 12px}.choices{grid-template-columns:1fr}.landing{grid-template-columns:1fr}.landing>img{max-height:230px}}
+@media(max-width:620px){header.top{flex-wrap:wrap;height:auto;padding:10px 16px}.app{height:auto;min-height:0;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto}.rail{min-width:0;overflow-x:auto;justify-content:flex-start}.rail ul{display:flex;gap:8px}.rail li{flex:0 0 145px;margin:0}.tile{grid-template-columns:52px 1fr;text-align:left;min-height:72px}.ico{width:52px;height:58px}.rail-left{grid-row:1}.stage{grid-row:2;min-height:70vh}.rail-right{grid-row:3}.card{position:fixed;inset:80px 16px auto 16px;width:auto;max-height:70vh}.shead{flex-wrap:wrap}#face img{width:56px;height:56px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}#stamp.on{opacity:1}}
+@media print{.app,header.top .tools,.skip{display:none}#text-version{max-width:none}}
+summary,button{min-height:44px}summary{padding:10px;cursor:pointer}.reference{border:1px solid #b6c6c5;border-radius:8px;margin:12px 0}.reference p{padding:0 16px}fieldset{min-width:0}.shead .meta{min-width:0}#stamp{display:none;transform:none!important;animation:none!important;max-width:100%;font-size:.85rem}#stamp.on{display:block;opacity:1}.data-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}.data-controls label{min-width:0;font-weight:650}select{max-width:100%;height:auto;white-space:normal}select option{font:inherit}.dataset{border:1px solid var(--line);border-radius:10px;padding:12px}.table-scroll{overflow:auto;max-height:340px;border:1px solid var(--line);margin-top:12px;max-width:100%}table{border-collapse:collapse;min-width:740px;width:100%;font-size:.9rem}caption{text-align:left;padding:8px;font-weight:650}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}thead th{position:sticky;top:0;background:#e1efed;z-index:1}tbody tr:nth-child(even){background:#f7f9f8}.counts{padding:0;list-style:none}.counts li{display:grid;grid-template-columns:100px minmax(0,1fr) 24px;gap:8px;align-items:center;padding:3px 0}.countbar{height:14px;background:var(--teal-d);width:calc(var(--count)*18%);max-width:100%;border-radius:3px}.field{margin-top:16px}.fb{margin:16px 0;padding:12px;border:2px solid var(--teal-d);border-radius:8px}#review-record ul{padding-left:22px;overflow-wrap:anywhere}.table-scroll:focus-visible{outline:3px solid #9c3d00}.data-status{font-weight:650}
+@media(max-width:900px){.shead{display:grid;grid-template-columns:56px minmax(0,1fr)}.shead .meta{grid-column:2}#toggle-card{grid-column:1/-1;justify-self:start}#stamp{grid-column:1/-1;width:100%}.data-controls{grid-template-columns:1fr}}
+@media(max-width:620px){.rail h2{position:sticky;left:0;max-width:100%;white-space:normal;line-height:1.35}}
+</style></head><body>
+<a class="skip" href="#stage-scroll">Skip to the current step</a><a class="skip" href="#text-version">Go to complete text version</a>
+<header class="top"><div><h1 id="h-top" tabindex="-1">Interpreting the pipeline</h1></div><div class="tools"><button type="button" id="restart" class="quiet">Start again</button></div></header>
+<noscript><p style="padding:12px 20px">Use the complete text version below, or <a href="fallback.html">open the text version</a> or <a href="fallback.pdf">the PDF</a>. Everything in the activity is included.</p></noscript>
+<div id="interactive" class="app" hidden>
+<nav class="rail rail-left" aria-label="Brief, distribution and timing steps"><h2>Brief, distribution and timing</h2><ul class="list" id="rail-left"></ul></nav>
+<main class="stage" aria-label="Current step" data-activity-id="w2-a2-s4" data-version="v1-20261102">
+<div class="shead"><div id="face"></div><div class="meta"><strong>Inspect the records. Support your review.</strong><span class="muted">Fixed snapshot: 19 August 2025. Filters change the view, not the records.</span></div><div id="stamp" aria-hidden="true"></div><button type="button" id="toggle-card" class="quiet" aria-expanded="false" aria-controls="card">Progress</button></div>
+<div id="stage-scroll" tabindex="-1"><div id="stage-body"></div></div>
+<p id="lockmsg" role="status"></p>
+<div class="snav"><button type="button" id="prev" class="quiet">←</button><button type="button" id="next" class="quiet">Next →</button></div>
+</main>
+<nav class="rail rail-right" aria-label="Value, synthesis and record steps"><h2>Value, synthesis and record</h2><ul class="list" id="rail-right"></ul></nav>
+<aside class="card" id="card" aria-label="Your pipeline review" hidden><div class="chead"><h2>Your pipeline review</h2><button type="button" id="closecard" class="quiet">Close</button></div><div class="bar" aria-hidden="true"><div id="bar"></div></div><p id="prog"></p><div class="unlocked" id="unlocked" hidden><img src="data:image/webp;base64,UklGRq4CAABXRUJQVlA4IKICAAAQFQCdASqgAHgAPm02mEckIyKhKTkIkIANiWNu3V5Srf+MmZP6ruz/EfJJyYfedsik8bmUzeUF4wSzIt69W/XlvlpYaTMVr/gTMeeWeWY2I8tsjkcBciGDdDVB8srcYZU7RHRsuqXHrR7IuKJvudaT6Ro/NEomekaezKYqnhoqNcT4kKhi9bw5ImsNVwjY9M4Fg5VV8BQ6flW/6MqbAfxrjBpu06UsipQ+PDDopPRSZgAA/vtMo/kE9pMuZKKi3hWUiSuAm1ZxLQx5adg9T6o1RfJFrtAA2PY29dcj1V1s0FE+bNZTSON/kad4qM38GHJ6VGX/6L/3u1z7U+F7EoLLmeXc+uRHvZzj4YTaQWfTAY3Omf//oJkQFiEz6O64Zks4mqRCpVAsNceI39UPFO3lGr16+n/jlWjWmCKu1BmShx6dWBgN2fngdDULdrX9h++mFT78Udy+PmvM4hyog0jd6t/+slFXber8Yc/5n0sR9WJ6SgcvNrRD4Zz0n6TuWs0lfBbtP/k//+d//OezXyuH5uEu84e6bnUbH4AROcEAOhG0gGS7Bj6VhYkaHdi0H3ek+w7mxUtrmd3odjnnk7tdmxc5POBLn4CaGxf8mYa7tYKRhj/42DKtBV5VdxeIyH+G2sifKOqhnCm2sJUAdr7efmke+sov7Pei8bfuw/tBKz7P0i6IpF3j/ME1euJAy8nnL8CnY/fg6QAOT+JK9Xy5vW2j3T7qUxWoPL494NeZFHiknac6Xn2bBl+LCp0ZKUx7g/xsGVaCryq8ycc1vw3svjvA40VUlWqj7gGwVJil5zIVDu1BRNTfS9jcwhnWRhD9Umtz61B4OtkprG+ykiyi0vRY4SChcusMyGsX6Pu68+OXgRN7sLggKzj5b0AAAAAAAA==" alt="">Four evidence reviews complete. Review and download your record.</div><ul class="list" id="slots"></ul></aside>
+</div>
+<div id="live" class="sr" role="status" aria-live="polite"></div>
+
+<details id="text-version"><summary>Complete text version: everything in the activity, including all feedback</summary><h1>Interpreting the pipeline</h1>
+<p>Complete text version</p>
+<p>Inspect a fictional CRM snapshot and build a short pipeline review. Separate active opportunities from closed outcomes, compare time in stage, then use deal values and expected close dates to explain one strength and one risk.</p>
+<p>This is ungraded practice. The checks compare your selections and counts with the displayed data; your optional written notes are for your own reflection. Nothing is submitted or saved after reloading. Download your review if you want to keep it.</p>
+<h2>Definitions and snapshot</h2>
+<p>The snapshot is fixed at 19 August 2025. Days in stage and expected close dates belong to that fictional snapshot.</p>
+<p>Prospect, Qualify, Discover, Propose and Close describe active sales work. Nurture describes work with an existing customer. Closed Won and Closed Lost are recorded outcomes. This snapshot has no active records labelled Propose, Close or Nurture.</p>
+<p>Compare time in stage with peers at the same stage. An outlier is a reason to investigate, not proof of a stalled or lost deal. No stage-duration target is supplied.</p>
+<p>A snapshot shows current distribution. It does not show how many deals moved between stages over a period, so it cannot establish a conversion rate or steady progression.</p>
+<p>Deal values use a common monetary unit. An expected close date is an estimate; potential deal value is not guaranteed revenue. Exclude closed outcomes when reviewing active opportunities.</p>
+<h2>Use the text version</h2>
+<p>Use the full record list below for each review. Group active and closed records, order active records by days in stage or value, and compare expected dates. Write your counts, selections and optional interpretations on paper or in a text file before reading feedback. In the interaction, you can filter and sort this same dataset, then check and explicitly complete each review. Changing a selection invalidates its earlier check and completion. After two unsuccessful checks, an optional worked review fills the supported selections; you still choose Complete this review. The downloaded record distinguishes worked reviews from checked selections. Nothing advances automatically.</p>
+<p>Record views: All records; Active only; Closed outcomes; Prospect; Qualify; Discover; Propose; Close; Nurture. Sort choices: Record ID; Days in stage: highest first; Deal value: highest first; Expected close: earliest first. A view with no matching rows says No records in this view. Each view reports its count and sum of recorded deal values; a view containing only active rows labels this as Active potential deal value. An expandable stage-count list reports the count in every stage/outcome. Count and total for closed records describe that selected group, not future active revenue.</p>
+<h2>CRM records: fictional snapshot at 19 August 2025</h2>
+<ul><li>A-001 | Jin Cloud Solutions | Current stage: Prospect | Days in stage: 4 | Deal value: 27,330 monetary units | Expected close date: 3 October 2025.</li></ul>
+<ul><li>A-002 | Ordinary Systems | Current stage: Qualify | Days in stage: 6 | Deal value: 14,778 monetary units | Expected close date: 28 September 2025.</li></ul>
+<ul><li>A-003 | Solitude Innovations | Current stage: Discover | Days in stage: 7 | Deal value: 16,351 monetary units | Expected close date: 23 September 2025.</li></ul>
+<ul><li>A-004 | Patternmaster Strategies | Current stage: Closed Won | Days in stage: 7 | Deal value: 10,899 monetary units | Expected close date: 24 August 2025.</li></ul>
+<ul><li>A-005 | Carrow and Vale Consulting | Current stage: Closed Won | Days in stage: 6 | Deal value: 31,277 monetary units | Expected close date: 24 August 2025.</li></ul>
+<ul><li>B-001 | Ashbourne Global | Current stage: Prospect | Days in stage: 4 | Deal value: 12,507 monetary units | Expected close date: 3 October 2025.</li></ul>
+<ul><li>B-002 | Anarres Systems | Current stage: Qualify | Days in stage: 22 | Deal value: 46,071 monetary units | Expected close date: 28 September 2025.</li></ul>
+<ul><li>B-003 | Port Coriol Labs | Current stage: Discover | Days in stage: 9 | Deal value: 21,346 monetary units | Expected close date: 23 September 2025.</li></ul>
+<ul><li>B-004 | Lancre Works | Current stage: Closed Won | Days in stage: 8 | Deal value: 37,769 monetary units | Expected close date: 24 August 2025.</li></ul>
+<ul><li>B-005 | Dawnstar Diagnostics | Current stage: Closed Lost | Days in stage: 9 | Deal value: 32,220 monetary units | Expected close date: 24 August 2025.</li></ul>
+<ul><li>C-001 | Primer Systems | Current stage: Prospect | Days in stage: 8 | Deal value: 36,059 monetary units | Expected close date: 3 October 2025.</li></ul>
+<ul><li>C-002 | Makeda MedTech | Current stage: Qualify | Days in stage: 7 | Deal value: 29,689 monetary units | Expected close date: 28 September 2025.</li></ul>
+<ul><li>C-003 | Karhide Consulting Group | Current stage: Discover | Days in stage: 12 | Deal value: 12,871 monetary units | Expected close date: 23 September 2025.</li></ul>
+<ul><li>C-004 | Olamina Advisory | Current stage: Closed Lost | Days in stage: 14 | Deal value: 30,219 monetary units | Expected close date: 24 August 2025.</li></ul>
+<ul><li>C-005 | Vetinari Investments | Current stage: Closed Won | Days in stage: 12 | Deal value: 13,372 monetary units | Expected close date: 24 August 2025.</li></ul>
+<ul><li>D-001 | Klatch Mercantile | Current stage: Prospect | Days in stage: 15 | Deal value: 37,088 monetary units | Expected close date: 3 October 2025.</li></ul>
+<ul><li>D-002 | Sto Lat Select | Current stage: Qualify | Days in stage: 13 | Deal value: 21,548 monetary units | Expected close date: 28 September 2025.</li></ul>
+<ul><li>D-003 | Silverpath Outfitters | Current stage: Discover | Days in stage: 13 | Deal value: 30,904 monetary units | Expected close date: 23 September 2025.</li></ul>
+<ul><li>D-004 | Laconia Energy Systems | Current stage: Closed Won | Days in stage: 2 | Deal value: 25,491 monetary units | Expected close date: 24 August 2025.</li></ul>
+<ul><li>D-005 | Idiran Dynamics | Current stage: Closed Lost | Days in stage: 6 | Deal value: 49,307 monetary units | Expected close date: 24 August 2025.</li></ul>
+<h2>Separate active and closed records</h2>
+<p>Compare All records with Active only. Count the active opportunities and closed outcomes, then choose a conclusion the snapshot supports.</p>
+<h3>Choose before reading feedback</h3>
+<p>Number of active opportunities</p>
+<p>Enter a whole-number count from 0 to 20.</p>
+<p>Number of closed outcomes</p>
+<p>Enter a whole-number count from 0 to 20.</p>
+<p>What does the distribution establish?</p>
+<ul><li>Active records are equally split across three stages; movement over time is not shown.</li></ul>
+<ul><li>Equal stage counts prove that deals are moving at a steady rate.</li></ul>
+<ul><li>All 20 records are future sales opportunities.</li></ul>
+<ul><li>No active Close records means no deals have ever been won.</li></ul>
+<p>Your interpretation (optional; not automatically assessed).</p>
+<h3>Feedback: compare after choosing</h3>
+<p>Number of active opportunities</p>
+<p>Supported count: 12. There are 12 active opportunities: four in Prospect, four in Qualify and four in Discover.</p>
+<p>If the count differs: Count Prospect, Qualify and Discover records. Keep Closed Won and Closed Lost in the separate closed-outcome count.</p>
+<p>Number of closed outcomes</p>
+<p>Supported count: 8. There are eight closed outcomes: five Closed Won and three Closed Lost.</p>
+<p>If the count differs: Count both Closed Won and Closed Lost. Neither category belongs in the active-opportunity count.</p>
+<p>What does the distribution establish?</p>
+<p>Active records are equally split across three stages; movement over time is not shown. Four active records sit in each of Prospect, Qualify and Discover. Equal current counts do not show how deals moved or converted over time.</p>
+<p>Equal stage counts prove that deals are moving at a steady rate. Current counts do not reveal movement over a period. You would need dated stage changes or a defined cohort to support that claim.</p>
+<p>All 20 records are future sales opportunities. Eight records already have closed outcomes. Including them as active opportunities overstates the current pipeline.</p>
+<p>No active Close records means no deals have ever been won. The Closed Won outcomes show recorded wins. An empty active Close work stage does not erase those outcomes.</p>
+<h3>Worked review</h3>
+<p>Number of active opportunities: 12</p>
+<p>Number of closed outcomes: 8</p>
+<p>What does the distribution establish?: Active records are equally split across three stages; movement over time is not shown.</p>
+<h2>Investigate time in stage</h2>
+<p>Compare all four qualification records. Select the record that has spent longest in that stage and decide what the difference warrants.</p>
+<h3>Choose before reading feedback</h3>
+<p>Which qualification record needs a closer timing review?</p>
+<ul><li>A-001 · Jin Cloud Solutions · Prospect · 4 days · 27,330</li></ul>
+<ul><li>A-002 · Ordinary Systems · Qualify · 6 days · 14,778</li></ul>
+<ul><li>A-003 · Solitude Innovations · Discover · 7 days · 16,351</li></ul>
+<ul><li>B-001 · Ashbourne Global · Prospect · 4 days · 12,507</li></ul>
+<ul><li>B-002 · Anarres Systems · Qualify · 22 days · 46,071</li></ul>
+<ul><li>B-003 · Port Coriol Labs · Discover · 9 days · 21,346</li></ul>
+<ul><li>C-001 · Primer Systems · Prospect · 8 days · 36,059</li></ul>
+<ul><li>C-002 · Makeda MedTech · Qualify · 7 days · 29,689</li></ul>
+<ul><li>C-003 · Karhide Consulting Group · Discover · 12 days · 12,871</li></ul>
+<ul><li>D-001 · Klatch Mercantile · Prospect · 15 days · 37,088</li></ul>
+<ul><li>D-002 · Sto Lat Select · Qualify · 13 days · 21,548</li></ul>
+<ul><li>D-003 · Silverpath Outfitters · Discover · 13 days · 30,904</li></ul>
+<p>What can you conclude from the timing?</p>
+<ul><li>Review the outlier&#x27;s notes and agreed next step before deciding whether progress has stalled.</li></ul>
+<ul><li>The longest qualification record must be marked Closed Lost.</li></ul>
+<ul><li>Every qualification record above ten days has breached the stage target.</li></ul>
+<ul><li>Ignore timing because the four qualification records have the same stage.</li></ul>
+<p>Your interpretation (optional; not automatically assessed).</p>
+<h3>Feedback: compare after choosing</h3>
+<p>Which qualification record needs a closer timing review?</p>
+<p>A-001 · Jin Cloud Solutions · Prospect · 4 days · 27,330 A-001 has 4 days in Prospect. Compare all four qualification records to find the longest time within that stage.</p>
+<p>A-002 · Ordinary Systems · Qualify · 6 days · 14,778 A-002 has 6 days in Qualify. Compare all four qualification records to find the longest time within that stage.</p>
+<p>A-003 · Solitude Innovations · Discover · 7 days · 16,351 A-003 has 7 days in Discover. Compare all four qualification records to find the longest time within that stage.</p>
+<p>B-001 · Ashbourne Global · Prospect · 4 days · 12,507 B-001 has 4 days in Prospect. Compare all four qualification records to find the longest time within that stage.</p>
+<p>B-002 · Anarres Systems · Qualify · 22 days · 46,071 B-002 has 22 days in Qualify; the other qualification records have 6, 7 and 13 days.</p>
+<p>B-003 · Port Coriol Labs · Discover · 9 days · 21,346 B-003 has 9 days in Discover. Compare all four qualification records to find the longest time within that stage.</p>
+<p>C-001 · Primer Systems · Prospect · 8 days · 36,059 C-001 has 8 days in Prospect. Compare all four qualification records to find the longest time within that stage.</p>
+<p>C-002 · Makeda MedTech · Qualify · 7 days · 29,689 C-002 has 7 days in Qualify. Compare all four qualification records to find the longest time within that stage.</p>
+<p>C-003 · Karhide Consulting Group · Discover · 12 days · 12,871 C-003 has 12 days in Discover. Compare all four qualification records to find the longest time within that stage.</p>
+<p>D-001 · Klatch Mercantile · Prospect · 15 days · 37,088 D-001 has 15 days in Prospect. Compare all four qualification records to find the longest time within that stage.</p>
+<p>D-002 · Sto Lat Select · Qualify · 13 days · 21,548 D-002 has 13 days in Qualify. Compare all four qualification records to find the longest time within that stage.</p>
+<p>D-003 · Silverpath Outfitters · Discover · 13 days · 30,904 D-003 has 13 days in Discover. Compare all four qualification records to find the longest time within that stage.</p>
+<p>What can you conclude from the timing?</p>
+<p>Review the outlier&#x27;s notes and agreed next step before deciding whether progress has stalled. B-002 has 22 days in Qualify; its peers have 6, 7 and 13. Investigate the difference. The snapshot provides no cause or agreed stage-duration target.</p>
+<p>The longest qualification record must be marked Closed Lost. Time in stage alone does not establish a loss. A status change needs evidence about the opportunity&#x27;s outcome.</p>
+<p>Every qualification record above ten days has breached the stage target. No ten-day target is supplied. Compare the records without inventing a service level or stage-duration rule.</p>
+<p>Ignore timing because the four qualification records have the same stage. Records in the same stage can have different timing risks. Comparing those peers is a useful starting point for investigation.</p>
+<h3>Worked review</h3>
+<p>Which qualification record needs a closer timing review?: B-002 · Anarres Systems · Qualify · 22 days · 46,071</p>
+<p>What can you conclude from the timing?: Review the outlier&#x27;s notes and agreed next step before deciding whether progress has stalled.</p>
+<h2>Put value and dates in context</h2>
+<p>Sort the active records by deal value, then by expected close date. Identify the largest active opportunity and the earliest expected active close date. Keep the closed outcomes separate.</p>
+<h3>Choose before reading feedback</h3>
+<p>Which active opportunity has the largest deal value?</p>
+<ul><li>A-001 · Jin Cloud Solutions · Prospect · 4 days · 27,330</li></ul>
+<ul><li>A-002 · Ordinary Systems · Qualify · 6 days · 14,778</li></ul>
+<ul><li>A-003 · Solitude Innovations · Discover · 7 days · 16,351</li></ul>
+<ul><li>B-001 · Ashbourne Global · Prospect · 4 days · 12,507</li></ul>
+<ul><li>B-002 · Anarres Systems · Qualify · 22 days · 46,071</li></ul>
+<ul><li>B-003 · Port Coriol Labs · Discover · 9 days · 21,346</li></ul>
+<ul><li>C-001 · Primer Systems · Prospect · 8 days · 36,059</li></ul>
+<ul><li>C-002 · Makeda MedTech · Qualify · 7 days · 29,689</li></ul>
+<ul><li>C-003 · Karhide Consulting Group · Discover · 12 days · 12,871</li></ul>
+<ul><li>D-001 · Klatch Mercantile · Prospect · 15 days · 37,088</li></ul>
+<ul><li>D-002 · Sto Lat Select · Qualify · 13 days · 21,548</li></ul>
+<ul><li>D-003 · Silverpath Outfitters · Discover · 13 days · 30,904</li></ul>
+<p>Earliest expected close date among active opportunities</p>
+<ul><li>23 September 2025</li></ul>
+<ul><li>28 September 2025</li></ul>
+<ul><li>3 October 2025</li></ul>
+<ul><li>24 August 2025</li></ul>
+<p>Which value-and-date interpretation is justified?</p>
+<ul><li>Value helps size the opportunity; the timing outlier still needs investigation and close dates remain estimates.</li></ul>
+<ul><li>The largest deal value is guaranteed revenue on its expected close date.</li></ul>
+<ul><li>The 24 August dates on closed rows show new near-term active revenue.</li></ul>
+<ul><li>The largest value removes the need to review its time in stage.</li></ul>
+<p>Your interpretation (optional; not automatically assessed).</p>
+<h3>Feedback: compare after choosing</h3>
+<p>Which active opportunity has the largest deal value?</p>
+<p>A-001 · Jin Cloud Solutions · Prospect · 4 days · 27,330 A-001 has 27,330 monetary units of potential value. Another active record has a larger value; compare active rows without adding closed outcomes.</p>
+<p>A-002 · Ordinary Systems · Qualify · 6 days · 14,778 A-002 has 14,778 monetary units of potential value. Another active record has a larger value; compare active rows without adding closed outcomes.</p>
+<p>A-003 · Solitude Innovations · Discover · 7 days · 16,351 A-003 has 16,351 monetary units of potential value. Another active record has a larger value; compare active rows without adding closed outcomes.</p>
+<p>B-001 · Ashbourne Global · Prospect · 4 days · 12,507 B-001 has 12,507 monetary units of potential value. Another active record has a larger value; compare active rows without adding closed outcomes.</p>
+<p>B-002 · Anarres Systems · Qualify · 22 days · 46,071 B-002 has the largest active deal value: 46,071 monetary units.</p>
+<p>B-003 · Port Coriol Labs · Discover · 9 days · 21,346 B-003 has 21,346 monetary units of potential value. Another active record has a larger value; compare active rows without adding closed outcomes.</p>
+<p>C-001 · Primer Systems · Prospect · 8 days · 36,059 C-001 has 36,059 monetary units of potential value. Another active record has a larger value; compare active rows without adding closed outcomes.</p>
+<p>C-002 · Makeda MedTech · Qualify · 7 days · 29,689 C-002 has 29,689 monetary units of potential value. Another active record has a larger value; compare active rows without adding closed outcomes.</p>
+<p>C-003 · Karhide Consulting Group · Discover · 12 days · 12,871 C-003 has 12,871 monetary units of potential value. Another active record has a larger value; compare active rows without adding closed outcomes.</p>
+<p>D-001 · Klatch Mercantile · Prospect · 15 days · 37,088 D-001 has 37,088 monetary units of potential value. Another active record has a larger value; compare active rows without adding closed outcomes.</p>
+<p>D-002 · Sto Lat Select · Qualify · 13 days · 21,548 D-002 has 21,548 monetary units of potential value. Another active record has a larger value; compare active rows without adding closed outcomes.</p>
+<p>D-003 · Silverpath Outfitters · Discover · 13 days · 30,904 D-003 has 30,904 monetary units of potential value. Another active record has a larger value; compare active rows without adding closed outcomes.</p>
+<p>Earliest expected close date among active opportunities</p>
+<p>23 September 2025 The four Discover records have expected close dates of 23 September. That is the earliest active date in the snapshot.</p>
+<p>28 September 2025 Qualification records have this expected date, but the Discover records have an earlier one. Compare all active rows.</p>
+<p>3 October 2025 Prospect records have this expected date. Other active records have earlier expected dates.</p>
+<p>24 August 2025 This date appears on closed outcomes. Do not treat it as an active opportunity&#x27;s expected future close.</p>
+<p>Which value-and-date interpretation is justified?</p>
+<p>Value helps size the opportunity; the timing outlier still needs investigation and close dates remain estimates. B-002 is the largest active record at 46,071 monetary units and is also the 22-day qualification outlier. Its 28 September expected close is an estimate, not a purchase commitment.</p>
+<p>The largest deal value is guaranteed revenue on its expected close date. An active opportunity&#x27;s value and expected date do not establish a commitment or a completed sale.</p>
+<p>The 24 August dates on closed rows show new near-term active revenue. Those rows already have recorded outcomes. Their dates do not turn them back into active opportunities.</p>
+<p>The largest value removes the need to review its time in stage. Value adds context to the timing concern. It does not explain why the opportunity has spent longer in qualification than its peers.</p>
+<h3>Worked review</h3>
+<p>Which active opportunity has the largest deal value?: B-002 · Anarres Systems · Qualify · 22 days · 46,071</p>
+<p>Earliest expected close date among active opportunities: 23 September 2025</p>
+<p>Which value-and-date interpretation is justified?: Value helps size the opportunity; the timing outlier still needs investigation and close dates remain estimates.</p>
+<h2>Write a supported pipeline review</h2>
+<p>Choose one supported strength and one supported risk. Add your own short interpretation if useful, then download the review with its data evidence.</p>
+<h3>Choose before reading feedback</h3>
+<p>A strength supported by the snapshot</p>
+<ul><li>Twelve active opportunities provide coverage across Prospect, Qualify and Discover.</li></ul>
+<ul><li>Equal active counts prove a healthy conversion rate.</li></ul>
+<ul><li>All active deal value is committed revenue.</li></ul>
+<ul><li>Every closed outcome is a successful sale.</li></ul>
+<p>A risk supported by the snapshot</p>
+<ul><li>B-002 combines the largest active value with unusually long qualification time and needs investigation.</li></ul>
+<ul><li>B-002 is already lost because it has 22 days in qualification.</li></ul>
+<ul><li>Every active opportunity is expected to close within five days of the snapshot.</li></ul>
+<ul><li>The pipeline contains no active opportunities.</li></ul>
+<p>Your interpretation (optional; not automatically assessed).</p>
+<h3>Feedback: compare after choosing</h3>
+<p>A strength supported by the snapshot</p>
+<p>Twelve active opportunities provide coverage across Prospect, Qualify and Discover. The twelve active rows span three work stages. This describes coverage without claiming that the distribution proves healthy movement.</p>
+<p>Equal active counts prove a healthy conversion rate. Current stage counts are not a conversion-rate denominator and do not show a time period or cohort.</p>
+<p>All active deal value is committed revenue. The active rows represent potential opportunities. Their deal value does not establish a purchase commitment.</p>
+<p>Every closed outcome is a successful sale. The closed group includes three Closed Lost records. Separate wins from losses.</p>
+<p>A risk supported by the snapshot</p>
+<p>B-002 combines the largest active value with unusually long qualification time and needs investigation. B-002 has 46,071 monetary units at stake and 22 days in qualification versus peer values of 6, 7 and 13 days. Review its context and next step before deciding the cause.</p>
+<p>B-002 is already lost because it has 22 days in qualification. The record is still in Qualify. A time outlier is not evidence of a closed outcome.</p>
+<p>Every active opportunity is expected to close within five days of the snapshot. The earliest active expected close is 23 September, 35 days after the 19 August snapshot. Five-day dates occur on closed records.</p>
+<p>The pipeline contains no active opportunities. Twelve rows remain active. Excluding closed outcomes must not exclude the Prospect, Qualify and Discover records.</p>
+<h3>Worked review</h3>
+<p>A strength supported by the snapshot: Twelve active opportunities provide coverage across Prospect, Qualify and Discover.</p>
+<p>A risk supported by the snapshot: B-002 combines the largest active value with unusually long qualification time and needs investigation.</p>
+<h2>Your pipeline review</h2>
+<p>Keep the four evidence reviews, whether you checked selections or viewed a worked review, and your optional interpretations. The interaction downloads these details as a text file. Open it with a text editor and save it before reloading. The complete text version and PDF provide the same data and feedback without the interaction or a spreadsheet application.</p>
+<p>Complete each field before checking. Use the data controls to inspect the records. Complete all four evidence reviews before opening your final record. If an answer changes, check it again before completing that review. This review is not complete yet remains visible for an incomplete review.</p>
+<p>Use your evidence review to decide what you would investigate next. Return to the course page to mark this step complete; the workbench does not update FutureLearn completion.</p></details>
+<p class="altlinks"><a href="fallback.html">Open the text version</a> · <a href="fallback.pdf">Download the text version as a PDF</a></p>
+<script>const DATA={"title": "Interpreting the pipeline", "intro": "Inspect a fictional CRM snapshot and build a short pipeline review. Separate active opportunities from closed outcomes, compare time in stage, then use deal values and expected close dates to explain one strength and one risk.", "boundary": "This is ungraded practice. The checks compare your selections and counts with the displayed data; your optional written notes are for your own reflection. Nothing is submitted or saved after reloading. Download your review if you want to keep it.", "reference": ["The snapshot is fixed at 19 August 2025. Days in stage and expected close dates belong to that fictional snapshot.", "Prospect, Qualify, Discover, Propose and Close describe active sales work. Nurture describes work with an existing customer. Closed Won and Closed Lost are recorded outcomes. This snapshot has no active records labelled Propose, Close or Nurture.", "Compare time in stage with peers at the same stage. An outlier is a reason to investigate, not proof of a stalled or lost deal. No stage-duration target is supplied.", "A snapshot shows current distribution. It does not show how many deals moved between stages over a period, so it cannot establish a conversion rate or steady progression.", "Deal values use a common monetary unit. An expected close date is an estimate; potential deal value is not guaranteed revenue. Exclude closed outcomes when reviewing active opportunities."], "tasks": [{"id": "distribution", "title": "Separate active and closed records", "short": "Stage distribution", "filter": "all", "sort": "id", "brief": "Compare All records with Active only. Count the active opportunities and closed outcomes, then choose a conclusion the snapshot supports.", "fields": [{"id": "active", "label": "Number of active opportunities", "kind": "number", "answer": "12", "correct": "There are 12 active opportunities: four in Prospect, four in Qualify and four in Discover.", "retry": "Count Prospect, Qualify and Discover records. Keep Closed Won and Closed Lost in the separate closed-outcome count."}, {"id": "closed", "label": "Number of closed outcomes", "kind": "number", "answer": "8", "correct": "There are eight closed outcomes: five Closed Won and three Closed Lost.", "retry": "Count both Closed Won and Closed Lost. Neither category belongs in the active-opportunity count."}, {"id": "claim", "label": "What does the distribution establish?", "kind": "select", "answer": "snapshot", "options": [{"id": "snapshot", "label": "Active records are equally split across three stages; movement over time is not shown.", "feedback": "Four active records sit in each of Prospect, Qualify and Discover. Equal current counts do not show how deals moved or converted over time."}, {"id": "flow", "label": "Equal stage counts prove that deals are moving at a steady rate.", "feedback": "Current counts do not reveal movement over a period. You would need dated stage changes or a defined cohort to support that claim."}, {"id": "allactive", "label": "All 20 records are future sales opportunities.", "feedback": "Eight records already have closed outcomes. Including them as active opportunities overstates the current pipeline."}, {"id": "gap", "label": "No active Close records means no deals have ever been won.", "feedback": "The Closed Won outcomes show recorded wins. An empty active Close work stage does not erase those outcomes."}]}]}, {"id": "timing", "title": "Investigate time in stage", "short": "Timing outlier", "filter": "Qualify", "sort": "days", "brief": "Compare all four qualification records. Select the record that has spent longest in that stage and decide what the difference warrants.", "fields": [{"id": "record", "label": "Which qualification record needs a closer timing review?", "kind": "record", "answer": "B-002", "rule": "timing"}, {"id": "claim", "label": "What can you conclude from the timing?", "kind": "select", "answer": "investigate", "options": [{"id": "investigate", "label": "Review the outlier's notes and agreed next step before deciding whether progress has stalled.", "feedback": "B-002 has 22 days in Qualify; its peers have 6, 7 and 13. Investigate the difference. The snapshot provides no cause or agreed stage-duration target."}, {"id": "lost", "label": "The longest qualification record must be marked Closed Lost.", "feedback": "Time in stage alone does not establish a loss. A status change needs evidence about the opportunity's outcome."}, {"id": "target", "label": "Every qualification record above ten days has breached the stage target.", "feedback": "No ten-day target is supplied. Compare the records without inventing a service level or stage-duration rule."}, {"id": "ignore", "label": "Ignore timing because the four qualification records have the same stage.", "feedback": "Records in the same stage can have different timing risks. Comparing those peers is a useful starting point for investigation."}]}]}, {"id": "value", "title": "Put value and dates in context", "short": "Value and dates", "filter": "active", "sort": "value", "brief": "Sort the active records by deal value, then by expected close date. Identify the largest active opportunity and the earliest expected active close date. Keep the closed outcomes separate.", "fields": [{"id": "record", "label": "Which active opportunity has the largest deal value?", "kind": "record", "answer": "B-002", "rule": "value"}, {"id": "date", "label": "Earliest expected close date among active opportunities", "kind": "select", "answer": "2025-09-23", "options": [{"id": "2025-09-23", "label": "23 September 2025", "feedback": "The four Discover records have expected close dates of 23 September. That is the earliest active date in the snapshot."}, {"id": "2025-09-28", "label": "28 September 2025", "feedback": "Qualification records have this expected date, but the Discover records have an earlier one. Compare all active rows."}, {"id": "2025-10-03", "label": "3 October 2025", "feedback": "Prospect records have this expected date. Other active records have earlier expected dates."}, {"id": "2025-08-24", "label": "24 August 2025", "feedback": "This date appears on closed outcomes. Do not treat it as an active opportunity's expected future close."}]}, {"id": "claim", "label": "Which value-and-date interpretation is justified?", "kind": "select", "answer": "potential", "options": [{"id": "potential", "label": "Value helps size the opportunity; the timing outlier still needs investigation and close dates remain estimates.", "feedback": "B-002 is the largest active record at 46,071 monetary units and is also the 22-day qualification outlier. Its 28 September expected close is an estimate, not a purchase commitment."}, {"id": "guaranteed", "label": "The largest deal value is guaranteed revenue on its expected close date.", "feedback": "An active opportunity's value and expected date do not establish a commitment or a completed sale."}, {"id": "closed", "label": "The 24 August dates on closed rows show new near-term active revenue.", "feedback": "Those rows already have recorded outcomes. Their dates do not turn them back into active opportunities."}, {"id": "days", "label": "The largest value removes the need to review its time in stage.", "feedback": "Value adds context to the timing concern. It does not explain why the opportunity has spent longer in qualification than its peers."}]}]}, {"id": "summary", "title": "Write a supported pipeline review", "short": "Strength and risk", "filter": "active", "sort": "id", "brief": "Choose one supported strength and one supported risk. Add your own short interpretation if useful, then download the review with its data evidence.", "fields": [{"id": "strength", "label": "A strength supported by the snapshot", "kind": "select", "answer": "coverage", "options": [{"id": "coverage", "label": "Twelve active opportunities provide coverage across Prospect, Qualify and Discover.", "feedback": "The twelve active rows span three work stages. This describes coverage without claiming that the distribution proves healthy movement."}, {"id": "conversion", "label": "Equal active counts prove a healthy conversion rate.", "feedback": "Current stage counts are not a conversion-rate denominator and do not show a time period or cohort."}, {"id": "forecast", "label": "All active deal value is committed revenue.", "feedback": "The active rows represent potential opportunities. Their deal value does not establish a purchase commitment."}, {"id": "wins", "label": "Every closed outcome is a successful sale.", "feedback": "The closed group includes three Closed Lost records. Separate wins from losses."}]}, {"id": "risk", "label": "A risk supported by the snapshot", "kind": "select", "answer": "outlier", "options": [{"id": "outlier", "label": "B-002 combines the largest active value with unusually long qualification time and needs investigation.", "feedback": "B-002 has 46,071 monetary units at stake and 22 days in qualification versus peer values of 6, 7 and 13 days. Review its context and next step before deciding the cause."}, {"id": "loss", "label": "B-002 is already lost because it has 22 days in qualification.", "feedback": "The record is still in Qualify. A time outlier is not evidence of a closed outcome."}, {"id": "tomorrow", "label": "Every active opportunity is expected to close within five days of the snapshot.", "feedback": "The earliest active expected close is 23 September, 35 days after the 19 August snapshot. Five-day dates occur on closed records."}, {"id": "empty", "label": "The pipeline contains no active opportunities.", "feedback": "Twelve rows remain active. Excluding closed outcomes must not exclude the Prospect, Qualify and Discover records."}]}]}], "closing": "Use your evidence review to decide what you would investigate next. Return to the course page to mark this step complete; the workbench does not update FutureLearn completion."};
+const PIPELINE={"snapshot": "2025-08-19", "unit": "monetary units", "rows": [{"id": "A-001", "account": "Jin Cloud Solutions", "stage": "Prospect", "days": 4, "value": 27330, "expected": "2025-10-03"}, {"id": "A-002", "account": "Ordinary Systems", "stage": "Qualify", "days": 6, "value": 14778, "expected": "2025-09-28"}, {"id": "A-003", "account": "Solitude Innovations", "stage": "Discover", "days": 7, "value": 16351, "expected": "2025-09-23"}, {"id": "A-004", "account": "Patternmaster Strategies", "stage": "Closed Won", "days": 7, "value": 10899, "expected": "2025-08-24"}, {"id": "A-005", "account": "Carrow and Vale Consulting", "stage": "Closed Won", "days": 6, "value": 31277, "expected": "2025-08-24"}, {"id": "B-001", "account": "Ashbourne Global", "stage": "Prospect", "days": 4, "value": 12507, "expected": "2025-10-03"}, {"id": "B-002", "account": "Anarres Systems", "stage": "Qualify", "days": 22, "value": 46071, "expected": "2025-09-28"}, {"id": "B-003", "account": "Port Coriol Labs", "stage": "Discover", "days": 9, "value": 21346, "expected": "2025-09-23"}, {"id": "B-004", "account": "Lancre Works", "stage": "Closed Won", "days": 8, "value": 37769, "expected": "2025-08-24"}, {"id": "B-005", "account": "Dawnstar Diagnostics", "stage": "Closed Lost", "days": 9, "value": 32220, "expected": "2025-08-24"}, {"id": "C-001", "account": "Primer Systems", "stage": "Prospect", "days": 8, "value": 36059, "expected": "2025-10-03"}, {"id": "C-002", "account": "Makeda MedTech", "stage": "Qualify", "days": 7, "value": 29689, "expected": "2025-09-28"}, {"id": "C-003", "account": "Karhide Consulting Group", "stage": "Discover", "days": 12, "value": 12871, "expected": "2025-09-23"}, {"id": "C-004", "account": "Olamina Advisory", "stage": "Closed Lost", "days": 14, "value": 30219, "expected": "2025-08-24"}, {"id": "C-005", "account": "Vetinari Investments", "stage": "Closed Won", "days": 12, "value": 13372, "expected": "2025-08-24"}, {"id": "D-001", "account": "Klatch Mercantile", "stage": "Prospect", "days": 15, "value": 37088, "expected": "2025-10-03"}, {"id": "D-002", "account": "Sto Lat Select", "stage": "Qualify", "days": 13, "value": 21548, "expected": "2025-09-28"}, {"id": "D-003", "account": "Silverpath Outfitters", "stage": "Discover", "days": 13, "value": 30904, "expected": "2025-09-23"}, {"id": "D-004", "account": "Laconia Energy Systems", "stage": "Closed Won", "days": 2, "value": 25491, "expected": "2025-08-24"}, {"id": "D-005", "account": "Idiran Dynamics", "stage": "Closed Lost", "days": 6, "value": 49307, "expected": "2025-08-24"}]};
+const IMAGES={"start": "data:image/webp;base64,UklGRq4CAABXRUJQVlA4IKICAAAQFQCdASqgAHgAPm02mEckIyKhKTkIkIANiWNu3V5Srf+MmZP6ruz/EfJJyYfedsik8bmUzeUF4wSzIt69W/XlvlpYaTMVr/gTMeeWeWY2I8tsjkcBciGDdDVB8srcYZU7RHRsuqXHrR7IuKJvudaT6Ro/NEomekaezKYqnhoqNcT4kKhi9bw5ImsNVwjY9M4Fg5VV8BQ6flW/6MqbAfxrjBpu06UsipQ+PDDopPRSZgAA/vtMo/kE9pMuZKKi3hWUiSuAm1ZxLQx5adg9T6o1RfJFrtAA2PY29dcj1V1s0FE+bNZTSON/kad4qM38GHJ6VGX/6L/3u1z7U+F7EoLLmeXc+uRHvZzj4YTaQWfTAY3Omf//oJkQFiEz6O64Zks4mqRCpVAsNceI39UPFO3lGr16+n/jlWjWmCKu1BmShx6dWBgN2fngdDULdrX9h++mFT78Udy+PmvM4hyog0jd6t/+slFXber8Yc/5n0sR9WJ6SgcvNrRD4Zz0n6TuWs0lfBbtP/k//+d//OezXyuH5uEu84e6bnUbH4AROcEAOhG0gGS7Bj6VhYkaHdi0H3ek+w7mxUtrmd3odjnnk7tdmxc5POBLn4CaGxf8mYa7tYKRhj/42DKtBV5VdxeIyH+G2sifKOqhnCm2sJUAdr7efmke+sov7Pei8bfuw/tBKz7P0i6IpF3j/ME1euJAy8nnL8CnY/fg6QAOT+JK9Xy5vW2j3T7qUxWoPL494NeZFHiknac6Xn2bBl+LCp0ZKUx7g/xsGVaCryq8ycc1vw3svjvA40VUlWqj7gGwVJil5zIVDu1BRNTfS9jcwhnWRhD9Umtz61B4OtkprG+ykiyi0vRY4SChcusMyGsX6Pu68+OXgRN7sLggKzj5b0AAAAAAAA==", "distribution": "data:image/webp;base64,UklGRq4CAABXRUJQVlA4IKICAAAQFQCdASqgAHgAPm02mEckIyKhKTkIkIANiWNu3V5Srf+MmZP6ruz/EfJJyYfedsik8bmUzeUF4wSzIt69W/XlvlpYaTMVr/gTMeeWeWY2I8tsjkcBciGDdDVB8srcYZU7RHRsuqXHrR7IuKJvudaT6Ro/NEomekaezKYqnhoqNcT4kKhi9bw5ImsNVwjY9M4Fg5VV8BQ6flW/6MqbAfxrjBpu06UsipQ+PDDopPRSZgAA/vtMo/kE9pMuZKKi3hWUiSuAm1ZxLQx5adg9T6o1RfJFrtAA2PY29dcj1V1s0FE+bNZTSON/kad4qM38GHJ6VGX/6L/3u1z7U+F7EoLLmeXc+uRHvZzj4YTaQWfTAY3Omf//oJkQFiEz6O64Zks4mqRCpVAsNceI39UPFO3lGr16+n/jlWjWmCKu1BmShx6dWBgN2fngdDULdrX9h++mFT78Udy+PmvM4hyog0jd6t/+slFXber8Yc/5n0sR9WJ6SgcvNrRD4Zz0n6TuWs0lfBbtP/k//+d//OezXyuH5uEu84e6bnUbH4AROcEAOhG0gGS7Bj6VhYkaHdi0H3ek+w7mxUtrmd3odjnnk7tdmxc5POBLn4CaGxf8mYa7tYKRhj/42DKtBV5VdxeIyH+G2sifKOqhnCm2sJUAdr7efmke+sov7Pei8bfuw/tBKz7P0i6IpF3j/ME1euJAy8nnL8CnY/fg6QAOT+JK9Xy5vW2j3T7qUxWoPL494NeZFHiknac6Xn2bBl+LCp0ZKUx7g/xsGVaCryq8ycc1vw3svjvA40VUlWqj7gGwVJil5zIVDu1BRNTfS9jcwhnWRhD9Umtz61B4OtkprG+ykiyi0vRY4SChcusMyGsX6Pu68+OXgRN7sLggKzj5b0AAAAAAAA==", "timing": "data:image/webp;base64,UklGRq4CAABXRUJQVlA4IKICAAAQFQCdASqgAHgAPm02mEckIyKhKTkIkIANiWNu3V5Srf+MmZP6ruz/EfJJyYfedsik8bmUzeUF4wSzIt69W/XlvlpYaTMVr/gTMeeWeWY2I8tsjkcBciGDdDVB8srcYZU7RHRsuqXHrR7IuKJvudaT6Ro/NEomekaezKYqnhoqNcT4kKhi9bw5ImsNVwjY9M4Fg5VV8BQ6flW/6MqbAfxrjBpu06UsipQ+PDDopPRSZgAA/vtMo/kE9pMuZKKi3hWUiSuAm1ZxLQx5adg9T6o1RfJFrtAA2PY29dcj1V1s0FE+bNZTSON/kad4qM38GHJ6VGX/6L/3u1z7U+F7EoLLmeXc+uRHvZzj4YTaQWfTAY3Omf//oJkQFiEz6O64Zks4mqRCpVAsNceI39UPFO3lGr16+n/jlWjWmCKu1BmShx6dWBgN2fngdDULdrX9h++mFT78Udy+PmvM4hyog0jd6t/+slFXber8Yc/5n0sR9WJ6SgcvNrRD4Zz0n6TuWs0lfBbtP/k//+d//OezXyuH5uEu84e6bnUbH4AROcEAOhG0gGS7Bj6VhYkaHdi0H3ek+w7mxUtrmd3odjnnk7tdmxc5POBLn4CaGxf8mYa7tYKRhj/42DKtBV5VdxeIyH+G2sifKOqhnCm2sJUAdr7efmke+sov7Pei8bfuw/tBKz7P0i6IpF3j/ME1euJAy8nnL8CnY/fg6QAOT+JK9Xy5vW2j3T7qUxWoPL494NeZFHiknac6Xn2bBl+LCp0ZKUx7g/xsGVaCryq8ycc1vw3svjvA40VUlWqj7gGwVJil5zIVDu1BRNTfS9jcwhnWRhD9Umtz61B4OtkprG+ykiyi0vRY4SChcusMyGsX6Pu68+OXgRN7sLggKzj5b0AAAAAAAA==", "value": "data:image/webp;base64,UklGRq4CAABXRUJQVlA4IKICAAAQFQCdASqgAHgAPm02mEckIyKhKTkIkIANiWNu3V5Srf+MmZP6ruz/EfJJyYfedsik8bmUzeUF4wSzIt69W/XlvlpYaTMVr/gTMeeWeWY2I8tsjkcBciGDdDVB8srcYZU7RHRsuqXHrR7IuKJvudaT6Ro/NEomekaezKYqnhoqNcT4kKhi9bw5ImsNVwjY9M4Fg5VV8BQ6flW/6MqbAfxrjBpu06UsipQ+PDDopPRSZgAA/vtMo/kE9pMuZKKi3hWUiSuAm1ZxLQx5adg9T6o1RfJFrtAA2PY29dcj1V1s0FE+bNZTSON/kad4qM38GHJ6VGX/6L/3u1z7U+F7EoLLmeXc+uRHvZzj4YTaQWfTAY3Omf//oJkQFiEz6O64Zks4mqRCpVAsNceI39UPFO3lGr16+n/jlWjWmCKu1BmShx6dWBgN2fngdDULdrX9h++mFT78Udy+PmvM4hyog0jd6t/+slFXber8Yc/5n0sR9WJ6SgcvNrRD4Zz0n6TuWs0lfBbtP/k//+d//OezXyuH5uEu84e6bnUbH4AROcEAOhG0gGS7Bj6VhYkaHdi0H3ek+w7mxUtrmd3odjnnk7tdmxc5POBLn4CaGxf8mYa7tYKRhj/42DKtBV5VdxeIyH+G2sifKOqhnCm2sJUAdr7efmke+sov7Pei8bfuw/tBKz7P0i6IpF3j/ME1euJAy8nnL8CnY/fg6QAOT+JK9Xy5vW2j3T7qUxWoPL494NeZFHiknac6Xn2bBl+LCp0ZKUx7g/xsGVaCryq8ycc1vw3svjvA40VUlWqj7gGwVJil5zIVDu1BRNTfS9jcwhnWRhD9Umtz61B4OtkprG+ykiyi0vRY4SChcusMyGsX6Pu68+OXgRN7sLggKzj5b0AAAAAAAA==", "summary": "data:image/webp;base64,UklGRq4CAABXRUJQVlA4IKICAAAQFQCdASqgAHgAPm02mEckIyKhKTkIkIANiWNu3V5Srf+MmZP6ruz/EfJJyYfedsik8bmUzeUF4wSzIt69W/XlvlpYaTMVr/gTMeeWeWY2I8tsjkcBciGDdDVB8srcYZU7RHRsuqXHrR7IuKJvudaT6Ro/NEomekaezKYqnhoqNcT4kKhi9bw5ImsNVwjY9M4Fg5VV8BQ6flW/6MqbAfxrjBpu06UsipQ+PDDopPRSZgAA/vtMo/kE9pMuZKKi3hWUiSuAm1ZxLQx5adg9T6o1RfJFrtAA2PY29dcj1V1s0FE+bNZTSON/kad4qM38GHJ6VGX/6L/3u1z7U+F7EoLLmeXc+uRHvZzj4YTaQWfTAY3Omf//oJkQFiEz6O64Zks4mqRCpVAsNceI39UPFO3lGr16+n/jlWjWmCKu1BmShx6dWBgN2fngdDULdrX9h++mFT78Udy+PmvM4hyog0jd6t/+slFXber8Yc/5n0sR9WJ6SgcvNrRD4Zz0n6TuWs0lfBbtP/k//+d//OezXyuH5uEu84e6bnUbH4AROcEAOhG0gGS7Bj6VhYkaHdi0H3ek+w7mxUtrmd3odjnnk7tdmxc5POBLn4CaGxf8mYa7tYKRhj/42DKtBV5VdxeIyH+G2sifKOqhnCm2sJUAdr7efmke+sov7Pei8bfuw/tBKz7P0i6IpF3j/ME1euJAy8nnL8CnY/fg6QAOT+JK9Xy5vW2j3T7qUxWoPL494NeZFHiknac6Xn2bBl+LCp0ZKUx7g/xsGVaCryq8ycc1vw3svjvA40VUlWqj7gGwVJil5zIVDu1BRNTfS9jcwhnWRhD9Umtz61B4OtkprG+ykiyi0vRY4SChcusMyGsX6Pu68+OXgRN7sLggKzj5b0AAAAAAAA==", "record": "data:image/webp;base64,UklGRq4CAABXRUJQVlA4IKICAAAQFQCdASqgAHgAPm02mEckIyKhKTkIkIANiWNu3V5Srf+MmZP6ruz/EfJJyYfedsik8bmUzeUF4wSzIt69W/XlvlpYaTMVr/gTMeeWeWY2I8tsjkcBciGDdDVB8srcYZU7RHRsuqXHrR7IuKJvudaT6Ro/NEomekaezKYqnhoqNcT4kKhi9bw5ImsNVwjY9M4Fg5VV8BQ6flW/6MqbAfxrjBpu06UsipQ+PDDopPRSZgAA/vtMo/kE9pMuZKKi3hWUiSuAm1ZxLQx5adg9T6o1RfJFrtAA2PY29dcj1V1s0FE+bNZTSON/kad4qM38GHJ6VGX/6L/3u1z7U+F7EoLLmeXc+uRHvZzj4YTaQWfTAY3Omf//oJkQFiEz6O64Zks4mqRCpVAsNceI39UPFO3lGr16+n/jlWjWmCKu1BmShx6dWBgN2fngdDULdrX9h++mFT78Udy+PmvM4hyog0jd6t/+slFXber8Yc/5n0sR9WJ6SgcvNrRD4Zz0n6TuWs0lfBbtP/k//+d//OezXyuH5uEu84e6bnUbH4AROcEAOhG0gGS7Bj6VhYkaHdi0H3ek+w7mxUtrmd3odjnnk7tdmxc5POBLn4CaGxf8mYa7tYKRhj/42DKtBV5VdxeIyH+G2sifKOqhnCm2sJUAdr7efmke+sov7Pei8bfuw/tBKz7P0i6IpF3j/ME1euJAy8nnL8CnY/fg6QAOT+JK9Xy5vW2j3T7qUxWoPL494NeZFHiknac6Xn2bBl+LCp0ZKUx7g/xsGVaCryq8ycc1vw3svjvA40VUlWqj7gGwVJil5zIVDu1BRNTfS9jcwhnWRhD9Umtz61B4OtkprG+ykiyi0vRY4SChcusMyGsX6Pu68+OXgRN7sLggKzj5b0AAAAAAAA=="};
+// Shared board engine for the C1 activities: one fixed screen, illustrated tiles left and right open their step in the
+// centre stage. The activity's app.js fills in Board.tiles and the hooks below, then calls Board.start().
+// Tile: { id, title, short, image, side: 'left'|'right', render: () => html, slot: bool }
+const byId = id => document.getElementById(id);
+const safe = v => String(v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const Board = {
+  tiles: [],
+  faces: null,                              // { n, p, w } images for a reacting character; null = the current tile's picture
+  mood: { n: 'Focused.', p: 'Done.', w: 'Not yet.' },
+  cardLabel: (n, total) => `Progress ${n}/${total}`,
+  unlocked: () => true,
+  lockedMsg: () => '',
+  onOpen: () => {},
+  onClick: () => false,                     // return true when the activity handled the click
+  onReset: () => {},
+  st: null,
+  cur: 0,
+
+  idx(id) { return this.tiles.findIndex(t => t.id === id); },
+  slots() { return this.tiles.filter(t => t.slot).map(t => t.id); },
+  say(msg) { byId('live').textContent = ''; setTimeout(() => { byId('live').textContent = msg; }, 30); },
+  face(m) {
+    const f = byId('face'); f.className = m;
+    const src = this.faces ? this.faces[m] : this.tiles[this.cur].image;
+    f.innerHTML = `<img src="${src}" width="72" height="72" alt=""><span class="sr">${safe(this.mood[m])}</span>`;
+  },
+
+  start() {
+    byId('interactive').hidden = false;
+    this.build();
+    this.wire();
+  },
+  build() {
+    this.st = { done: {}, tries: {} };
+    this.onReset();
+    byId('stage-body').innerHTML = this.tiles.map((t, i) => `<section class="pane" id="pane-${t.id}" hidden aria-labelledby="ph-${t.id}">
+      <h2 id="ph-${t.id}" tabindex="-1"><span class="kick">Step ${i + 1} of ${this.tiles.length}</span> ${safe(t.title)}</h2>${t.render()}</section>`).join('');
+    const tile = t => `<li><button type="button" class="tile" data-tile="${t.id}" id="tile-${t.id}">
+      <span class="ico" aria-hidden="true"><img src="${t.image}" alt=""></span><span class="tt">${safe(t.short)}</span><span class="state" aria-hidden="true"></span><span class="sr st-text"></span></button></li>`;
+    byId('rail-left').innerHTML = this.tiles.filter(t => t.side === 'left').map(tile).join('');
+    byId('rail-right').innerHTML = this.tiles.filter(t => t.side === 'right').map(tile).join('');
+    byId('slots').innerHTML = this.slots().map(id => `<li><button type="button" class="slot" data-tile="${id}" id="slot-${id}"><strong>${safe(this.tiles[this.idx(id)].title)}</strong><span class="body muted">Not yet done.</span></button></li>`).join('');
+    this.open(0, true);
+  },
+
+  open(i, silent) {
+    const t = this.tiles[i];
+    if (!this.unlocked(t.id)) { const m = this.lockedMsg(t.id); this.say(m); byId('lockmsg').textContent = m; return; }
+    byId('lockmsg').textContent = '';
+    this.cur = i;
+    this.tiles.forEach(x => { byId('pane-' + x.id).hidden = x.id !== t.id; });
+    this.onOpen(t.id);
+    this.face(this.st.done[t.id] ? 'p' : 'n');
+    this.paint();
+    byId('stage-scroll').scrollTop = 0;
+    if (!silent) byId('ph-' + t.id).focus();
+  },
+  paint() {
+    this.tiles.forEach((t, i) => {
+      const b = byId('tile-' + t.id), done = !!this.st.done[t.id], lock = !this.unlocked(t.id);
+      b.className = 'tile' + (done ? ' done' : '') + (i === this.cur ? ' current' : '') + (lock ? ' locked' : '');
+      b.setAttribute('aria-current', i === this.cur ? 'step' : 'false');
+      b.querySelector('.state').textContent = done ? '✓' : lock ? '🔒' : '';
+      b.querySelector('.st-text').textContent = done ? ' (done)' : lock ? ' (locked)' : i === this.cur ? ' (current)' : ' (not started)';
+    });
+    const s = this.slots(), n = s.filter(id => this.st.done[id]).length;
+    byId('prog').textContent = `${n} of ${s.length} done`;
+    byId('bar').style.width = (s.length ? n / s.length * 100 : 0) + '%';
+    byId('card').classList.toggle('complete', n === s.length);
+    byId('unlocked').hidden = n !== s.length;
+    byId('toggle-card').textContent = this.cardLabel(n, s.length);
+    const last = this.tiles.length - 1, nx = byId('next'), pv = byId('prev');
+    pv.disabled = this.cur === 0; nx.disabled = this.cur === last;
+    nx.textContent = this.cur < last ? 'Next: ' + this.tiles[this.cur + 1].short + ' →' : 'Last step';
+    pv.textContent = this.cur ? '← ' + this.tiles[this.cur - 1].short : '←';
+  },
+  nextOpen() {
+    for (let k = 1; k <= this.tiles.length; k++) {
+      const j = (this.cur + k) % this.tiles.length, t = this.tiles[j];
+      if (!this.st.done[t.id] && this.unlocked(t.id)) return j;
+    }
+    return -1;
+  },
+
+  // Reactions
+  stamp(text) { const s = byId('stamp'); s.textContent = text; s.classList.remove('on'); void s.offsetWidth; s.classList.add('on'); },
+  wrong(fb) { this.face('w'); fb.classList.remove('wob'); void fb.offsetWidth; fb.classList.add('wob'); this.say(this.mood.w); },
+  fill(id, html) { const s = byId('slot-' + id); if (!s) return; const b = s.querySelector('.body'); b.className = 'body'; b.innerHTML = html; },
+  fly(id) {
+    const slot = byId('slot-' + id);
+    const pop = () => { if (slot) { slot.classList.add('filled', 'pop'); setTimeout(() => slot.classList.remove('pop'), 700); } };
+    if (!slot || reduced()) { pop(); return; }
+    const from = byId('tile-' + id).querySelector('.ico').getBoundingClientRect();
+    const to = (byId('card').hidden ? byId('toggle-card') : slot).getBoundingClientRect();
+    const c = document.createElement('div'); c.className = 'flyer'; c.textContent = '✓';
+    Object.assign(c.style, { left: from.left + 'px', top: from.top + 'px', width: from.width + 'px', height: from.height + 'px' });
+    document.body.appendChild(c);
+    const a = c.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${to.left + 12 - from.left}px,${to.top + 12 - from.top}px) scale(1.4)`, opacity: .2 }], { duration: 650, easing: 'cubic-bezier(.3,.7,.2,1)' });
+    a.onfinish = () => { c.remove(); pop(); };
+  },
+  // A step is finished: tick its tile, fill its slot, react, and offer the next open step inside `holder`.
+  complete(id, holder, stampText, slotHtml) {
+    this.st.done[id] = true;
+    if (slotHtml !== undefined) { this.fill(id, slotHtml); this.fly(id); }
+    this.face('p');
+    if (stampText) this.stamp(stampText);
+    const j = this.nextOpen();
+    if (holder && !holder.querySelector('[data-advance]')) {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'go'; b.dataset.advance = '1';
+      b.textContent = j >= 0 ? 'Continue to ' + this.tiles[j].short : 'All done';
+      holder.appendChild(b);
+    }
+    this.paint();
+    this.say(this.mood.p);
+  },
+  // Count a failed check; true once the "Show me the answer" escape should appear (after two).
+  failed(id) { this.st.tries[id] = (this.st.tries[id] || 0) + 1; return this.st.tries[id] >= 2; },
+
+  showCard(on) {
+    byId('card').hidden = !on;
+    byId('toggle-card').setAttribute('aria-expanded', String(on));
+    if (on) byId('closecard').focus();
+  },
+  wire() {
+    document.addEventListener('click', e => {
+      const t = e.target.closest('button');
+      if (!t || this.onClick(t)) return;
+      if (t.dataset.tile) this.open(this.idx(t.dataset.tile));
+      else if (t.dataset.advance) { const j = this.nextOpen(); if (j >= 0) this.open(j); else this.say('Every step is done.'); }
+      else if (t.id === 'prev') this.open(this.cur - 1);
+      else if (t.id === 'next') this.open(this.cur + 1);
+      else if (t.id === 'restart') { this.build(); byId('h-top').focus(); }
+      else if (t.id === 'toggle-card') this.showCard(byId('card').hidden);
+      else if (t.id === 'closecard') { this.showCard(false); byId('toggle-card').focus(); }
+      else if (t.id === 'casefile' && byId('casedlg')) byId('casedlg').showModal();
+      else if (t.id === 'closecase') byId('casedlg').close();
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !byId('card').hidden) { this.showCard(false); byId('toggle-card').focus(); } });
+  }
+};
+
+const ROWS=PIPELINE.rows;
+const TASKS=DATA.tasks;
+const active=r=>!r.stage.startsWith('Closed');
+const money=n=>n.toLocaleString('en-GB');
+const date=s=>new Date(s+'T00:00:00Z').toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'});
+let checked={},saved={};
+function mix(items){const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function optionsFor(f){return f.kind==='record'?ROWS.filter(active).map(r=>({id:r.id,label:`${r.id} · ${r.account} · ${r.stage} · ${r.days} days · ${money(r.value)}`,feedback:f.rule==='timing'?(r.id===f.answer?'B-002 has 22 days in Qualify; the other qualification records have 6, 7 and 13 days.':`${r.id} has ${r.days} days in ${r.stage}. Compare all four qualification records to find the longest time within that stage.`):(r.id===f.answer?'B-002 has the largest active deal value: 46,071 monetary units.':`${r.id} has ${money(r.value)} monetary units of potential value. Another active record has a larger value; compare active rows without adding closed outcomes.`)})):f.options;}
+function reference(){return `<details class="reference"><summary>Review the definitions and snapshot</summary>${DATA.reference.map(t=>`<p>${safe(t)}</p>`).join('')}</details>`;}
+function controls(t){return `<section class="dataset" aria-label="CRM data for ${safe(t.short)}"><p><strong>Fictional CRM snapshot: 19 August 2025</strong></p><div class="data-controls"><label>Records <select id="filter-${t.id}" data-filter="${t.id}">${[['all','All records'],['active','Active only'],['closed','Closed outcomes'],['Prospect','Prospect'],['Qualify','Qualify'],['Discover','Discover'],['Propose','Propose'],['Close','Close'],['Nurture','Nurture']].map(([id,label])=>`<option value="${id}" ${id===t.filter?'selected':''}>${label}</option>`).join('')}</select></label><label>Sort by <select id="sort-${t.id}" data-filter="${t.id}"><option value="id" ${t.sort==='id'?'selected':''}>Record ID</option><option value="days" ${t.sort==='days'?'selected':''}>Days in stage: highest first</option><option value="value" ${t.sort==='value'?'selected':''}>Deal value: highest first</option><option value="date" ${t.sort==='date'?'selected':''}>Expected close: earliest first</option></select></label></div><div id="data-${t.id}"></div></section>`;}
+function renderData(id){
+  const filter=byId('filter-'+id).value,sort=byId('sort-'+id).value;
+  const rows=ROWS.filter(r=>filter==='all'||filter==='active'&&active(r)||filter==='closed'&&!active(r)||r.stage===filter).sort((a,b)=>sort==='days'?b.days-a.days||a.id.localeCompare(b.id):sort==='value'?b.value-a.value||a.id.localeCompare(b.id):sort==='date'?a.expected.localeCompare(b.expected)||a.id.localeCompare(b.id):a.id.localeCompare(b.id));
+  const order=['Prospect','Qualify','Discover','Propose','Close','Nurture','Closed Won','Closed Lost'];
+  const counts=order.map(stage=>({stage,n:rows.filter(r=>r.stage===stage).length}));
+  const valueLabel=rows.length&&rows.every(active)?'Active potential deal value':'Sum of recorded deal values';
+  byId('data-'+id).innerHTML=`<p class="data-status" role="status">Showing ${rows.length} records. ${valueLabel}: ${money(rows.reduce((n,r)=>n+r.value,0))} monetary units.</p><details><summary>Show stage counts for these records</summary><ul class="counts">${counts.map(c=>`<li><span>${safe(c.stage)}</span><span class="countbar" aria-hidden="true" style="--count:${c.n}"></span><strong>${c.n}</strong></li>`).join('')}</ul></details><div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable CRM records"><table><caption>CRM records in the selected view</caption><thead><tr>${['Opportunity','Account','Current stage','Days in stage','Deal value (units)','Expected close date'].map(t=>`<th scope="col">${t}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr data-record="${r.id}"><th scope="row">${r.id}</th><td>${safe(r.account)}</td><td>${safe(r.stage)}</td><td>${r.days}</td><td>${money(r.value)}</td><td>${date(r.expected)}</td></tr>`).join('')||'<tr><td colspan="6">No records in this view.</td></tr>'}</tbody></table></div>`;
+}
+function field(t,f){const id=t.id+'-'+f.id;
+  if(f.kind==='select')return `<fieldset id="${id}"><legend>${safe(f.label)}</legend>${mix(optionsFor(f)).map((o,i)=>`<label class="pick"><input type="radio" name="${id}" value="${safe(o.id)}" data-answer="${t.id}"><span>${safe(o.label)}</span></label>`).join('')}</fieldset>`;
+  return `<label class="field" for="${id}">${safe(f.label)}</label>`+(f.kind==='number'?`<input id="${id}" type="number" inputmode="numeric" min="0" max="20" step="1" data-answer="${t.id}">`:`<p>Match the opportunity ID to its row in the data table.</p><select id="${id}" data-answer="${t.id}"><option value="">Choose an opportunity ID</option>${ROWS.filter(active).map(r=>`<option value="${r.id}">${r.id}</option>`).join('')}</select>`);
+}
+function taskPane(t){return `<p>${safe(t.brief)}</p>${reference()}${controls(t)}<fieldset><legend>Your evidence review</legend>${t.fields.map(f=>field(t,f)).join('')}</fieldset><label class="field" for="note-${t.id}">Your interpretation (optional; not automatically assessed)</label><textarea id="note-${t.id}" maxlength="1500"></textarea><div class="actions"><button type="button" data-check-task="${t.id}">Check my review</button><button type="button" class="quiet" data-reveal-task="${t.id}" hidden>Show a worked review</button><button type="button" class="go" data-complete-task="${t.id}" disabled>Complete this review</button><button type="button" data-continue-task="${t.id}" hidden>Continue</button></div><section class="fb" id="fb-${t.id}" tabindex="-1" role="status" aria-live="polite" hidden></section>`;}
+function read(t){return Object.fromEntries(t.fields.map(f=>{const el=byId(t.id+'-'+f.id);return [f.id,f.kind==='select'?(el.querySelector('input:checked')?.value||''):el.value];}));}
+function assess(t,p){return {valid:t.fields.every(f=>String(p[f.id])===f.answer),signature:JSON.stringify(t.fields.map(f=>p[f.id]))};}
+function canComplete(t,p){return !!checked[t.id]?.valid&&checked[t.id].signature===assess(t,p).signature&&assess(t,p).valid;}
+function explain(f,v){if(f.kind==='number')return v===f.answer?f.correct:f.retry;const o=optionsFor(f).find(o=>o.id===v);return o?.feedback||'Choose an answer before checking.';}
+function focusFeedback(id,html){const box=byId('fb-'+id);box.innerHTML=html;box.hidden=false;box.focus();}
+function check(t,reveal=false){
+  if(reveal)t.fields.forEach(f=>{const el=byId(t.id+'-'+f.id);if(f.kind==='select')el.querySelectorAll('input').forEach(i=>i.checked=i.value===f.answer);else el.value=f.answer;});
+  const proposal=read(t),r=assess(t,proposal);
+  if(t.fields.some(f=>proposal[f.id]==='')){focusFeedback(t.id,'<p>Complete each field before checking. Use the data controls to inspect the records.</p>');return;}
+  checked[t.id]={...r,revealed:reveal};
+  focusFeedback(t.id,`<p><strong>${reveal?'Worked review':r.valid?'Your selections fit the data':'Review the evidence and try again'}</strong></p>`+t.fields.map(f=>`<p><strong>${safe(f.label)}:</strong> ${safe(explain(f,proposal[f.id]))}</p>`).join(''));
+  byId('pane-'+t.id).querySelector('[data-complete-task]').disabled=!r.valid;
+  if(!r.valid){Board.wrong(byId('fb-'+t.id));if(Board.failed(t.id))byId('pane-'+t.id).querySelector('[data-reveal-task]').hidden=false;}
+}
+function invalidate(id){
+  delete checked[id];delete saved[id];delete Board.st.done[id];
+  const pane=byId('pane-'+id);pane.querySelector('[data-complete-task]').disabled=true;pane.querySelector('[data-continue-task]').hidden=true;byId('fb-'+id).hidden=true;
+  Board.fill(id,'Changed: check this review again.');Board.paint();updateRecord();Board.say('Answer changed. Check it again before completing this review.');
+}
+function label(f,v){return f.kind==='number'?v:optionsFor(f).find(o=>o.id===v)?.label||'No selection';}
+function updateRecord(){if(!byId('review-record'))return;byId('review-record').innerHTML=TASKS.map(t=>{const s=saved[t.id];return `<section class="panel"><h3>${safe(t.title)}</h3>${s?`<p>${s.revealed?'Worked review viewed':'Selections checked against data'}</p><ul>${t.fields.map(f=>`<li><strong>${safe(f.label)}:</strong> ${safe(label(f,s.proposal[f.id]))}</li>`).join('')}</ul><p><strong>Your interpretation:</strong> ${safe(byId('note-'+t.id).value||'No note entered.')}</p>`:'<p>This review is not complete yet.</p>'}</section>`;}).join('');byId('download').disabled=!TASKS.every(t=>Board.st.done[t.id]);}
+Board.tiles=[{id:'start',title:'Read the review brief',short:'Brief and definitions',image:IMAGES.start,side:'left',render:()=>`<p>${safe(DATA.intro)}</p><p>${safe(DATA.boundary)}</p>${reference()}<p>Use the record and sort controls to compare the same CRM data in different ways. Then check and complete each evidence review. The complete text version and PDF below contain the full data, prompts and feedback. Neither requires the interaction or a spreadsheet application.</p><button type="button" id="begin">Open the pipeline</button>`},...TASKS.map((t,i)=>({id:t.id,title:t.title,short:t.short,image:IMAGES[t.id],side:i<2?'left':'right',slot:true,render:()=>taskPane(t)})),{id:'record',title:'Your pipeline review',short:'Review and download',image:IMAGES.record,side:'right',render:()=>`<div id="review-record"></div><button type="button" id="download" disabled>Download my pipeline review</button><p id="download-status" role="status"></p><p>${safe(DATA.closing)}</p><p>Your downloaded review is a text file. Open it in a text editor. Save it before reloading to retain your notes.</p>`}];
+Board.cardLabel=(n,t)=>`Reviews ${n}/${t}`;
+Board.unlocked=id=>id!=='record'||TASKS.every(t=>Board.st.done[t.id]);Board.lockedMsg=()=> 'Complete all four evidence reviews before opening your final record.';
+Board.onReset=()=>{checked={};saved={};byId('stamp').textContent='';byId('stamp').classList.remove('on');byId('card').hidden=true;byId('toggle-card').setAttribute('aria-expanded','false');};
+Board.onOpen=id=>{if(TASKS.some(t=>t.id===id))renderData(id);if(id==='record')updateRecord();};
+Board.onClick=b=>{
+  if(b.id==='begin'){Board.open(1);return true;}
+  const t=TASKS.find(t=>t.id===(b.dataset.checkTask||b.dataset.revealTask||b.dataset.completeTask||b.dataset.continueTask));
+  if(b.dataset.checkTask){check(t);return true;}if(b.dataset.revealTask){check(t,true);return true;}
+  if(b.dataset.completeTask){if(!canComplete(t,read(t)))return true;saved[t.id]={proposal:read(t),revealed:checked[t.id].revealed};Board.complete(t.id,null,saved[t.id].revealed?'Worked review':'Review complete','Evidence recorded');b.disabled=true;const next=byId('pane-'+t.id).querySelector('[data-continue-task]');next.hidden=false;next.focus();updateRecord();return true;}
+  if(b.dataset.continueTask){Board.open(Board.idx(t.id)+1);return true;}
+  if(b.id==='download'){
+    if(!TASKS.every(t=>Board.st.done[t.id]))return true;
+    const lines=[DATA.title,'Fictional snapshot: 19 August 2025',''];for(const t of TASKS){const s=saved[t.id];lines.push(t.title,s.revealed?'Worked review viewed':'Selections checked against data',...t.fields.map(f=>f.label+': '+label(f,s.proposal[f.id])),'Your interpretation: '+(byId('note-'+t.id).value||'No note entered.'),'');}
+    const url=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='my-pipeline-review.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);byId('download-status').textContent='Your pipeline review has been downloaded.';return true;
+  }return false;
+};
+Board.start();
+document.addEventListener('change',e=>{if(e.target.dataset.filter)renderData(e.target.dataset.filter);if(e.target.dataset.answer)invalidate(e.target.dataset.answer);});
+</script></body></html>
