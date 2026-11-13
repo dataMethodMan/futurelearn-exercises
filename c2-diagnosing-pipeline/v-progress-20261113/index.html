@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Diagnosing the pipeline</title><style>*{box-sizing:border-box}[hidden]{display:none!important}
+:root{--navy:#14213d;--teal:#1fa3a3;--teal-d:#0b6b6b;--amber:#f4a261;--paper:#faf6ee;--coral:#e76f51;--ink:#172b36;--line:#c9d6da;--ok:#2f8f60}
+html{color-scheme:light}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 system-ui,sans-serif}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-9999px;top:0}.skip:focus{left:8px;z-index:100;background:white;padding:8px}
+a{color:#07516d}
+header.top{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--navy);color:white;height:64px}
+header.top h1{font-size:1.15rem;margin:0}
+header.top .tools{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+header.top button{background:transparent;color:white;border-color:white;margin:0}
+.app{display:grid;grid-template-columns:190px minmax(0,1fr) 190px;gap:14px;padding:14px 18px;height:calc(100vh - 64px);min-height:560px;position:relative}
+.rail,.card,.stage{background:white;border:1px solid var(--line);border-radius:14px;min-height:0}
+.rail{padding:10px;overflow:auto;display:flex;flex-direction:column;justify-content:center}.rail h2,.card h2{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:#35505e;margin:2px 4px 8px}
+ul.list{list-style:none;margin:0;padding:0}ul.list li{margin:0 0 8px}
+button{font:inherit;cursor:pointer;min-height:44px;padding:10px 14px;border-radius:8px;border:2px solid var(--teal-d);background:var(--teal-d);color:white}
+button.quiet{background:white;color:var(--teal-d)}button:disabled{opacity:.45;cursor:default}
+.tile{position:relative;display:grid;grid-template-columns:58px 1fr auto;align-items:center;gap:8px;width:100%;text-align:left;background:#eef1f2;color:#40545d;border:2px solid transparent;border-radius:12px;padding:6px;min-height:86px;transition:transform .2s,background .2s,box-shadow .2s}
+.rail-left .tile:hover{transform:translateX(3px)}.rail-right .tile:hover{transform:translateX(-3px)}
+.ico{display:block;width:58px;height:70px;border-radius:8px;overflow:hidden;background:#d7dfe2}.ico img{width:100%;height:100%;display:block;object-fit:cover}
+.tt{font-weight:700;line-height:1.15;font-size:.82rem}.state{font-size:1rem}
+.tile.current{background:white;color:var(--navy);border:2px solid var(--teal);box-shadow:0 0 0 4px #1fa3a329;animation:pulse 2.4s ease-in-out infinite}
+.tile.done{background:#e3f4ec;color:#154a33;border:2px solid var(--ok)}.tile.locked{opacity:.65}
+@keyframes pulse{50%{box-shadow:0 0 0 8px #1fa3a314}}
+.stage{display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 34px #14213d1f;position:relative}
+.shead{display:flex;gap:14px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,#e9f7f6,white)}
+#face img{display:block;width:72px;height:72px;object-fit:cover;border-radius:50%;border:4px solid var(--teal);transition:transform .25s}#face.p img{border-color:var(--amber)}#face.w img{border-color:var(--coral)}
+.shead .meta{flex:1}.shead .meta strong{display:block;font-size:1.05rem}.muted{color:#35505e}
+#stamp{border:3px solid var(--teal-d);color:var(--teal-d);font-weight:800;letter-spacing:.03em;font-size:1.05rem;padding:4px 10px;border-radius:6px;transform:rotate(-6deg);opacity:0;max-width:220px;text-align:center}
+#stamp.on{animation:stamp 1.1s ease-out forwards}
+@keyframes stamp{0%{opacity:0;transform:rotate(-6deg) scale(2.2)}25%{opacity:1;transform:rotate(-6deg) scale(1)}85%{opacity:1}100%{opacity:0}}
+#stage-scroll{flex:1;overflow-y:auto;padding:16px 22px;overscroll-behavior:contain}
+.pane h2{font-size:1.4rem;margin:.1em 0 .5em;outline-offset:6px}.kick{display:block;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-d)}
+fieldset{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0;min-width:0}fieldset.done{border:2px solid var(--ok)}legend{font-weight:700;padding:0 6px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px}.choices.one{grid-template-columns:1fr}
+.pick{display:flex;gap:10px;align-items:flex-start;min-height:44px;padding:8px;border:1px solid #dbe4e7;border-radius:8px;cursor:pointer}.pick input{width:22px;height:22px;flex:0 0 22px;margin-top:2px;accent-color:var(--teal-d)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.go{background:var(--amber);border-color:var(--amber);color:var(--navy);font-weight:700}
+.fb p{margin:.4em 0}.fb .ok{font-weight:700;color:#1d5a3c}.wob{animation:wob .35s}@keyframes wob{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.landing{display:grid;grid-template-columns:minmax(260px,1fr) minmax(300px,1fr);gap:22px;align-items:center}.landing>img{display:block;width:100%;max-height:330px;object-fit:cover;border-radius:14px}.landing h3{font-size:1.5rem;margin:.2em 0}
+.field{display:block;font-weight:600;margin-top:14px}input[type=text],textarea,select{font:inherit;display:block;width:100%;padding:10px;border:1px solid #627784;border-radius:6px;min-height:44px;background:white;color:inherit}textarea{min-height:120px}
+.panel{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:10px 0}
+.snav{display:flex;justify-content:space-between;gap:8px;padding:10px 20px;border-top:1px solid var(--line);background:#f6fafa}
+#lockmsg{padding:0 20px;margin:0;color:#8a3b1c}
+.card{position:absolute;right:222px;top:118px;z-index:20;width:min(390px,calc(100vw - 40px));max-height:calc(100% - 140px);padding:12px;overflow:auto;box-shadow:0 14px 42px #14213d44}
+.chead{display:flex;justify-content:space-between;align-items:center;gap:8px}.chead h2{margin:0 4px}
+.card .bar{height:10px;border-radius:6px;background:#e1e8ea;overflow:hidden;margin:10px 4px 12px}
+#bar{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--amber));transition:width .6s}
+#prog{margin:0 4px 8px;font-weight:600}
+.slot{display:block;width:100%;text-align:left;background:#f1f4f5;color:#5b6d76;border:2px dashed #b9c6cb;border-radius:12px;padding:10px 12px;min-height:60px}
+.slot strong{display:block;font-size:.9rem}.slot .body{display:block;font-size:.85rem;font-weight:400}.slot ul{margin:.3em 0 0;padding-left:1.1em}.slot li{margin:0 0 3px}
+.slot.filled{background:#e7f6f6;color:var(--ink);border:2px solid var(--teal)}.slot.pop{animation:pop .6s}
+@keyframes pop{40%{transform:scale(1.04);box-shadow:0 0 0 6px #1fa3a333}}
+.card.complete{box-shadow:0 0 0 3px var(--amber),0 8px 30px #f4a26166}
+.unlocked{display:flex;gap:12px;align-items:center;margin:4px 4px 10px;font-weight:700;color:#8a4a12}.unlocked img{width:56px;height:56px;border-radius:10px;object-fit:cover}
+.flyer{position:fixed;z-index:50;display:grid;place-items:center;border-radius:10px;background:var(--ok);color:white;font-weight:800;pointer-events:none}
+dialog{max-width:720px;border:1px solid var(--line);border-radius:14px;padding:20px}dialog::backdrop{background:#14213d88}
+:focus-visible{outline:3px solid #9c3d00;outline-offset:3px}
+#text-version{max-width:860px;margin:18px auto;padding:0 18px 24px}#text-version>summary{font:inherit;min-height:48px;padding:12px;cursor:pointer;font-weight:700}
+#text-version h1{font-size:clamp(1.5rem,4vw,2.3rem);line-height:1.2}#text-version h2{font-size:1.35rem}#text-version h3{font-size:1.1rem}
+.altlinks{text-align:center}
+.dossier{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:start}.dossier img{width:100%;border-radius:12px;display:block}.dossier .panel{margin:0}
+.scenario{font-size:1.05rem;margin:0}.quote{font-size:1.08rem;font-weight:600;border-left:5px solid var(--teal-d);padding-left:12px;margin:.4em 0}
+.pick:has(input:checked){border-color:var(--teal-d);background:#e7f6f6}
+@media(max-width:900px){.dossier{grid-template-columns:1fr}.dossier img{max-width:260px}.app{grid-template-columns:112px minmax(0,1fr) 112px;padding:8px;gap:8px}.rail{padding:5px}.rail h2{font-size:.68rem}.tile{grid-template-columns:1fr;min-height:92px;text-align:center}.ico{width:100%;height:54px}.tt{font-size:.72rem}.state{position:absolute;top:4px;right:6px}.card{right:128px}.shead{padding:8px 12px}#stage-scroll{padding:12px}.snav{padding:8px 12px}.choices{grid-template-columns:1fr}.landing{grid-template-columns:1fr}.landing>img{max-height:230px}}
+@media(max-width:620px){header.top{flex-wrap:wrap;height:auto;padding:10px 16px}.app{height:auto;min-height:0;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto}.rail{min-width:0;overflow-x:auto;justify-content:flex-start}.rail ul{display:flex;gap:8px}.rail li{flex:0 0 145px;margin:0}.tile{grid-template-columns:52px 1fr;text-align:left;min-height:72px}.ico{width:52px;height:58px}.rail-left{grid-row:1}.stage{grid-row:2;min-height:70vh}.rail-right{grid-row:3}.card{position:fixed;inset:80px 16px auto 16px;width:auto;max-height:70vh}.shead{flex-wrap:wrap}#face img{width:56px;height:56px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}#stamp.on{opacity:1}}
+@media print{.app,header.top .tools,.skip{display:none}#text-version{max-width:none}}
+summary,button{min-height:44px}summary{padding:10px;cursor:pointer}.reference{border:1px solid #b6c6c5;border-radius:8px;margin:12px 0}.reference p{padding:0 16px}fieldset{min-width:0}.shead .meta{min-width:0}#stamp{display:none;transform:none!important;animation:none!important;max-width:100%;font-size:.85rem}#stamp.on{display:block;opacity:1}.data-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}.data-controls label{min-width:0;font-weight:650}select{max-width:100%;height:auto;white-space:normal}select option{font:inherit}.dataset{border:1px solid var(--line);border-radius:10px;padding:12px}.table-scroll{overflow:auto;max-height:340px;border:1px solid var(--line);margin-top:12px;max-width:100%}table{border-collapse:collapse;min-width:740px;width:100%;font-size:.9rem}caption{text-align:left;padding:8px;font-weight:650}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}thead th{position:sticky;top:0;background:#e1efed;z-index:1}tbody tr:nth-child(even){background:#f7f9f8}.counts{padding:0;list-style:none}.counts li{display:grid;grid-template-columns:100px minmax(0,1fr) 24px;gap:8px;align-items:center;padding:3px 0}.countbar{height:14px;background:var(--teal-d);width:calc(var(--count)*18%);max-width:100%;border-radius:3px}.field{margin-top:16px}.fb{margin:16px 0;padding:12px;border:2px solid var(--teal-d);border-radius:8px}#review-record ul{padding-left:22px;overflow-wrap:anywhere}.table-scroll:focus-visible{outline:3px solid #9c3d00}.data-status{font-weight:650}
+@media(max-width:900px){.shead{display:grid;grid-template-columns:56px minmax(0,1fr)}.shead .meta{grid-column:2}#toggle-card{grid-column:1/-1;justify-self:start}#stamp{grid-column:1/-1;width:100%}.data-controls{grid-template-columns:1fr}}
+@media(max-width:620px){.rail h2{position:sticky;left:0;max-width:100%;white-space:normal;line-height:1.35}}
+.metric-chart{padding:0;list-style:none}.metric-chart li{padding:10px 0;border-bottom:1px solid var(--line)}.metric-series{margin-top:5px}.metric-series>span:first-child{display:block;font-size:.9rem}.metric-bar{display:block;height:13px;min-width:1px;border-radius:3px;background:#176d70}.reference-bar{background:#b66b2f}.record-table{margin-top:12px}.metric-chart li>strong{display:block}.data-controls .pick{align-self:end;font-weight:400}
+</style></head><body>
+<a class="skip" href="#stage-scroll">Skip to the current step</a><a class="skip" href="#text-version">Go to complete text version</a>
+<header class="top"><div><h1 id="h-top" tabindex="-1">Diagnosing the pipeline</h1></div><div class="tools"><button type="button" id="restart" class="quiet">Start again</button></div></header>
+<noscript><p style="padding:12px 20px">Use the complete text version below, or <a href="fallback.html">open the text version</a> or <a href="fallback.pdf">the PDF</a>. Everything in the activity is included.</p></noscript>
+<div id="interactive" class="app" hidden>
+<nav class="rail rail-left" aria-label="Example A and review B steps"><h2>Example A and review B</h2><ul class="list" id="rail-left"></ul></nav>
+<main class="stage" aria-label="Current step" data-activity-id="w2-a3-s5" data-version="v-progress-20261113">
+<div class="shead"><div id="face"></div><div class="meta"><strong>Compare the metrics. Explain the diagnosis.</strong><span class="muted">Example A and three reports. Keep claims tied to the supplied records.</span></div><div id="stamp" aria-hidden="true"></div><button type="button" id="toggle-card" class="quiet" aria-expanded="false" aria-controls="card">Progress</button></div>
+<div id="stage-scroll" tabindex="-1"><div id="stage-body"></div></div>
+<p id="lockmsg" role="status"></p>
+<div class="snav"><button type="button" id="prev" class="quiet">←</button><button type="button" id="next" class="quiet">Next →</button></div>
+</main>
+<nav class="rail rail-right" aria-label="Reviews C-D and your record steps"><h2>Reviews C-D and your record</h2><ul class="list" id="rail-right"></ul></nav>
+<aside class="card" id="card" aria-label="Your diagnostic review" hidden><div class="chead"><h2>Your diagnostic review</h2><button type="button" id="closecard" class="quiet">Close</button></div><div class="bar" aria-hidden="true"><div id="bar"></div></div><p id="prog"></p><div class="unlocked" id="unlocked" hidden><img src="data:image/webp;base64,UklGRgoDAABXRUJQVlA4IP4CAAAwFwCdASqgAHgAPm0yl0YkIyKhLTg5MIANiU3bq9rlqLAi6PEn1/8l+qukX8wH6o+thplf8iqI3xWrzuiAeCBqun855a/xv/Keov/X+qh+xhvZ+IZoXFpSrhExEYvlaaJXIf03bbM1wqlyIMaL/qFdEpWtAaM7FpaPUo9knGRr1OihGmnr3yMIAzUaiWof2ik9VbUalMzs9GR+I+zltfyVOaaaq+T5LrR9I2h5JMTplInlqUeMdng8xtZb7rNTLOFhUAD++7jby2/IcAACA9q8vLkw4GZ/u2gGq2XzMuAwa2V2avcH7JqMYbGeDmrbPqXZS+bXXqr4hoQv0lfmPFp6lr9N26lvHkUO+UoE36q/LgUOspyBx8S/8HRphJZWi/kH/n7/He5n2M2OvTo/lbsj/IIpUKEvnW2NdvtRtvovfgeiyuwNNexVAOmQnLwjICLCqEs/46iXZ8WjHx44MjkTYFx7drhWF/5ilxDKrlLrrA5HqipdH/AxJDWK9Hz+ffgd4c+VK7KS941GkkD23kFqT1+E4B10D6xmOHWoPvgcGuno0JzQJeS3+gFhjXqDjjF3+nBALdpykGEM+OgeGMTa9LJq5gDIsExkN+R1c6VbEbyfRvWLewDnqi1n6jwtd9H2ZVytDDh4jmzwgZU4BvWCFeF4z+POg0bwKyGC/0sbv+aJQlz1nFVTIhAPaN14Xi1g1Hb3N56u3nx7/W2DdaJyNcmfgnF+5Fr9Hwv+IOaDxV+TQP4S+pwlFMrdyS+xDtiU5eTLTdh41I2kv12BatpMIJvu3DHc2pVe/4RMNQRkxMwW9Lksb3VYywGqqz5nbcUBB598w3w6u/EQ6yVFAgr8DTSatXHz7RC7b2wchtaovLO2v7mqwAhz1yVnIX3lzq5KJWFY6DrTDkHymvWbl006/eQzRoJt4L7MfT8y5b4vBMBVd//ypPuv0crt0M700znZ7slxT3eBWDvfpAMxdhR8XEenOkaSNTwMZ4MwJjjUCdJBT1wBd5gpMt5gAAAA" alt="">Three reports reviewed. Compare and download your diagnostic record.</div><ul class="list" id="slots"></ul></aside>
+</div>
+<div id="live" class="sr" role="status" aria-live="polite"></div>
+
+<details id="text-version"><summary>Complete text version: everything in the activity, including all feedback</summary><h1>Diagnosing the pipeline</h1>
+<p>Complete text version</p>
+<p>Your manager has supplied a reference report and three pipelines to review. Compare each report with example A, identify a supported strength and a risk, and decide whether it needs attention in this exercise.</p>
+<p>This is ungraded practice with fictional reports. The checks assess your selected evidence, not your optional written explanation. Your work and checked attempts are saved automatically in this browser. Return here to resume; Restart clears saved work and attempts for this activity. Nothing is submitted. Download your review if you want to keep it.</p>
+<h2>Definitions and example</h2>
+<p>Report A is the supplied healthy example for this exercise. Its records have 3, 5, 7, 6 and 4 days in their respective stages; close probability estimates rise from 20% at Prospect to 90% at Close.</p>
+<p>Each report contains one opportunity in each of five work stages. Counts therefore do not establish a large backlog, measured conversion rate or movement over time. Compare the supplied time-in-stage and probability patterns instead.</p>
+<p>Use A as a comparison, not a universal stage-duration target. An ageing difference suggests a question to investigate; the report does not establish its cause or prove an opportunity is lost.</p>
+<p>Close probability is the supplied estimate for each opportunity, not a measured conversion rate. Forecasted revenue here is deal value multiplied by that estimate; it is not guaranteed revenue. Values use a common monetary unit.</p>
+<p>No sales target or reporting period is supplied. The reports do not establish target coverage or realised sales performance. A Close work stage is distinct from an outcome such as Closed Won.</p>
+<h2>Using this text version</h2>
+<p>Read example A and note the characteristics you would use for comparison. For B, C and D, compare each work stage with A using days in stage, supplied close probability and forecasted revenue. Choose a diagnosis, one supported strength and one supported risk, then add your own reasoning or a question to investigate. Make your choices before reading feedback. No spreadsheet application is needed.</p>
+<p>In the interaction, the metric control switches between Days in stage, Close probability (%) and Forecasted revenue (units, estimate). Compare with example A adds or removes a second, labelled bar per stage. Every bar also has its numeric value in text. Open the five report records shows all data columns below. The same records are provided here in full.</p>
+<p>Check my diagnosis explains each chosen answer. After two unsuccessful checks, Show a worked diagnosis fills supported choices; select Complete this review to finish. Nothing advances automatically. Changing an answer invalidates its check and completion, so check it again. Complete all three report reviews before opening the final record. Worked diagnoses are recorded separately from checked choices. Optional personal notes are not automatically assessed or submitted.</p>
+<h2>Report A - supplied example</h2>
+<ul><li>A-OPP1 | Jin Cloud Solutions | Work stage: Prospect | Days in stage: 3 | Deal value: 15,000 monetary units | Close probability estimate: 20% | Forecasted revenue estimate: 3,000 monetary units.</li></ul>
+<ul><li>A-OPP2 | Ordinary Systems | Work stage: Qualify | Days in stage: 5 | Deal value: 16,000 monetary units | Close probability estimate: 40% | Forecasted revenue estimate: 6,400 monetary units.</li></ul>
+<ul><li>A-OPP3 | Solitude Innovations | Work stage: Discover | Days in stage: 7 | Deal value: 17,000 monetary units | Close probability estimate: 55% | Forecasted revenue estimate: 9,350 monetary units.</li></ul>
+<ul><li>A-OPP4 | Patternmaster Strategies | Work stage: Propose | Days in stage: 6 | Deal value: 18,000 monetary units | Close probability estimate: 70% | Forecasted revenue estimate: 12,600 monetary units.</li></ul>
+<ul><li>A-OPP5 | Carrow and Vale Consulting | Work stage: Close | Days in stage: 4 | Deal value: 20,000 monetary units | Close probability estimate: 90% | Forecasted revenue estimate: 18,000 monetary units.</li></ul>
+<h3>What the example shows</h3>
+<p>A has one record per stage. Its supplied probability estimates increase from 20% to 90%, with stage durations of 3, 5, 7, 6 and 4 days. These are useful reference values. The snapshot does not prove steady movement, measured conversion or sales-target attainment.</p>
+<p>Which characteristics would you use as a comparison? Optional personal notes.</p>
+<h2>Report B</h2>
+<ul><li>B-OPP1 | Ashbourne Global | Work stage: Prospect | Days in stage: 12 | Deal value: 14,000 monetary units | Close probability estimate: 20% | Forecasted revenue estimate: 2,800 monetary units.</li></ul>
+<ul><li>B-OPP2 | Anarres Systems | Work stage: Qualify | Days in stage: 20 | Deal value: 15,000 monetary units | Close probability estimate: 25% | Forecasted revenue estimate: 3,750 monetary units.</li></ul>
+<ul><li>B-OPP3 | Port Coriol Labs | Work stage: Discover | Days in stage: 15 | Deal value: 16,000 monetary units | Close probability estimate: 30% | Forecasted revenue estimate: 4,800 monetary units.</li></ul>
+<ul><li>B-OPP4 | Lancre Works | Work stage: Propose | Days in stage: 10 | Deal value: 17,000 monetary units | Close probability estimate: 35% | Forecasted revenue estimate: 5,950 monetary units.</li></ul>
+<ul><li>B-OPP5 | Dawnstar Diagnostics | Work stage: Close | Days in stage: 9 | Deal value: 18,000 monetary units | Close probability estimate: 50% | Forecasted revenue estimate: 9,000 monetary units.</li></ul>
+<h3>Choose before reading feedback</h3>
+<p>Your diagnosis for this exercise</p>
+<ul><li>At risk: investigate the ageing pattern</li></ul>
+<ul><li>Healthy: no further investigation is needed</li></ul>
+<p>A strength supported by B&#x27;s data</p>
+<ul><li>Close probability estimates increase from 20% at Prospect to 50% at Close.</li></ul>
+<ul><li>B has a larger early-stage opportunity volume than A.</li></ul>
+<ul><li>The Close record proves B has already won the sale.</li></ul>
+<p>The evidence that most clearly warrants attention</p>
+<ul><li>Qualify has 20 days in B versus 5 in A; B&#x27;s other stage times are also higher.</li></ul>
+<ul><li>There are no records in B&#x27;s Propose stage.</li></ul>
+<ul><li>The 20-day qualification record is definitely lost.</li></ul>
+<ul><li>B has breached a universal ten-day qualification target.</li></ul>
+<p>Your reasoning or follow-up question (optional; not automatically assessed).</p>
+<h3>Feedback: compare after choosing</h3>
+<p>Your diagnosis for this exercise</p>
+<p>At risk: investigate the ageing pattern Compared with example A, B has longer times in every stage, including 20 days in Qualify versus 5. That supports a timing concern, without proving a stall or its cause.</p>
+<p>Healthy: no further investigation is needed B&#x27;s qualification record has 20 days in stage versus 5 in A. The larger timing values deserve investigation even though some probability estimates rise in later stages.</p>
+<p>A strength supported by B&#x27;s data</p>
+<p>Close probability estimates increase from 20% at Prospect to 50% at Close. The supplied estimates are 20%, 25%, 30%, 35% and 50% across B&#x27;s stages. That increasing pattern is a relative strength; it does not establish actual conversion.</p>
+<p>B has a larger early-stage opportunity volume than A. Both reports have one opportunity in each stage. The displayed counts do not support a larger-volume claim.</p>
+<p>The Close record proves B has already won the sale. Close is the work stage shown. No completed purchase outcome is supplied.</p>
+<p>The evidence that most clearly warrants attention</p>
+<p>Qualify has 20 days in B versus 5 in A; B&#x27;s other stage times are also higher. B&#x27;s days are 12, 20, 15, 10 and 9 versus A&#x27;s 3, 5, 7, 6 and 4. Qualification is the largest gap, suggesting a useful starting point for review.</p>
+<p>There are no records in B&#x27;s Propose stage. B-OPP4 is in Propose, with 10 days and a 35% close probability estimate.</p>
+<p>The 20-day qualification record is definitely lost. The record still says Qualify. Duration does not establish a loss or a reason to change its outcome.</p>
+<p>B has breached a universal ten-day qualification target. No ten-day target is supplied. Compare B with the exercise&#x27;s reference without inventing a universal rule.</p>
+<h3>Worked diagnosis</h3>
+<p>Your diagnosis for this exercise: At risk: investigate the ageing pattern</p>
+<p>A strength supported by B&#x27;s data: Close probability estimates increase from 20% at Prospect to 50% at Close.</p>
+<p>The evidence that most clearly warrants attention: Qualify has 20 days in B versus 5 in A; B&#x27;s other stage times are also higher.</p>
+<h2>Report C</h2>
+<ul><li>C-OPP1 | Primer Systems | Work stage: Prospect | Days in stage: 4 | Deal value: 15,000 monetary units | Close probability estimate: 30% | Forecasted revenue estimate: 4,500 monetary units.</li></ul>
+<ul><li>C-OPP2 | Makeda MedTech | Work stage: Qualify | Days in stage: 6 | Deal value: 16,000 monetary units | Close probability estimate: 40% | Forecasted revenue estimate: 6,400 monetary units.</li></ul>
+<ul><li>C-OPP3 | Karhide Consulting Group | Work stage: Discover | Days in stage: 8 | Deal value: 17,000 monetary units | Close probability estimate: 50% | Forecasted revenue estimate: 8,500 monetary units.</li></ul>
+<ul><li>C-OPP4 | Olamina Advisory | Work stage: Propose | Days in stage: 12 | Deal value: 18,000 monetary units | Close probability estimate: 40% | Forecasted revenue estimate: 7,200 monetary units.</li></ul>
+<ul><li>C-OPP5 | Vetinari Investments | Work stage: Close | Days in stage: 14 | Deal value: 20,000 monetary units | Close probability estimate: 35% | Forecasted revenue estimate: 7,000 monetary units.</li></ul>
+<h3>Choose before reading feedback</h3>
+<p>Your diagnosis for this exercise</p>
+<ul><li>At risk: investigate the later-stage estimates and ageing</li></ul>
+<ul><li>Healthy: the later-stage pattern needs no attention</li></ul>
+<p>A strength supported by C&#x27;s data</p>
+<ul><li>The estimate rises from 30% at Prospect to 50% at Discover.</li></ul>
+<ul><li>Every forecasted value is guaranteed revenue.</li></ul>
+<ul><li>Close has C&#x27;s highest probability estimate.</li></ul>
+<p>The evidence that most clearly warrants attention</p>
+<ul><li>Discover to Close: probability 50% to 35%, forecast 8,500 to 7,000, and days 8 to 14.</li></ul>
+<ul><li>The number of Close opportunities collapses relative to Discover.</li></ul>
+<ul><li>The data proves the seller failed in negotiation.</li></ul>
+<ul><li>Propose-to-Close forecast falls from 7,200 to zero.</li></ul>
+<p>Your reasoning or follow-up question (optional; not automatically assessed).</p>
+<h3>Feedback: compare after choosing</h3>
+<p>Your diagnosis for this exercise</p>
+<p>At risk: investigate the later-stage estimates and ageing C&#x27;s close probability estimate falls from 50% at Discover to 40% at Propose and 35% at Close, while days increase from 8 to 12 and 14. That combination warrants investigation.</p>
+<p>Healthy: the later-stage pattern needs no attention The probability estimates fall through C&#x27;s later stages as time in stage rises. Compare that pattern with A&#x27;s increasing later-stage estimates and shorter later-stage durations.</p>
+<p>A strength supported by C&#x27;s data</p>
+<p>The estimate rises from 30% at Prospect to 50% at Discover. C&#x27;s early-stage estimates are 30%, 40% and 50%. That early pattern is a relative strength alongside the later-stage concern.</p>
+<p>Every forecasted value is guaranteed revenue. Forecasted revenue uses supplied probability estimates. It does not establish a commitment or a completed sale.</p>
+<p>Close has C&#x27;s highest probability estimate. C&#x27;s Close estimate is 35%; Discover is 50%. A later stage does not automatically have a higher supplied estimate.</p>
+<p>The evidence that most clearly warrants attention</p>
+<p>Discover to Close: probability 50% to 35%, forecast 8,500 to 7,000, and days 8 to 14. Those are the displayed values. The Propose-to-Close change alone is 40% to 35% and 7,200 to 7,000; describe its size accurately and review it with the ageing pattern.</p>
+<p>The number of Close opportunities collapses relative to Discover. C has one opportunity in each stage. These counts do not establish a volume collapse or a measured conversion decline.</p>
+<p>The data proves the seller failed in negotiation. The estimates and ageing suggest a review, but no negotiation record or causal evidence is supplied.</p>
+<p>Propose-to-Close forecast falls from 7,200 to zero. C&#x27;s Close forecast is 7,000. Use the actual 7,200-to-7,000 change instead of overstating it.</p>
+<h3>Worked diagnosis</h3>
+<p>Your diagnosis for this exercise: At risk: investigate the later-stage estimates and ageing</p>
+<p>A strength supported by C&#x27;s data: The estimate rises from 30% at Prospect to 50% at Discover.</p>
+<p>The evidence that most clearly warrants attention: Discover to Close: probability 50% to 35%, forecast 8,500 to 7,000, and days 8 to 14.</p>
+<h2>Report D</h2>
+<ul><li>D-OPP1 | Klatch Mercantile | Work stage: Prospect | Days in stage: 20 | Deal value: 15,000 monetary units | Close probability estimate: 15% | Forecasted revenue estimate: 2,250 monetary units.</li></ul>
+<ul><li>D-OPP2 | Sto Lat Select | Work stage: Qualify | Days in stage: 12 | Deal value: 16,000 monetary units | Close probability estimate: 25% | Forecasted revenue estimate: 4,000 monetary units.</li></ul>
+<ul><li>D-OPP3 | Silverpath Outfitters | Work stage: Discover | Days in stage: 14 | Deal value: 17,000 monetary units | Close probability estimate: 30% | Forecasted revenue estimate: 5,100 monetary units.</li></ul>
+<ul><li>D-OPP4 | Laconia Energy Systems | Work stage: Propose | Days in stage: 8 | Deal value: 18,000 monetary units | Close probability estimate: 60% | Forecasted revenue estimate: 10,800 monetary units.</li></ul>
+<ul><li>D-OPP5 | Idiran Dynamics | Work stage: Close | Days in stage: 7 | Deal value: 20,000 monetary units | Close probability estimate: 75% | Forecasted revenue estimate: 15,000 monetary units.</li></ul>
+<h3>Choose before reading feedback</h3>
+<p>Your diagnosis for this exercise</p>
+<ul><li>At risk: investigate early-stage ageing despite stronger later estimates</li></ul>
+<ul><li>Healthy: later estimates make early-stage ageing irrelevant</li></ul>
+<p>A strength supported by D&#x27;s data</p>
+<ul><li>Later close probability estimates reach 60% at Propose and 75% at Close.</li></ul>
+<ul><li>D is faster than A in every stage.</li></ul>
+<ul><li>D&#x27;s forecast proves the sales target has been met.</li></ul>
+<p>The evidence that most clearly warrants attention</p>
+<ul><li>Prospect has 20 days versus A&#x27;s 3; Discover has 14 versus A&#x27;s 7.</li></ul>
+<ul><li>D&#x27;s Close probability estimate is only 15%.</li></ul>
+<ul><li>D has more Prospect records than all other stages combined.</li></ul>
+<ul><li>All D opportunities have failed because they are older than A&#x27;s.</li></ul>
+<p>Your reasoning or follow-up question (optional; not automatically assessed).</p>
+<h3>Feedback: compare after choosing</h3>
+<p>Your diagnosis for this exercise</p>
+<p>At risk: investigate early-stage ageing despite stronger later estimates D has 20 days in Prospect and 14 in Discover, versus A&#x27;s 3 and 7. Later estimates of 60% and 75% are a strength, but do not remove the early-stage timing concern.</p>
+<p>Healthy: later estimates make early-stage ageing irrelevant The later estimates do not explain D&#x27;s 20-day Prospect and 14-day Discover records. Review both the strength and the timing concern.</p>
+<p>A strength supported by D&#x27;s data</p>
+<p>Later close probability estimates reach 60% at Propose and 75% at Close. Those later estimates are higher than D&#x27;s early estimates of 15%, 25% and 30%. They remain estimates, not completed outcomes.</p>
+<p>D is faster than A in every stage. D has more days in every stage than A. Its Prospect record is 20 days versus 3 in A.</p>
+<p>D&#x27;s forecast proves the sales target has been met. No sales target is supplied, and forecasted revenue is not realised revenue.</p>
+<p>The evidence that most clearly warrants attention</p>
+<p>Prospect has 20 days versus A&#x27;s 3; Discover has 14 versus A&#x27;s 7. Those early-stage differences warrant investigating what is holding up each opportunity. They do not establish a large-volume backlog or its cause.</p>
+<p>D&#x27;s Close probability estimate is only 15%. 15% belongs to Prospect. The Close estimate is 75%; match each value to its actual stage.</p>
+<p>D has more Prospect records than all other stages combined. There is one D record in each stage. The available data supports an ageing comparison, not this volume claim.</p>
+<p>All D opportunities have failed because they are older than A&#x27;s. Longer time supports investigation. It does not establish a loss for every opportunity.</p>
+<h3>Worked diagnosis</h3>
+<p>Your diagnosis for this exercise: At risk: investigate early-stage ageing despite stronger later estimates</p>
+<p>A strength supported by D&#x27;s data: Later close probability estimates reach 60% at Propose and 75% at Close.</p>
+<p>The evidence that most clearly warrants attention: Prospect has 20 days versus A&#x27;s 3; Discover has 14 versus A&#x27;s 7.</p>
+<h2>Your diagnostic review</h2>
+<p>Keep your observations about A, the diagnosis/strength/risk for each of B, C and D, and your optional reasoning. The interaction downloads these as a text file; open it in a text editor and save it before reloading. Choose a diagnosis, a supported strength and a supported risk before checking. An incomplete report remains labelled This report review is not complete yet. Start again clears all answers, notes, completion stamps and progress.</p>
+<p>Keep your diagnosis tied to the metric and stage you observed. Decide what you would investigate before changing an opportunity&#x27;s status. Return to the course page to mark this step complete; this activity does not update FutureLearn completion.</p></details>
+<p class="altlinks"><a href="fallback.html">Open the text version</a> · <a href="fallback.pdf">Download the text version as a PDF</a></p>
+<script>
+/* Shared local-only progress and attempt history. No network, analytics or account storage. */
+(function (global) {
+  'use strict';
+  const SCHEMA = 1, LIMIT = 1800000;
+  const clone = value => JSON.parse(JSON.stringify(value));
+  function validateData(value, depth = 0) {
+    if (depth > 60) throw Error('Saved data is too deeply nested');
+    if (value === null || typeof value === 'boolean') return;
+    if (typeof value === 'string') { if (value.length > 100000) throw Error('Saved text is too long'); return; }
+    if (typeof value === 'number') { if (!Number.isFinite(value)) throw Error('Invalid number'); return; }
+    if (typeof value !== 'object') throw Error('Invalid saved value');
+    for (const [key, item] of Object.entries(value)) {
+      if (['__proto__', 'constructor', 'prototype'].includes(key)) throw Error('Unsafe saved key');
+      validateData(item, depth + 1);
+    }
+  }
+  function parse(raw, id, compatibility) {
+    if (raw === null) return null;
+    if (raw.length > LIMIT) throw Error('Saved copy is too large');
+    const value = JSON.parse(raw); validateData(value);
+    if (!value || value.schema !== SCHEMA || value.id !== id || typeof value.epoch !== 'string' || !Number.isInteger(value.revision) || value.revision < 0) throw Error('Invalid saved copy');
+    if (value.cleared === true) return value;
+    if (value.compatibility !== compatibility) throw Error('Saved copy belongs to a different activity edition');
+    if (!value.snapshot || !Array.isArray(value.history)) throw Error('Incomplete saved copy');
+    for (const attempt of value.history) {
+      if (!attempt || typeof attempt.title !== 'string' || typeof attempt.when !== 'string' || !Array.isArray(attempt.answers) || !Array.isArray(attempt.feedback)) throw Error('Invalid attempt');
+      if (attempt.answers.some(x => !x || typeof x.label !== 'string' || typeof x.value !== 'string') || attempt.feedback.some(x => typeof x !== 'string')) throw Error('Invalid attempt detail');
+    }
+    return value;
+  }
+  function createStore(getStorage, id, compatibility, random = () => String(Date.now()) + '-' + Math.random().toString(36).slice(2)) {
+    const key = 'futurelearn:progress:v1:' + id;
+    let baseline = null, epoch = random(), revision = 0, ready = false, paused = false;
+    function load() {
+      let raw;
+      try { raw = getStorage().getItem(key); } catch { ready = false; return {status: 'unavailable'}; }
+      try {
+        const value = parse(raw, id, compatibility);
+        baseline = raw; ready = true; paused = false;
+        if (value) { epoch = value.epoch; revision = value.revision; }
+        return {status: 'ok', value};
+      } catch (error) { baseline = raw; ready = true; paused = true; return {status: 'invalid', message: error.message}; }
+    }
+    function save(snapshot, history) {
+      if (!ready) {
+        const result = load();
+        if (result.status !== 'ok') return result;
+        if (result.value) { paused = true; return {status: 'conflict', value: result.value}; }
+      }
+      if (paused) return {status: 'paused'};
+      try {
+        const storage = getStorage(), current = storage.getItem(key);
+        if (current !== baseline) {
+          paused = true;
+          let value = null;
+          try { value = parse(current, id, compatibility); } catch {}
+          return {status: 'conflict', value, generationChanged: !!value && value.epoch !== epoch};
+        }
+        const value = {schema: SCHEMA, id, compatibility, epoch, revision: revision + 1, snapshot, history};
+        validateData(value);
+        const raw = JSON.stringify(value);
+        if (raw.length > LIMIT) throw Error('Saved work is too large');
+        storage.setItem(key, raw);
+        if (storage.getItem(key) !== raw) { paused = true; return {status: 'conflict'}; }
+        baseline = raw; revision++; return {status: 'ok'};
+      } catch { return {status: 'unavailable'}; }
+    }
+    function erase(legacyKeys = []) {
+      try {
+        const storage = getStorage();
+        // A tombstone contains no learner work and fences delayed saves in older tabs.
+        const value = {schema: SCHEMA, id, epoch: random(), revision: 0, cleared: true};
+        const raw = JSON.stringify(value);
+        storage.setItem(key, raw);
+        if (storage.getItem(key) !== raw) throw Error('Erase did not persist');
+        for (const legacy of legacyKeys) { if (legacy !== key) storage.removeItem(legacy); }
+        if (legacyKeys.some(legacy => legacy !== key && storage.getItem(legacy) !== null)) throw Error('Legacy erase failed');
+        baseline = raw; epoch = value.epoch; revision = 0; ready = true; paused = false;
+        return {status: 'ok', value};
+      } catch { paused = true; return {status: 'unavailable'}; }
+    }
+    return {key, load, save, erase, pause: () => { paused = true; }, get epoch() { return epoch; }};
+  }
+
+  // Presentation is encoded as inert, allowlisted DOM data, never stored/replayed HTML.
+  // Keeping existing keyed nodes retains their directly attached input/click listeners.
+  const TAGS = new Set('main figure figcaption aside header footer nav time output sup sub u s kbd samp mark abbr cite q wbr div section article p span strong b em i small ul ol li dl dt dd h1 h2 h3 h4 h5 h6 label fieldset legend input textarea select option optgroup button a img details summary table caption thead tbody tfoot tr th td blockquote pre code br hr progress meter svg g path circle rect line polyline polygon text title desc'.split(' '));
+  const ATTR = /^(id|class|hidden|disabled|open|checked|selected|type|name|value|for|role|tabindex|maxlength|min|max|step|rows|cols|multiple|placeholder|autocomplete|inputmode|width|height|alt|title|target|rel|colspan|rowspan|scope|viewBox|d|cx|cy|r|x|y|x1|x2|y1|y2|points|fill|stroke|stroke-width|preserveAspectRatio|aria-[a-z-]+|data-[a-z0-9-]+)$/;
+  function createCodec(document, rootIds, media = []) {
+    const urls = [...new Set([...document.querySelectorAll('img[src],a[href]')].map(e => e.getAttribute(e.tagName === 'IMG' ? 'src' : 'href')).concat(media).filter(x => typeof x === 'string'))].sort();
+    const transient = new Set(['pop', 'wob', 'newly-solved']);
+    function attributes(node) {
+      const result = {};
+      for (const a of node.attributes) {
+        if (ATTR.test(a.name)) result[a.name] = a.name === 'class' ? a.value.split(/\s+/).filter(x => !transient.has(x)).join(' ') : a.value;
+        else if ((a.name === 'src' || a.name === 'href') && urls.includes(a.value)) result[a.name] = urls.indexOf(a.value);
+      }
+      const style = {};
+      for (const name of node.style) {
+        const value = node.style.getPropertyValue(name);
+        if (/^(width|height|opacity|transform|background-color|color|border-color|--[a-z-]+)$/.test(name) && /^[a-z0-9\s#%.,()+-]+$/i.test(value) && !/url|expression/i.test(value)) style[name] = value;
+      }
+      if (Object.keys(style).length) result.style = style;
+      return result;
+    }
+    function encode(node) {
+      if (node.nodeType === 3) return ['#', node.data];
+      if (node.nodeType !== 1 || !TAGS.has(node.localName)) return null;
+      const props = {};
+      if (node.matches('input:not([type=file]),textarea,select')) { props.value = node.value; if (node.matches('input[type=checkbox],input[type=radio]')) props.checked = node.checked; }
+      return [node.localName, attributes(node), props, [...node.childNodes].map(encode).filter(Boolean)];
+    }
+    function validate(tree, budget = {n: 0}, depth = 0) {
+      if (++budget.n > 25000 || depth > 50 || !Array.isArray(tree)) throw Error('Invalid saved view');
+      if (tree[0] === '#') { if (tree.length !== 2 || typeof tree[1] !== 'string') throw Error('Invalid text'); return; }
+      if (tree.length !== 4 || !TAGS.has(tree[0]) || !tree[1] || !tree[2] || !Array.isArray(tree[3])) throw Error('Invalid saved element');
+      for (const [name, value] of Object.entries(tree[1])) {
+        if (name === 'href' || name === 'src') { if (!Number.isInteger(value) || !urls[value]) throw Error('Invalid resource'); }
+        else if (name === 'style') {
+          if (!value || typeof value !== 'object' || Array.isArray(value)) throw Error('Invalid style');
+          for (const [k, v] of Object.entries(value)) if (!/^(width|height|opacity|transform|background-color|color|border-color|--[a-z-]+)$/.test(k) || typeof v !== 'string' || !/^[a-z0-9\s#%.,()+-]+$/i.test(v) || /url|expression/i.test(v)) throw Error('Invalid style value');
+        } else if (!ATTR.test(name) || typeof value !== 'string') throw Error('Invalid attribute');
+      }
+      if (Object.keys(tree[2]).some(x => !['value', 'checked'].includes(x)) || (tree[2].value !== undefined && typeof tree[2].value !== 'string') || (tree[2].checked !== undefined && typeof tree[2].checked !== 'boolean')) throw Error('Invalid control');
+      for (const child of tree[3]) validate(child, budget, depth + 1);
+    }
+    const treeKey = tree => tree[0] === '#' ? null : tree[1].id ? 'id:' + tree[1].id : tree[0] === 'input' && tree[1].name ? 'input:' + tree[1].name + ':' + tree[1].value : tree[0] === 'option' ? 'option:' + tree[1].value : tree[0] === 'label' && tree[3].some(x => x[0] === 'input') ? 'label:' + treeKey(tree[3].find(x => x[0] === 'input')) : null;
+    function nodeKey(node) { return node.nodeType === 1 ? treeKey(encode(node)) : null; }
+    function patch(node, tree, svg = false) {
+      if (tree[0] === '#') { if (node?.nodeType === 3) { node.data = tree[1]; return node; } return document.createTextNode(tree[1]); }
+      const inSvg = svg || tree[0] === 'svg';
+      if (!node || node.nodeType !== 1 || node.localName !== tree[0]) node = inSvg ? document.createElementNS('http://www.w3.org/2000/svg', tree[0]) : document.createElement(tree[0]);
+      const attrs = tree[1];
+      for (const a of [...node.attributes]) if ((ATTR.test(a.name) || ['src', 'href', 'style'].includes(a.name)) && !(a.name in attrs)) node.removeAttribute(a.name);
+      for (const [name, value] of Object.entries(attrs)) {
+        if (name === 'style') { node.removeAttribute('style'); for (const [k, v] of Object.entries(value)) node.style.setProperty(k, v); }
+        else node.setAttribute(name, name === 'src' || name === 'href' ? urls[value] : value);
+      }
+      const old = [...node.childNodes], used = new Set(), next = [];
+      for (let i = 0; i < tree[3].length; i++) {
+        const child = tree[3][i], key = treeKey(child);
+        let match = key ? old.find(x => !used.has(x) && nodeKey(x) === key) : null;
+        if (!match && old[i] && !used.has(old[i]) && !nodeKey(old[i]) && ((child[0] === '#' && old[i].nodeType === 3) || old[i].localName === child[0])) match = old[i];
+        if (match) used.add(match);
+        next.push(patch(match, child, inSvg));
+      }
+      node.replaceChildren(...next);
+      for (const [key, value] of Object.entries(tree[2])) if (node.matches('input:not([type=file]),textarea,select')) node[key] = value;
+      return node;
+    }
+    function capture() { return Object.fromEntries(rootIds.map(id => { const tree = encode(document.getElementById(id)); if (!tree) throw Error('Missing supported activity root: ' + id); return [id, tree]; })); }
+    function restore(value) {
+      if (!value || Object.keys(value).sort().join('|') !== [...rootIds].sort().join('|')) throw Error('Saved view does not match');
+      for (const id of rootIds) { validate(value[id]); if (value[id][1]?.id !== id) throw Error('Invalid view root'); }
+      for (const id of rootIds) patch(document.getElementById(id), value[id]);
+    }
+    return {capture, restore, validate};
+  }
+
+  function mount(options) {
+    const document = global.document;
+    const codec = createCodec(document, options.roots || [], options.media || []);
+    const store = createStore(() => global.localStorage, options.id, options.compatibility);
+    let history = [], suspended = true, scheduled = false, lastSnapshot = '', health = 'ready';
+    const dialog = document.createElement('dialog'); dialog.className = 'ap-dialog'; dialog.setAttribute('aria-labelledby', 'ap-title');
+    dialog.innerHTML = '<h2 id="ap-title">Your saved work</h2><p>Work and checked attempts are saved automatically in this browser and device. Returning here restores your progress. This is not an account backup or cross-device sync. On a shared device, use Restart when finished.</p><p id="ap-status" role="status"></p><div class="ap-actions"><button type="button" id="ap-close">Close</button><button type="button" id="ap-load">Load latest saved work</button><button type="button" id="ap-export">Download a backup</button><button type="button" id="ap-import">Restore a backup</button><input type="file" id="ap-import-file" accept=".json,application/json" hidden><button type="button" id="ap-retry">Retry saving</button><button type="button" id="ap-restart">Restart activity</button></div><h3>Past attempts</h3><div id="ap-history"></div>';
+    document.body.append(dialog);
+    const status = dialog.querySelector('#ap-status'), list = dialog.querySelector('#ap-history');
+    const button = document.createElement('button'); button.type = 'button'; button.id = 'saved-work-toggle'; button.className = 'quiet ap-toggle';
+    const holder = document.querySelector('header .tools,.top .tools,#project-tools .tool-buttons,.toolbar') || document.querySelector('header,.intro');
+    (holder || document.body).append(button);
+    const live = document.createElement('span'); live.className = 'ap-sr'; live.setAttribute('role', 'status'); document.body.append(live);
+    const style = document.createElement('style');
+    style.textContent = '.ap-dialog{box-sizing:border-box;width:min(680px,calc(100% - 24px));max-height:85vh;overflow:auto;border:2px solid #0a6b66;border-radius:12px;padding:20px;color:#172d35;background:white;font:16px/1.5 system-ui}.ap-dialog::backdrop{background:#172d3570}.ap-dialog h2{margin-top:0}.ap-actions{display:flex;flex-wrap:wrap;gap:8px}.ap-dialog button{font:inherit;min-height:44px;padding:8px 12px;border:2px solid #0a6b66;border-radius:6px;background:white;color:#075d56;cursor:pointer}.ap-dialog button:focus-visible,.ap-dialog summary:focus-visible{outline:3px solid #172d35;outline-offset:3px}.ap-dialog details{border-top:1px solid #bdcdd1;padding:10px 0}.ap-dialog summary{cursor:pointer;font-weight:650}.ap-dialog dd{white-space:pre-wrap;overflow-wrap:anywhere;margin:0 0 10px}.ap-dialog dt{font-weight:650}.ap-dialog p{overflow-wrap:anywhere}.ap-toggle{font-size:14px!important;min-height:44px!important}.ap-toggle.ap-warning{background:#fff0ce!important;color:#62430b!important}.ap-sr{position:fixed;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}@media print{.ap-dialog,.ap-toggle,.ap-sr{display:none!important}}';
+    document.head.append(style);
+    function message(code) {
+      const messages = {ready: 'Automatic saving is ready.', ok: 'Saved in this browser. Return here to resume.', restored: 'Your saved work and past attempts have been restored.', cleared: 'All saved work and attempts for this activity have been cleared. Downloaded files are unchanged.', unavailable: 'Saving is unavailable or storage is full. Your work is still on this page. Download a backup before leaving, then retry saving.', invalid: 'The saved copy is unreadable or belongs to a different edition. It has been kept unchanged. Download a backup before choosing Restart.', conflict: 'Another tab changed the saved work. Saving is paused to protect both copies. Download your current backup or load the latest saved work.', paused: 'Saving is paused. Download a backup or load the latest saved work.'};
+      health = code; const text = messages[code] || messages.paused;
+      status.textContent = text;
+      button.textContent = ['ok', 'restored'].includes(code) ? 'Saved work · ' + history.length : ['ready', 'cleared'].includes(code) ? 'Saved work' : 'Check saved work';
+      button.classList.toggle('ap-warning', ['unavailable', 'invalid', 'conflict', 'paused'].includes(code));
+      button.setAttribute('aria-label', 'Saved work and ' + history.length + ' past attempts. ' + text);
+      if (!['ready', 'ok', 'restored'].includes(code)) live.textContent = text;
+    }
+    function snapshot() { return {state: clone(options.getState()), view: codec.capture()}; }
+    function apply(value) {
+      suspended = true;
+      try {
+        if (!value || value.cleared) { history = []; options.reset(); }
+        else {
+          codec.restore(value.snapshot.view); options.setState(clone(value.snapshot.state));
+          history = clone(value.history); options.afterRestore?.();
+        }
+        lastSnapshot = JSON.stringify(snapshot());
+      } finally { suspended = false; }
+    }
+    function load() {
+      const loaded = store.load();
+      if (loaded.status !== 'ok') { message(loaded.status); return false; }
+      try { if (loaded.value) apply(loaded.value); message(loaded.value?.cleared ? 'cleared' : loaded.value ? 'restored' : 'ready'); return true; }
+      catch { store.pause(); suspended = false; message('invalid'); return false; }
+    }
+    function capture(force = false) {
+      if (suspended) return;
+      const current = snapshot(), text = JSON.stringify(current);
+      if (!force && text === lastSnapshot) return;
+      const saved = store.save(current, history);
+      if (saved.status === 'conflict' && (saved.value?.cleared || saved.generationChanged)) { const latest = store.load(); if (latest.status === 'ok') { apply(latest.value); message(latest.value?.cleared ? 'cleared' : 'restored'); return; } }
+      if (saved.status === 'ok') lastSnapshot = text;
+      message(saved.status);
+    }
+    function schedule() { if (!suspended && !scheduled) { scheduled = true; queueMicrotask(() => { scheduled = false; capture(); }); } }
+    function renderHistory() {
+      list.replaceChildren();
+      if (!history.length) { const p = document.createElement('p'); p.textContent = 'No checked attempts saved yet. Your unfinished work is saved as you go.'; list.append(p); }
+      history.forEach((attempt, index) => {
+        const details = document.createElement('details'), summary = document.createElement('summary'), when = document.createElement('p'), dl = document.createElement('dl');
+        summary.textContent = (index + 1) + '. ' + attempt.title; when.textContent = new Date(attempt.when).toLocaleString();
+        for (const answer of attempt.answers) { const dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = answer.label; dd.textContent = answer.value; dl.append(dt, dd); }
+        details.append(summary, when, dl);
+        for (const text of attempt.feedback) { const p = document.createElement('p'); p.textContent = text; details.append(p); }
+        list.append(details);
+      });
+    }
+    function recordAttempt(action) {
+      const root = options.currentRoot?.() || document.querySelector('#interactive,main') || document.body;
+      const answers = [...root.querySelectorAll('input:not([type=file]):not([type=hidden]),textarea,select')].filter(e => !e.closest('[hidden]')).map(e => {
+        const label = (e.id && document.querySelector('label[for="' + global.CSS.escape(e.id) + '"]')?.textContent) || e.closest('label')?.textContent || e.closest('fieldset')?.querySelector('legend')?.textContent || e.name || e.id || 'Response';
+        return {label: label.trim(), value: e.matches('input[type=checkbox],input[type=radio]') ? (e.checked ? 'Selected: ' : 'Not selected: ') + e.value : e.tagName === 'SELECT' ? e.selectedOptions[0]?.textContent || e.value : e.value};
+      });
+      const feedback = [...root.querySelectorAll('.fb,.feedback,.field-feedback,[id$="-feedback"],[id^="feedback-"],#completion-status')].filter(e => !e.closest('[hidden]')).map(e => e.textContent.trim()).filter(Boolean);
+      history.push({when: new Date().toISOString(), title: (root.querySelector('h2,h3')?.textContent.trim() || options.title || document.title) + ' · ' + action, answers, feedback});
+      capture(true);
+    }
+    function restart(confirm = true) {
+      if (confirm && !global.confirm('Restart this activity? This permanently clears all saved answers, writing, progress and past attempts for this activity in this browser. Downloaded files are unchanged.')) return false;
+      const result = store.erase(options.legacyKeys || []);
+      if (result.status !== 'ok') { message(result.status); return false; }
+      apply(result.value); message('cleared'); renderHistory();
+      if (dialog.open) dialog.close();
+      (document.querySelector('#h-top,h1') || button).focus?.();
+      return true;
+    }
+    function backup() {
+      const data = JSON.stringify({schema: SCHEMA, id: options.id, compatibility: options.compatibility, epoch: 'backup', revision: 0, snapshot: snapshot(), history}, null, 2);
+      const a = document.createElement('a'), url = global.URL.createObjectURL(new Blob([data], {type: 'application/json'}));
+      a.href = url; a.download = options.id + '-saved-work.json'; a.click(); setTimeout(() => global.URL.revokeObjectURL(url), 1000);
+    }
+    button.addEventListener('click', () => { renderHistory(); dialog.showModal(); });
+    dialog.querySelector('#ap-close').addEventListener('click', () => { dialog.close(); button.focus(); });
+    dialog.querySelector('#ap-load').addEventListener('click', () => { load(); renderHistory(); });
+    dialog.querySelector('#ap-export').addEventListener('click', backup);
+    dialog.querySelector('#ap-import').addEventListener('click', () => dialog.querySelector('#ap-import-file').click());
+    dialog.querySelector('#ap-import-file').addEventListener('change', async event => {
+      const file = event.target.files[0]; event.target.value = ''; if (!file) return;
+      try {
+        if (file.size > LIMIT) throw Error('Backup is too large');
+        const value = parse(await file.text(), options.id, options.compatibility);
+        if (!value || value.cleared) throw Error('Backup has no work');
+        for (const tree of Object.values(value.snapshot.view)) codec.validate(tree);
+        if (!global.confirm('Replace your current work and attempt history with this backup? Download your current backup first if you want to keep both.')) return;
+        const loaded = store.load(); if (loaded.status !== 'ok') { message(loaded.status); return; }
+        apply(value); capture(true); renderHistory();
+      } catch { status.textContent = 'That backup could not be restored. Current work and the saved copy are kept.'; }
+    });
+    dialog.querySelector('#ap-retry').addEventListener('click', () => capture(true));
+    dialog.querySelector('#ap-restart').addEventListener('click', () => restart());
+    document.addEventListener('click', event => {
+      const target = event.target.closest('button');
+      if (!target || target.closest('.ap-dialog') || target === button) return;
+      if (target.type === 'submit' && target.form) return;
+      if ((options.restartIds || ['restart']).includes(target.id)) { event.preventDefault(); event.stopImmediatePropagation(); restart(!(options.confirmedRestartIds || ['erase-confirm']).includes(target.id)); }
+    }, true);
+    document.addEventListener('click', event => {
+      const target = event.target.closest('button');
+      if (!target || target.closest('.ap-dialog') || target === button) return;
+      if (target.type === 'submit' && target.form) return;
+      if (/^(check|complete)-|-(check)$/.test(target.id) || Object.keys(target.dataset).some(k => /^(check|show|reveal|complete)/i.test(k)) || /^(check|compare my|i have reviewed|complete this)/i.test(target.textContent.trim())) recordAttempt(target.textContent.trim());
+      else schedule();
+    });
+    document.addEventListener('submit', event => { if (!event.target.closest('.ap-dialog')) recordAttempt('Check answer'); });
+    document.addEventListener('input', schedule); document.addEventListener('change', schedule);
+    document.addEventListener('toggle', schedule, true);
+    const observer = new global.MutationObserver(schedule);
+    for (const id of options.roots || []) observer.observe(document.getElementById(id), {subtree: true, childList: true, characterData: true, attributes: true});
+    global.addEventListener('storage', event => {
+      if (event.key !== store.key && event.key !== null) return;
+      let value = null; try { value = parse(global.localStorage.getItem(store.key), options.id, options.compatibility); } catch {}
+      if (value && (value.cleared || value.epoch !== store.epoch)) { const latest = store.load(); if (latest.status === 'ok') { apply(latest.value); message(latest.value?.cleared ? 'cleared' : 'restored'); } }
+      else message('conflict');
+    });
+    suspended = false;
+    load();
+    // A migrated legacy capstone has already restored itself; save it in the shared format.
+    if (options.legacyKeys?.length && health === 'ready') { history = clone(options.initialHistory?.() || []); capture(true); }
+    const controller = {capture, restart, load, backup, recordAttempt, get history() { return clone(history); }, get health() { return health; }, get key() { return store.key; }};
+    global.ActivityProgressController = controller;
+    return controller;
+  }
+  const api = {createStore, parse, validateData, createCodec, mount};
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  global.ActivityProgress = api;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>const DATA={"title": "Diagnosing the pipeline", "intro": "Your manager has supplied a reference report and three pipelines to review. Compare each report with example A, identify a supported strength and a risk, and decide whether it needs attention in this exercise.", "boundary": "This is ungraded practice with fictional reports. The checks assess your selected evidence, not your optional written explanation. Your work and checked attempts are saved automatically in this browser. Return here to resume; Restart clears saved work and attempts for this activity. Nothing is submitted. Download your review if you want to keep it.", "reference": ["Report A is the supplied healthy example for this exercise. Its records have 3, 5, 7, 6 and 4 days in their respective stages; close probability estimates rise from 20% at Prospect to 90% at Close.", "Each report contains one opportunity in each of five work stages. Counts therefore do not establish a large backlog, measured conversion rate or movement over time. Compare the supplied time-in-stage and probability patterns instead.", "Use A as a comparison, not a universal stage-duration target. An ageing difference suggests a question to investigate; the report does not establish its cause or prove an opportunity is lost.", "Close probability is the supplied estimate for each opportunity, not a measured conversion rate. Forecasted revenue here is deal value multiplied by that estimate; it is not guaranteed revenue. Values use a common monetary unit.", "No sales target or reporting period is supplied. The reports do not establish target coverage or realised sales performance. A Close work stage is distinct from an outcome such as Closed Won."], "tasks": [{"id": "B", "title": "Report B: review the early-stage delay", "short": "Review B", "fields": [{"id": "health", "label": "Your diagnosis for this exercise", "answer": "risk", "options": [{"id": "risk", "label": "At risk: investigate the ageing pattern", "feedback": "Compared with example A, B has longer times in every stage, including 20 days in Qualify versus 5. That supports a timing concern, without proving a stall or its cause."}, {"id": "healthy", "label": "Healthy: no further investigation is needed", "feedback": "B's qualification record has 20 days in stage versus 5 in A. The larger timing values deserve investigation even though some probability estimates rise in later stages."}]}, {"id": "strength", "label": "A strength supported by B's data", "answer": "rising", "options": [{"id": "rising", "label": "Close probability estimates increase from 20% at Prospect to 50% at Close.", "feedback": "The supplied estimates are 20%, 25%, 30%, 35% and 50% across B's stages. That increasing pattern is a relative strength; it does not establish actual conversion."}, {"id": "volume", "label": "B has a larger early-stage opportunity volume than A.", "feedback": "Both reports have one opportunity in each stage. The displayed counts do not support a larger-volume claim."}, {"id": "won", "label": "The Close record proves B has already won the sale.", "feedback": "Close is the work stage shown. No completed purchase outcome is supplied."}]}, {"id": "risk", "label": "The evidence that most clearly warrants attention", "answer": "qualify", "options": [{"id": "qualify", "label": "Qualify has 20 days in B versus 5 in A; B's other stage times are also higher.", "feedback": "B's days are 12, 20, 15, 10 and 9 versus A's 3, 5, 7, 6 and 4. Qualification is the largest gap, suggesting a useful starting point for review."}, {"id": "zero", "label": "There are no records in B's Propose stage.", "feedback": "B-OPP4 is in Propose, with 10 days and a 35% close probability estimate."}, {"id": "lost", "label": "The 20-day qualification record is definitely lost.", "feedback": "The record still says Qualify. Duration does not establish a loss or a reason to change its outcome."}, {"id": "target", "label": "B has breached a universal ten-day qualification target.", "feedback": "No ten-day target is supplied. Compare B with the exercise's reference without inventing a universal rule."}]}]}, {"id": "C", "title": "Report C: review the later-stage pattern", "short": "Review C", "fields": [{"id": "health", "label": "Your diagnosis for this exercise", "answer": "risk", "options": [{"id": "risk", "label": "At risk: investigate the later-stage estimates and ageing", "feedback": "C's close probability estimate falls from 50% at Discover to 40% at Propose and 35% at Close, while days increase from 8 to 12 and 14. That combination warrants investigation."}, {"id": "healthy", "label": "Healthy: the later-stage pattern needs no attention", "feedback": "The probability estimates fall through C's later stages as time in stage rises. Compare that pattern with A's increasing later-stage estimates and shorter later-stage durations."}]}, {"id": "strength", "label": "A strength supported by C's data", "answer": "early", "options": [{"id": "early", "label": "The estimate rises from 30% at Prospect to 50% at Discover.", "feedback": "C's early-stage estimates are 30%, 40% and 50%. That early pattern is a relative strength alongside the later-stage concern."}, {"id": "guaranteed", "label": "Every forecasted value is guaranteed revenue.", "feedback": "Forecasted revenue uses supplied probability estimates. It does not establish a commitment or a completed sale."}, {"id": "always", "label": "Close has C's highest probability estimate.", "feedback": "C's Close estimate is 35%; Discover is 50%. A later stage does not automatically have a higher supplied estimate."}]}, {"id": "risk", "label": "The evidence that most clearly warrants attention", "answer": "late", "options": [{"id": "late", "label": "Discover to Close: probability 50% to 35%, forecast 8,500 to 7,000, and days 8 to 14.", "feedback": "Those are the displayed values. The Propose-to-Close change alone is 40% to 35% and 7,200 to 7,000; describe its size accurately and review it with the ageing pattern."}, {"id": "volume", "label": "The number of Close opportunities collapses relative to Discover.", "feedback": "C has one opportunity in each stage. These counts do not establish a volume collapse or a measured conversion decline."}, {"id": "cause", "label": "The data proves the seller failed in negotiation.", "feedback": "The estimates and ageing suggest a review, but no negotiation record or causal evidence is supplied."}, {"id": "zero", "label": "Propose-to-Close forecast falls from 7,200 to zero.", "feedback": "C's Close forecast is 7,000. Use the actual 7,200-to-7,000 change instead of overstating it."}]}]}, {"id": "D", "title": "Report D: weigh strengths against timing concerns", "short": "Review D", "fields": [{"id": "health", "label": "Your diagnosis for this exercise", "answer": "risk", "options": [{"id": "risk", "label": "At risk: investigate early-stage ageing despite stronger later estimates", "feedback": "D has 20 days in Prospect and 14 in Discover, versus A's 3 and 7. Later estimates of 60% and 75% are a strength, but do not remove the early-stage timing concern."}, {"id": "healthy", "label": "Healthy: later estimates make early-stage ageing irrelevant", "feedback": "The later estimates do not explain D's 20-day Prospect and 14-day Discover records. Review both the strength and the timing concern."}]}, {"id": "strength", "label": "A strength supported by D's data", "answer": "later", "options": [{"id": "later", "label": "Later close probability estimates reach 60% at Propose and 75% at Close.", "feedback": "Those later estimates are higher than D's early estimates of 15%, 25% and 30%. They remain estimates, not completed outcomes."}, {"id": "fast", "label": "D is faster than A in every stage.", "feedback": "D has more days in every stage than A. Its Prospect record is 20 days versus 3 in A."}, {"id": "target", "label": "D's forecast proves the sales target has been met.", "feedback": "No sales target is supplied, and forecasted revenue is not realised revenue."}]}, {"id": "risk", "label": "The evidence that most clearly warrants attention", "answer": "ageing", "options": [{"id": "ageing", "label": "Prospect has 20 days versus A's 3; Discover has 14 versus A's 7.", "feedback": "Those early-stage differences warrant investigating what is holding up each opportunity. They do not establish a large-volume backlog or its cause."}, {"id": "lowclose", "label": "D's Close probability estimate is only 15%.", "feedback": "15% belongs to Prospect. The Close estimate is 75%; match each value to its actual stage."}, {"id": "volume", "label": "D has more Prospect records than all other stages combined.", "feedback": "There is one D record in each stage. The available data supports an ageing comparison, not this volume claim."}, {"id": "failure", "label": "All D opportunities have failed because they are older than A's.", "feedback": "Longer time supports investigation. It does not establish a loss for every opportunity."}]}]}], "closing": "Keep your diagnosis tied to the metric and stage you observed. Decide what you would investigate before changing an opportunity's status. Return to the course page to mark this step complete; this activity does not update FutureLearn completion."};
+const REPORTS={"rows": [{"group": "A", "id": "A-OPP1", "account": "Jin Cloud Solutions", "stage": "Prospect", "days": 3, "value": 15000, "probability": 20, "forecast": 3000}, {"group": "A", "id": "A-OPP2", "account": "Ordinary Systems", "stage": "Qualify", "days": 5, "value": 16000, "probability": 40, "forecast": 6400}, {"group": "A", "id": "A-OPP3", "account": "Solitude Innovations", "stage": "Discover", "days": 7, "value": 17000, "probability": 55, "forecast": 9350}, {"group": "A", "id": "A-OPP4", "account": "Patternmaster Strategies", "stage": "Propose", "days": 6, "value": 18000, "probability": 70, "forecast": 12600}, {"group": "A", "id": "A-OPP5", "account": "Carrow and Vale Consulting", "stage": "Close", "days": 4, "value": 20000, "probability": 90, "forecast": 18000}, {"group": "B", "id": "B-OPP1", "account": "Ashbourne Global", "stage": "Prospect", "days": 12, "value": 14000, "probability": 20, "forecast": 2800}, {"group": "B", "id": "B-OPP2", "account": "Anarres Systems", "stage": "Qualify", "days": 20, "value": 15000, "probability": 25, "forecast": 3750}, {"group": "B", "id": "B-OPP3", "account": "Port Coriol Labs", "stage": "Discover", "days": 15, "value": 16000, "probability": 30, "forecast": 4800}, {"group": "B", "id": "B-OPP4", "account": "Lancre Works", "stage": "Propose", "days": 10, "value": 17000, "probability": 35, "forecast": 5950}, {"group": "B", "id": "B-OPP5", "account": "Dawnstar Diagnostics", "stage": "Close", "days": 9, "value": 18000, "probability": 50, "forecast": 9000}, {"group": "C", "id": "C-OPP1", "account": "Primer Systems", "stage": "Prospect", "days": 4, "value": 15000, "probability": 30, "forecast": 4500}, {"group": "C", "id": "C-OPP2", "account": "Makeda MedTech", "stage": "Qualify", "days": 6, "value": 16000, "probability": 40, "forecast": 6400}, {"group": "C", "id": "C-OPP3", "account": "Karhide Consulting Group", "stage": "Discover", "days": 8, "value": 17000, "probability": 50, "forecast": 8500}, {"group": "C", "id": "C-OPP4", "account": "Olamina Advisory", "stage": "Propose", "days": 12, "value": 18000, "probability": 40, "forecast": 7200}, {"group": "C", "id": "C-OPP5", "account": "Vetinari Investments", "stage": "Close", "days": 14, "value": 20000, "probability": 35, "forecast": 7000}, {"group": "D", "id": "D-OPP1", "account": "Klatch Mercantile", "stage": "Prospect", "days": 20, "value": 15000, "probability": 15, "forecast": 2250}, {"group": "D", "id": "D-OPP2", "account": "Sto Lat Select", "stage": "Qualify", "days": 12, "value": 16000, "probability": 25, "forecast": 4000}, {"group": "D", "id": "D-OPP3", "account": "Silverpath Outfitters", "stage": "Discover", "days": 14, "value": 17000, "probability": 30, "forecast": 5100}, {"group": "D", "id": "D-OPP4", "account": "Laconia Energy Systems", "stage": "Propose", "days": 8, "value": 18000, "probability": 60, "forecast": 10800}, {"group": "D", "id": "D-OPP5", "account": "Idiran Dynamics", "stage": "Close", "days": 7, "value": 20000, "probability": 75, "forecast": 15000}], "stages": ["Prospect", "Qualify", "Discover", "Propose", "Close"]};
+const IMAGES={"start": "data:image/webp;base64,UklGRgoDAABXRUJQVlA4IP4CAAAwFwCdASqgAHgAPm0yl0YkIyKhLTg5MIANiU3bq9rlqLAi6PEn1/8l+qukX8wH6o+thplf8iqI3xWrzuiAeCBqun855a/xv/Keov/X+qh+xhvZ+IZoXFpSrhExEYvlaaJXIf03bbM1wqlyIMaL/qFdEpWtAaM7FpaPUo9knGRr1OihGmnr3yMIAzUaiWof2ik9VbUalMzs9GR+I+zltfyVOaaaq+T5LrR9I2h5JMTplInlqUeMdng8xtZb7rNTLOFhUAD++7jby2/IcAACA9q8vLkw4GZ/u2gGq2XzMuAwa2V2avcH7JqMYbGeDmrbPqXZS+bXXqr4hoQv0lfmPFp6lr9N26lvHkUO+UoE36q/LgUOspyBx8S/8HRphJZWi/kH/n7/He5n2M2OvTo/lbsj/IIpUKEvnW2NdvtRtvovfgeiyuwNNexVAOmQnLwjICLCqEs/46iXZ8WjHx44MjkTYFx7drhWF/5ilxDKrlLrrA5HqipdH/AxJDWK9Hz+ffgd4c+VK7KS941GkkD23kFqT1+E4B10D6xmOHWoPvgcGuno0JzQJeS3+gFhjXqDjjF3+nBALdpykGEM+OgeGMTa9LJq5gDIsExkN+R1c6VbEbyfRvWLewDnqi1n6jwtd9H2ZVytDDh4jmzwgZU4BvWCFeF4z+POg0bwKyGC/0sbv+aJQlz1nFVTIhAPaN14Xi1g1Hb3N56u3nx7/W2DdaJyNcmfgnF+5Fr9Hwv+IOaDxV+TQP4S+pwlFMrdyS+xDtiU5eTLTdh41I2kv12BatpMIJvu3DHc2pVe/4RMNQRkxMwW9Lksb3VYywGqqz5nbcUBB598w3w6u/EQ6yVFAgr8DTSatXHz7RC7b2wchtaovLO2v7mqwAhz1yVnIX3lzq5KJWFY6DrTDkHymvWbl006/eQzRoJt4L7MfT8y5b4vBMBVd//ypPuv0crt0M700znZ7slxT3eBWDvfpAMxdhR8XEenOkaSNTwMZ4MwJjjUCdJBT1wBd5gpMt5gAAAA", "B": "data:image/webp;base64,UklGRgoDAABXRUJQVlA4IP4CAAAwFwCdASqgAHgAPm0yl0YkIyKhLTg5MIANiU3bq9rlqLAi6PEn1/8l+qukX8wH6o+thplf8iqI3xWrzuiAeCBqun855a/xv/Keov/X+qh+xhvZ+IZoXFpSrhExEYvlaaJXIf03bbM1wqlyIMaL/qFdEpWtAaM7FpaPUo9knGRr1OihGmnr3yMIAzUaiWof2ik9VbUalMzs9GR+I+zltfyVOaaaq+T5LrR9I2h5JMTplInlqUeMdng8xtZb7rNTLOFhUAD++7jby2/IcAACA9q8vLkw4GZ/u2gGq2XzMuAwa2V2avcH7JqMYbGeDmrbPqXZS+bXXqr4hoQv0lfmPFp6lr9N26lvHkUO+UoE36q/LgUOspyBx8S/8HRphJZWi/kH/n7/He5n2M2OvTo/lbsj/IIpUKEvnW2NdvtRtvovfgeiyuwNNexVAOmQnLwjICLCqEs/46iXZ8WjHx44MjkTYFx7drhWF/5ilxDKrlLrrA5HqipdH/AxJDWK9Hz+ffgd4c+VK7KS941GkkD23kFqT1+E4B10D6xmOHWoPvgcGuno0JzQJeS3+gFhjXqDjjF3+nBALdpykGEM+OgeGMTa9LJq5gDIsExkN+R1c6VbEbyfRvWLewDnqi1n6jwtd9H2ZVytDDh4jmzwgZU4BvWCFeF4z+POg0bwKyGC/0sbv+aJQlz1nFVTIhAPaN14Xi1g1Hb3N56u3nx7/W2DdaJyNcmfgnF+5Fr9Hwv+IOaDxV+TQP4S+pwlFMrdyS+xDtiU5eTLTdh41I2kv12BatpMIJvu3DHc2pVe/4RMNQRkxMwW9Lksb3VYywGqqz5nbcUBB598w3w6u/EQ6yVFAgr8DTSatXHz7RC7b2wchtaovLO2v7mqwAhz1yVnIX3lzq5KJWFY6DrTDkHymvWbl006/eQzRoJt4L7MfT8y5b4vBMBVd//ypPuv0crt0M700znZ7slxT3eBWDvfpAMxdhR8XEenOkaSNTwMZ4MwJjjUCdJBT1wBd5gpMt5gAAAA", "C": "data:image/webp;base64,UklGRgoDAABXRUJQVlA4IP4CAAAwFwCdASqgAHgAPm0yl0YkIyKhLTg5MIANiU3bq9rlqLAi6PEn1/8l+qukX8wH6o+thplf8iqI3xWrzuiAeCBqun855a/xv/Keov/X+qh+xhvZ+IZoXFpSrhExEYvlaaJXIf03bbM1wqlyIMaL/qFdEpWtAaM7FpaPUo9knGRr1OihGmnr3yMIAzUaiWof2ik9VbUalMzs9GR+I+zltfyVOaaaq+T5LrR9I2h5JMTplInlqUeMdng8xtZb7rNTLOFhUAD++7jby2/IcAACA9q8vLkw4GZ/u2gGq2XzMuAwa2V2avcH7JqMYbGeDmrbPqXZS+bXXqr4hoQv0lfmPFp6lr9N26lvHkUO+UoE36q/LgUOspyBx8S/8HRphJZWi/kH/n7/He5n2M2OvTo/lbsj/IIpUKEvnW2NdvtRtvovfgeiyuwNNexVAOmQnLwjICLCqEs/46iXZ8WjHx44MjkTYFx7drhWF/5ilxDKrlLrrA5HqipdH/AxJDWK9Hz+ffgd4c+VK7KS941GkkD23kFqT1+E4B10D6xmOHWoPvgcGuno0JzQJeS3+gFhjXqDjjF3+nBALdpykGEM+OgeGMTa9LJq5gDIsExkN+R1c6VbEbyfRvWLewDnqi1n6jwtd9H2ZVytDDh4jmzwgZU4BvWCFeF4z+POg0bwKyGC/0sbv+aJQlz1nFVTIhAPaN14Xi1g1Hb3N56u3nx7/W2DdaJyNcmfgnF+5Fr9Hwv+IOaDxV+TQP4S+pwlFMrdyS+xDtiU5eTLTdh41I2kv12BatpMIJvu3DHc2pVe/4RMNQRkxMwW9Lksb3VYywGqqz5nbcUBB598w3w6u/EQ6yVFAgr8DTSatXHz7RC7b2wchtaovLO2v7mqwAhz1yVnIX3lzq5KJWFY6DrTDkHymvWbl006/eQzRoJt4L7MfT8y5b4vBMBVd//ypPuv0crt0M700znZ7slxT3eBWDvfpAMxdhR8XEenOkaSNTwMZ4MwJjjUCdJBT1wBd5gpMt5gAAAA", "D": "data:image/webp;base64,UklGRgoDAABXRUJQVlA4IP4CAAAwFwCdASqgAHgAPm0yl0YkIyKhLTg5MIANiU3bq9rlqLAi6PEn1/8l+qukX8wH6o+thplf8iqI3xWrzuiAeCBqun855a/xv/Keov/X+qh+xhvZ+IZoXFpSrhExEYvlaaJXIf03bbM1wqlyIMaL/qFdEpWtAaM7FpaPUo9knGRr1OihGmnr3yMIAzUaiWof2ik9VbUalMzs9GR+I+zltfyVOaaaq+T5LrR9I2h5JMTplInlqUeMdng8xtZb7rNTLOFhUAD++7jby2/IcAACA9q8vLkw4GZ/u2gGq2XzMuAwa2V2avcH7JqMYbGeDmrbPqXZS+bXXqr4hoQv0lfmPFp6lr9N26lvHkUO+UoE36q/LgUOspyBx8S/8HRphJZWi/kH/n7/He5n2M2OvTo/lbsj/IIpUKEvnW2NdvtRtvovfgeiyuwNNexVAOmQnLwjICLCqEs/46iXZ8WjHx44MjkTYFx7drhWF/5ilxDKrlLrrA5HqipdH/AxJDWK9Hz+ffgd4c+VK7KS941GkkD23kFqT1+E4B10D6xmOHWoPvgcGuno0JzQJeS3+gFhjXqDjjF3+nBALdpykGEM+OgeGMTa9LJq5gDIsExkN+R1c6VbEbyfRvWLewDnqi1n6jwtd9H2ZVytDDh4jmzwgZU4BvWCFeF4z+POg0bwKyGC/0sbv+aJQlz1nFVTIhAPaN14Xi1g1Hb3N56u3nx7/W2DdaJyNcmfgnF+5Fr9Hwv+IOaDxV+TQP4S+pwlFMrdyS+xDtiU5eTLTdh41I2kv12BatpMIJvu3DHc2pVe/4RMNQRkxMwW9Lksb3VYywGqqz5nbcUBB598w3w6u/EQ6yVFAgr8DTSatXHz7RC7b2wchtaovLO2v7mqwAhz1yVnIX3lzq5KJWFY6DrTDkHymvWbl006/eQzRoJt4L7MfT8y5b4vBMBVd//ypPuv0crt0M700znZ7slxT3eBWDvfpAMxdhR8XEenOkaSNTwMZ4MwJjjUCdJBT1wBd5gpMt5gAAAA", "record": "data:image/webp;base64,UklGRgoDAABXRUJQVlA4IP4CAAAwFwCdASqgAHgAPm0yl0YkIyKhLTg5MIANiU3bq9rlqLAi6PEn1/8l+qukX8wH6o+thplf8iqI3xWrzuiAeCBqun855a/xv/Keov/X+qh+xhvZ+IZoXFpSrhExEYvlaaJXIf03bbM1wqlyIMaL/qFdEpWtAaM7FpaPUo9knGRr1OihGmnr3yMIAzUaiWof2ik9VbUalMzs9GR+I+zltfyVOaaaq+T5LrR9I2h5JMTplInlqUeMdng8xtZb7rNTLOFhUAD++7jby2/IcAACA9q8vLkw4GZ/u2gGq2XzMuAwa2V2avcH7JqMYbGeDmrbPqXZS+bXXqr4hoQv0lfmPFp6lr9N26lvHkUO+UoE36q/LgUOspyBx8S/8HRphJZWi/kH/n7/He5n2M2OvTo/lbsj/IIpUKEvnW2NdvtRtvovfgeiyuwNNexVAOmQnLwjICLCqEs/46iXZ8WjHx44MjkTYFx7drhWF/5ilxDKrlLrrA5HqipdH/AxJDWK9Hz+ffgd4c+VK7KS941GkkD23kFqT1+E4B10D6xmOHWoPvgcGuno0JzQJeS3+gFhjXqDjjF3+nBALdpykGEM+OgeGMTa9LJq5gDIsExkN+R1c6VbEbyfRvWLewDnqi1n6jwtd9H2ZVytDDh4jmzwgZU4BvWCFeF4z+POg0bwKyGC/0sbv+aJQlz1nFVTIhAPaN14Xi1g1Hb3N56u3nx7/W2DdaJyNcmfgnF+5Fr9Hwv+IOaDxV+TQP4S+pwlFMrdyS+xDtiU5eTLTdh41I2kv12BatpMIJvu3DHc2pVe/4RMNQRkxMwW9Lksb3VYywGqqz5nbcUBB598w3w6u/EQ6yVFAgr8DTSatXHz7RC7b2wchtaovLO2v7mqwAhz1yVnIX3lzq5KJWFY6DrTDkHymvWbl006/eQzRoJt4L7MfT8y5b4vBMBVd//ypPuv0crt0M700znZ7slxT3eBWDvfpAMxdhR8XEenOkaSNTwMZ4MwJjjUCdJBT1wBd5gpMt5gAAAA"};
+// Shared board engine for the C1 activities: one fixed screen, illustrated tiles left and right open their step in the
+// centre stage. The activity's app.js fills in Board.tiles and the hooks below, then calls Board.start().
+// Tile: { id, title, short, image, side: 'left'|'right', render: () => html, slot: bool }
+const byId = id => document.getElementById(id);
+const safe = v => String(v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const Board = {
+  tiles: [],
+  faces: null,                              // { n, p, w } images for a reacting character; null = the current tile's picture
+  mood: { n: 'Focused.', p: 'Done.', w: 'Not yet.' },
+  cardLabel: (n, total) => `Progress ${n}/${total}`,
+  unlocked: () => true,
+  lockedMsg: () => '',
+  onOpen: () => {},
+  onClick: () => false,                     // return true when the activity handled the click
+  onReset: () => {},
+  st: null,
+  cur: 0,
+
+  idx(id) { return this.tiles.findIndex(t => t.id === id); },
+  slots() { return this.tiles.filter(t => t.slot).map(t => t.id); },
+  say(msg) { byId('live').textContent = ''; setTimeout(() => { byId('live').textContent = msg; }, 30); },
+  face(m) {
+    const f = byId('face'); f.className = m;
+    const src = this.faces ? this.faces[m] : this.tiles[this.cur].image;
+    f.innerHTML = `<img src="${src}" width="72" height="72" alt=""><span class="sr">${safe(this.mood[m])}</span>`;
+  },
+
+  start() {
+    byId('interactive').hidden = false;
+    this.build();
+    this.wire();
+  },
+  build() {
+    this.st = { done: {}, tries: {} };
+    this.onReset();
+    byId('stage-body').innerHTML = this.tiles.map((t, i) => `<section class="pane" id="pane-${t.id}" hidden aria-labelledby="ph-${t.id}">
+      <h2 id="ph-${t.id}" tabindex="-1"><span class="kick">Step ${i + 1} of ${this.tiles.length}</span> ${safe(t.title)}</h2>${t.render()}</section>`).join('');
+    const tile = t => `<li><button type="button" class="tile" data-tile="${t.id}" id="tile-${t.id}">
+      <span class="ico" aria-hidden="true"><img src="${t.image}" alt=""></span><span class="tt">${safe(t.short)}</span><span class="state" aria-hidden="true"></span><span class="sr st-text"></span></button></li>`;
+    byId('rail-left').innerHTML = this.tiles.filter(t => t.side === 'left').map(tile).join('');
+    byId('rail-right').innerHTML = this.tiles.filter(t => t.side === 'right').map(tile).join('');
+    byId('slots').innerHTML = this.slots().map(id => `<li><button type="button" class="slot" data-tile="${id}" id="slot-${id}"><strong>${safe(this.tiles[this.idx(id)].title)}</strong><span class="body muted">Not yet done.</span></button></li>`).join('');
+    this.open(0, true);
+  },
+
+  open(i, silent) {
+    const t = this.tiles[i];
+    if (!this.unlocked(t.id)) { const m = this.lockedMsg(t.id); this.say(m); byId('lockmsg').textContent = m; return; }
+    byId('lockmsg').textContent = '';
+    this.cur = i;
+    this.tiles.forEach(x => { byId('pane-' + x.id).hidden = x.id !== t.id; });
+    this.onOpen(t.id);
+    this.face(this.st.done[t.id] ? 'p' : 'n');
+    this.paint();
+    byId('stage-scroll').scrollTop = 0;
+    if (!silent) byId('ph-' + t.id).focus();
+  },
+  paint() {
+    this.tiles.forEach((t, i) => {
+      const b = byId('tile-' + t.id), done = !!this.st.done[t.id], lock = !this.unlocked(t.id);
+      b.className = 'tile' + (done ? ' done' : '') + (i === this.cur ? ' current' : '') + (lock ? ' locked' : '');
+      b.setAttribute('aria-current', i === this.cur ? 'step' : 'false');
+      b.querySelector('.state').textContent = done ? '✓' : lock ? '🔒' : '';
+      b.querySelector('.st-text').textContent = done ? ' (done)' : lock ? ' (locked)' : i === this.cur ? ' (current)' : ' (not started)';
+    });
+    const s = this.slots(), n = s.filter(id => this.st.done[id]).length;
+    byId('prog').textContent = `${n} of ${s.length} done`;
+    byId('bar').style.width = (s.length ? n / s.length * 100 : 0) + '%';
+    byId('card').classList.toggle('complete', n === s.length);
+    byId('unlocked').hidden = n !== s.length;
+    byId('toggle-card').textContent = this.cardLabel(n, s.length);
+    const last = this.tiles.length - 1, nx = byId('next'), pv = byId('prev');
+    pv.disabled = this.cur === 0; nx.disabled = this.cur === last;
+    nx.textContent = this.cur < last ? 'Next: ' + this.tiles[this.cur + 1].short + ' →' : 'Last step';
+    pv.textContent = this.cur ? '← ' + this.tiles[this.cur - 1].short : '←';
+  },
+  nextOpen() {
+    for (let k = 1; k <= this.tiles.length; k++) {
+      const j = (this.cur + k) % this.tiles.length, t = this.tiles[j];
+      if (!this.st.done[t.id] && this.unlocked(t.id)) return j;
+    }
+    return -1;
+  },
+
+  // Reactions
+  stamp(text) { const s = byId('stamp'); s.textContent = text; s.classList.remove('on'); void s.offsetWidth; s.classList.add('on'); },
+  wrong(fb) { this.face('w'); fb.classList.remove('wob'); void fb.offsetWidth; fb.classList.add('wob'); this.say(this.mood.w); },
+  fill(id, html) { const s = byId('slot-' + id); if (!s) return; const b = s.querySelector('.body'); b.className = 'body'; b.innerHTML = html; },
+  fly(id) {
+    const slot = byId('slot-' + id);
+    const pop = () => { if (slot) { slot.classList.add('filled', 'pop'); setTimeout(() => slot.classList.remove('pop'), 700); } };
+    if (!slot || reduced()) { pop(); return; }
+    const from = byId('tile-' + id).querySelector('.ico').getBoundingClientRect();
+    const to = (byId('card').hidden ? byId('toggle-card') : slot).getBoundingClientRect();
+    const c = document.createElement('div'); c.className = 'flyer'; c.textContent = '✓';
+    Object.assign(c.style, { left: from.left + 'px', top: from.top + 'px', width: from.width + 'px', height: from.height + 'px' });
+    document.body.appendChild(c);
+    const a = c.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${to.left + 12 - from.left}px,${to.top + 12 - from.top}px) scale(1.4)`, opacity: .2 }], { duration: 650, easing: 'cubic-bezier(.3,.7,.2,1)' });
+    a.onfinish = () => { c.remove(); pop(); };
+  },
+  // A step is finished: tick its tile, fill its slot, react, and offer the next open step inside `holder`.
+  complete(id, holder, stampText, slotHtml) {
+    this.st.done[id] = true;
+    if (slotHtml !== undefined) { this.fill(id, slotHtml); this.fly(id); }
+    this.face('p');
+    if (stampText) this.stamp(stampText);
+    const j = this.nextOpen();
+    if (holder && !holder.querySelector('[data-advance]')) {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'go'; b.dataset.advance = '1';
+      b.textContent = j >= 0 ? 'Continue to ' + this.tiles[j].short : 'All done';
+      holder.appendChild(b);
+    }
+    this.paint();
+    this.say(this.mood.p);
+  },
+  // Count a failed check; true once the "Show me the answer" escape should appear (after two).
+  failed(id) { this.st.tries[id] = (this.st.tries[id] || 0) + 1; return this.st.tries[id] >= 2; },
+
+  showCard(on) {
+    byId('card').hidden = !on;
+    byId('toggle-card').setAttribute('aria-expanded', String(on));
+    if (on) byId('closecard').focus();
+  },
+  wire() {
+    document.addEventListener('click', e => {
+      const t = e.target.closest('button');
+      if (!t || this.onClick(t)) return;
+      if (t.dataset.tile) this.open(this.idx(t.dataset.tile));
+      else if (t.dataset.advance) { const j = this.nextOpen(); if (j >= 0) this.open(j); else this.say('Every step is done.'); }
+      else if (t.id === 'prev') this.open(this.cur - 1);
+      else if (t.id === 'next') this.open(this.cur + 1);
+      else if (t.id === 'restart') { this.build(); byId('h-top').focus(); }
+      else if (t.id === 'toggle-card') this.showCard(byId('card').hidden);
+      else if (t.id === 'closecard') { this.showCard(false); byId('toggle-card').focus(); }
+      else if (t.id === 'casefile' && byId('casedlg')) byId('casedlg').showModal();
+      else if (t.id === 'closecase') byId('casedlg').close();
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !byId('card').hidden) { this.showCard(false); byId('toggle-card').focus(); } });
+  }
+};
+
+const ROWS=REPORTS.rows,TASKS=DATA.tasks;
+const METRICS={days:{label:'Days in stage',max:20},probability:{label:'Close probability (%)',max:100},forecast:{label:'Forecasted revenue (units, estimate)',max:18000}};
+let checked={},saved={};
+const fmt=n=>n.toLocaleString('en-GB');
+function mix(items){const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function reference(){return `<details class="reference"><summary>Review the definitions and example</summary>${DATA.reference.map(t=>`<p>${safe(t)}</p>`).join('')}</details>`;}
+function inspector(group){return `<section class="dataset" aria-label="Report ${group} metrics"><div class="data-controls"><label>Metric to compare<select id="metric-${group}" data-metric="${group}">${Object.entries(METRICS).map(([k,v])=>`<option value="${k}">${safe(v.label)}</option>`).join('')}</select></label>${group==='A'?'<p>Reference report A</p>':`<label class="pick"><input type="checkbox" id="compare-${group}" data-metric="${group}" checked><span>Compare with example A</span></label>`}</div><div id="chart-${group}"></div><details class="record-table"><summary>Open the five report records</summary><div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable report ${group} records"><table><caption>Report ${group}: one opportunity per work stage</caption><thead><tr>${['Opportunity','Account','Work stage','Days','Deal value (units)','Close probability (%)','Forecasted revenue (estimate)'].map(t=>`<th scope="col">${t}</th>`).join('')}</tr></thead><tbody>${ROWS.filter(r=>r.group===group).map(r=>`<tr><th scope="row">${r.id}</th><td>${safe(r.account)}</td><td>${r.stage}</td><td>${r.days}</td><td>${fmt(r.value)}</td><td>${r.probability}%</td><td>${fmt(r.forecast)}</td></tr>`).join('')}</tbody></table></div></details></section>`;}
+function renderChart(group){
+  const key=byId('metric-'+group).value,metric=METRICS[key],compare=group!=='A'&&byId('compare-'+group).checked;
+  byId('chart-'+group).innerHTML=`<p class="data-status" role="status">${safe(metric.label)} for report ${group}${compare?' and reference A':''}. Each row represents one opportunity.</p><ul class="metric-chart">${REPORTS.stages.map(stage=>{const r=ROWS.find(r=>r.group===group&&r.stage===stage),a=ROWS.find(r=>r.group==='A'&&r.stage===stage);return `<li><strong>${stage}</strong><div class="metric-series"><span>Report ${group}: ${fmt(r[key])}${key==='probability'?'%':''}</span><span class="metric-bar selected" aria-hidden="true" style="width:${r[key]/metric.max*100}%"></span></div>${compare?`<div class="metric-series"><span>Example A: ${fmt(a[key])}${key==='probability'?'%':''}</span><span class="metric-bar reference-bar" aria-hidden="true" style="width:${a[key]/metric.max*100}%"></span></div>`:''}</li>`;}).join('')}</ul>`;
+}
+function field(t,f){return `<fieldset id="${t.id}-${f.id}"><legend>${safe(f.label)}</legend>${mix(f.options).map(o=>`<label class="pick"><input type="radio" name="${t.id}-${f.id}" value="${o.id}" data-answer="${t.id}"><span>${safe(o.label)}</span></label>`).join('')}</fieldset>`;}
+function taskPane(t){return `<p>Explore the metrics for report ${t.id}. Switch measures and compare with A before choosing your diagnosis, a strength and a risk.</p>${reference()}${inspector(t.id)}${t.fields.map(f=>field(t,f)).join('')}<label class="field" for="note-${t.id}">Your reasoning or follow-up question (optional; not automatically assessed)</label><textarea id="note-${t.id}" maxlength="1500"></textarea><div class="actions"><button type="button" data-check-task="${t.id}">Check my diagnosis</button><button type="button" class="quiet" data-reveal-task="${t.id}" hidden>Show a worked diagnosis</button><button type="button" class="go" data-complete-task="${t.id}" disabled>Complete this review</button><button type="button" data-continue-task="${t.id}" hidden>Continue</button></div><section class="fb" id="fb-${t.id}" tabindex="-1" role="status" aria-live="polite" hidden></section>`;}
+function read(t){return Object.fromEntries(t.fields.map(f=>[f.id,byId(t.id+'-'+f.id).querySelector('input:checked')?.value||'']));}
+function assess(t,p){return {valid:t.fields.every(f=>p[f.id]===f.answer),signature:JSON.stringify(t.fields.map(f=>p[f.id]))};}
+function canComplete(t,p){return !!checked[t.id]?.valid&&checked[t.id].signature===assess(t,p).signature&&assess(t,p).valid;}
+function check(t,reveal=false){
+  if(reveal)t.fields.forEach(f=>byId(t.id+'-'+f.id).querySelectorAll('input').forEach(i=>i.checked=i.value===f.answer));
+  const p=read(t),r=assess(t,p),box=byId('fb-'+t.id);box.hidden=false;
+  if(t.fields.some(f=>!p[f.id])){box.textContent='Choose a diagnosis, a supported strength and a supported risk before checking.';box.focus();return;}
+  checked[t.id]={...r,revealed:reveal};box.innerHTML=`<p><strong>${reveal?'Worked diagnosis':r.valid?'Your selections fit the report':'Review the report evidence and try again'}</strong></p>`+t.fields.map(f=>`<p><strong>${safe(f.label)}:</strong> ${safe(f.options.find(o=>o.id===p[f.id]).feedback)}</p>`).join('');box.focus();byId('pane-'+t.id).querySelector('[data-complete-task]').disabled=!r.valid;
+  if(!r.valid){Board.wrong(box);if(Board.failed(t.id))byId('pane-'+t.id).querySelector('[data-reveal-task]').hidden=false;}
+}
+function invalidate(id){delete checked[id];delete saved[id];delete Board.st.done[id];byId('pane-'+id).querySelector('[data-complete-task]').disabled=true;byId('pane-'+id).querySelector('[data-continue-task]').hidden=true;byId('fb-'+id).hidden=true;Board.fill(id,'Changed: check this diagnosis again.');Board.paint();updateRecord();Board.say('Answer changed. Check it again before completing this review.');}
+function updateRecord(){if(!byId('review-record'))return;byId('review-record').innerHTML=`<section class="panel"><h3>Your observations about example A</h3><p>${safe(byId('note-A').value||'No note entered.')}</p></section>`+TASKS.map(t=>{const s=saved[t.id];return `<section class="panel"><h3>${safe(t.title)}</h3>${s?`<p>${s.revealed?'Worked diagnosis viewed':'Diagnosis and evidence checked'}</p><ul>${t.fields.map(f=>`<li><strong>${safe(f.label)}:</strong> ${safe(f.options.find(o=>o.id===s.proposal[f.id]).label)}</li>`).join('')}</ul><p><strong>Your reasoning:</strong> ${safe(byId('note-'+t.id).value||'No note entered.')}</p>`:'<p>This report review is not complete yet.</p>'}</section>`;}).join('');byId('download').disabled=!TASKS.every(t=>Board.st.done[t.id]);}
+Board.tiles=[{id:'start',title:'Review example A',short:'Example and definitions',image:IMAGES.start,side:'left',render:()=>`<p>${safe(DATA.intro)}</p><p>${safe(DATA.boundary)}</p>${reference()}${inspector('A')}<section class="panel"><h3>What the example shows</h3><p>A has one record per stage. Its supplied probability estimates increase from 20% to 90%, with stage durations of 3, 5, 7, 6 and 4 days. These are useful reference values. The snapshot does not prove steady movement, measured conversion or sales-target attainment.</p></section><label class="field" for="note-A">Which characteristics would you use as a comparison? (Optional personal notes)</label><textarea id="note-A" maxlength="1500"></textarea><button type="button" id="begin">Use A as the reference and review B</button><p>The complete text version and PDF below contain every report row, prompt, option and feedback explanation.</p>`},...TASKS.map((t,i)=>({id:t.id,title:t.title,short:t.short,image:IMAGES[t.id],side:i===0?'left':'right',slot:true,render:()=>taskPane(t)})),{id:'record',title:'Your diagnostic review',short:'Review and download',image:IMAGES.record,side:'right',render:()=>`<div id="review-record"></div><button type="button" id="download" disabled>Download my diagnostic review</button><p id="download-status" role="status"></p><p>${safe(DATA.closing)}</p><p>Your record is a text file. Open it with a text editor and save it before reloading if you want to keep your notes.</p>`}];
+Board.cardLabel=(n,t)=>`Reports ${n}/${t}`;Board.unlocked=id=>id!=='record'||TASKS.every(t=>Board.st.done[t.id]);Board.lockedMsg=()=> 'Complete all three report reviews before opening your final record.';
+Board.onReset=()=>{checked={};saved={};byId('stamp').textContent='';byId('stamp').classList.remove('on');byId('card').hidden=true;byId('toggle-card').setAttribute('aria-expanded','false');};
+Board.onOpen=id=>{if(id==='start')renderChart('A');if(TASKS.some(t=>t.id===id))renderChart(id);if(id==='record')updateRecord();};
+Board.onClick=b=>{
+  if(b.id==='begin'){Board.open(1);return true;}
+  const t=TASKS.find(t=>t.id===(b.dataset.checkTask||b.dataset.revealTask||b.dataset.completeTask||b.dataset.continueTask));
+  if(b.dataset.checkTask){check(t);return true;}if(b.dataset.revealTask){check(t,true);return true;}
+  if(b.dataset.completeTask){if(!canComplete(t,read(t)))return true;saved[t.id]={proposal:read(t),revealed:checked[t.id].revealed};Board.complete(t.id,null,saved[t.id].revealed?'Worked diagnosis':'Evidence checked','Diagnosis recorded');b.disabled=true;const next=byId('pane-'+t.id).querySelector('[data-continue-task]');next.hidden=false;next.focus();updateRecord();return true;}
+  if(b.dataset.continueTask){Board.open(Board.idx(t.id)+1);return true;}
+  if(b.id==='download'){
+    if(!TASKS.every(t=>Board.st.done[t.id]))return true;
+    const lines=[DATA.title,'Your observations about example A: '+(byId('note-A').value||'No note entered.'),''];for(const t of TASKS){const s=saved[t.id];lines.push(t.title,s.revealed?'Worked diagnosis viewed':'Diagnosis and evidence checked',...t.fields.map(f=>f.label+': '+f.options.find(o=>o.id===s.proposal[f.id]).label),'Your reasoning: '+(byId('note-'+t.id).value||'No note entered.'),'');}
+    const url=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='my-pipeline-diagnosis.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);byId('download-status').textContent='Your diagnostic review has been downloaded.';return true;
+  }return false;
+};
+Board.start();document.addEventListener('change',e=>{if(e.target.dataset.metric)renderChart(e.target.dataset.metric);if(e.target.dataset.answer)invalidate(e.target.dataset.answer);});
+
+/* Shared progress adapter; learner decisions and feedback remain owned by this activity. */
+ActivityProgress.mount({id: "c2-diagnosing-pipeline", compatibility: "state-v1:bd036a3ce557837d3d5b", title: document.title, media: [...(typeof IMG !== 'undefined' ? Object.values(IMG) : []), ...(typeof IMAGES !== 'undefined' ? Object.values(IMAGES) : []), ...(typeof CARLA !== 'undefined' ? Object.values(CARLA) : [])], roots:['stage-body','slots','stamp'],getState:()=>({board:Board.st,cur:Board.cur,checked,saved}),setState:value=>{Board.st=value.board;Board.cur=value.cur;checked=value.checked;saved=value.saved;},afterRestore:()=>{Board.paint();Board.face(Board.st.done[Board.tiles[Board.cur].id]?'p':'n');},reset:()=>{Board.build();byId('card').hidden=true;byId('toggle-card').setAttribute('aria-expanded','false');byId('stamp').textContent='';byId('stamp').classList.remove('on');},currentRoot:()=>byId('pane-'+Board.tiles[Board.cur].id)});
+</script></body></html>
