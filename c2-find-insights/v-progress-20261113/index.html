@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Find the insights</title><style>*{box-sizing:border-box}[hidden]{display:none!important}
+:root{--navy:#14213d;--teal:#1fa3a3;--teal-d:#0b6b6b;--amber:#f4a261;--paper:#faf6ee;--coral:#e76f51;--ink:#172b36;--line:#c9d6da;--ok:#2f8f60}
+html{color-scheme:light}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 system-ui,sans-serif}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-9999px;top:0}.skip:focus{left:8px;z-index:100;background:white;padding:8px}
+a{color:#07516d}
+header.top{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--navy);color:white;height:64px}
+header.top h1{font-size:1.15rem;margin:0}
+header.top .tools{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+header.top button{background:transparent;color:white;border-color:white;margin:0}
+.app{display:grid;grid-template-columns:190px minmax(0,1fr) 190px;gap:14px;padding:14px 18px;height:calc(100vh - 64px);min-height:560px;position:relative}
+.rail,.card,.stage{background:white;border:1px solid var(--line);border-radius:14px;min-height:0}
+.rail{padding:10px;overflow:auto;display:flex;flex-direction:column;justify-content:center}.rail h2,.card h2{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:#35505e;margin:2px 4px 8px}
+ul.list{list-style:none;margin:0;padding:0}ul.list li{margin:0 0 8px}
+button{font:inherit;cursor:pointer;min-height:44px;padding:10px 14px;border-radius:8px;border:2px solid var(--teal-d);background:var(--teal-d);color:white}
+button.quiet{background:white;color:var(--teal-d)}button:disabled{opacity:.45;cursor:default}
+.tile{position:relative;display:grid;grid-template-columns:58px 1fr auto;align-items:center;gap:8px;width:100%;text-align:left;background:#eef1f2;color:#40545d;border:2px solid transparent;border-radius:12px;padding:6px;min-height:86px;transition:transform .2s,background .2s,box-shadow .2s}
+.rail-left .tile:hover{transform:translateX(3px)}.rail-right .tile:hover{transform:translateX(-3px)}
+.ico{display:block;width:58px;height:70px;border-radius:8px;overflow:hidden;background:#d7dfe2}.ico img{width:100%;height:100%;display:block;object-fit:cover}
+.tt{font-weight:700;line-height:1.15;font-size:.82rem}.state{font-size:1rem}
+.tile.current{background:white;color:var(--navy);border:2px solid var(--teal);box-shadow:0 0 0 4px #1fa3a329;animation:pulse 2.4s ease-in-out infinite}
+.tile.done{background:#e3f4ec;color:#154a33;border:2px solid var(--ok)}.tile.locked{opacity:.65}
+@keyframes pulse{50%{box-shadow:0 0 0 8px #1fa3a314}}
+.stage{display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 34px #14213d1f;position:relative}
+.shead{display:flex;gap:14px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,#e9f7f6,white)}
+#face img{display:block;width:72px;height:72px;object-fit:cover;border-radius:50%;border:4px solid var(--teal);transition:transform .25s}#face.p img{border-color:var(--amber)}#face.w img{border-color:var(--coral)}
+.shead .meta{flex:1}.shead .meta strong{display:block;font-size:1.05rem}.muted{color:#35505e}
+#stamp{border:3px solid var(--teal-d);color:var(--teal-d);font-weight:800;letter-spacing:.03em;font-size:1.05rem;padding:4px 10px;border-radius:6px;transform:rotate(-6deg);opacity:0;max-width:220px;text-align:center}
+#stamp.on{animation:stamp 1.1s ease-out forwards}
+@keyframes stamp{0%{opacity:0;transform:rotate(-6deg) scale(2.2)}25%{opacity:1;transform:rotate(-6deg) scale(1)}85%{opacity:1}100%{opacity:0}}
+#stage-scroll{flex:1;overflow-y:auto;padding:16px 22px;overscroll-behavior:contain}
+.pane h2{font-size:1.4rem;margin:.1em 0 .5em;outline-offset:6px}.kick{display:block;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-d)}
+fieldset{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0;min-width:0}fieldset.done{border:2px solid var(--ok)}legend{font-weight:700;padding:0 6px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px}.choices.one{grid-template-columns:1fr}
+.pick{display:flex;gap:10px;align-items:flex-start;min-height:44px;padding:8px;border:1px solid #dbe4e7;border-radius:8px;cursor:pointer}.pick input{width:22px;height:22px;flex:0 0 22px;margin-top:2px;accent-color:var(--teal-d)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.go{background:var(--amber);border-color:var(--amber);color:var(--navy);font-weight:700}
+.fb p{margin:.4em 0}.fb .ok{font-weight:700;color:#1d5a3c}.wob{animation:wob .35s}@keyframes wob{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.landing{display:grid;grid-template-columns:minmax(260px,1fr) minmax(300px,1fr);gap:22px;align-items:center}.landing>img{display:block;width:100%;max-height:330px;object-fit:cover;border-radius:14px}.landing h3{font-size:1.5rem;margin:.2em 0}
+.field{display:block;font-weight:600;margin-top:14px}input[type=text],textarea,select{font:inherit;display:block;width:100%;padding:10px;border:1px solid #627784;border-radius:6px;min-height:44px;background:white;color:inherit}textarea{min-height:120px}
+.panel{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:10px 0}
+.snav{display:flex;justify-content:space-between;gap:8px;padding:10px 20px;border-top:1px solid var(--line);background:#f6fafa}
+#lockmsg{padding:0 20px;margin:0;color:#8a3b1c}
+.card{position:absolute;right:222px;top:118px;z-index:20;width:min(390px,calc(100vw - 40px));max-height:calc(100% - 140px);padding:12px;overflow:auto;box-shadow:0 14px 42px #14213d44}
+.chead{display:flex;justify-content:space-between;align-items:center;gap:8px}.chead h2{margin:0 4px}
+.card .bar{height:10px;border-radius:6px;background:#e1e8ea;overflow:hidden;margin:10px 4px 12px}
+#bar{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--amber));transition:width .6s}
+#prog{margin:0 4px 8px;font-weight:600}
+.slot{display:block;width:100%;text-align:left;background:#f1f4f5;color:#5b6d76;border:2px dashed #b9c6cb;border-radius:12px;padding:10px 12px;min-height:60px}
+.slot strong{display:block;font-size:.9rem}.slot .body{display:block;font-size:.85rem;font-weight:400}.slot ul{margin:.3em 0 0;padding-left:1.1em}.slot li{margin:0 0 3px}
+.slot.filled{background:#e7f6f6;color:var(--ink);border:2px solid var(--teal)}.slot.pop{animation:pop .6s}
+@keyframes pop{40%{transform:scale(1.04);box-shadow:0 0 0 6px #1fa3a333}}
+.card.complete{box-shadow:0 0 0 3px var(--amber),0 8px 30px #f4a26166}
+.unlocked{display:flex;gap:12px;align-items:center;margin:4px 4px 10px;font-weight:700;color:#8a4a12}.unlocked img{width:56px;height:56px;border-radius:10px;object-fit:cover}
+.flyer{position:fixed;z-index:50;display:grid;place-items:center;border-radius:10px;background:var(--ok);color:white;font-weight:800;pointer-events:none}
+dialog{max-width:720px;border:1px solid var(--line);border-radius:14px;padding:20px}dialog::backdrop{background:#14213d88}
+:focus-visible{outline:3px solid #9c3d00;outline-offset:3px}
+#text-version{max-width:860px;margin:18px auto;padding:0 18px 24px}#text-version>summary{font:inherit;min-height:48px;padding:12px;cursor:pointer;font-weight:700}
+#text-version h1{font-size:clamp(1.5rem,4vw,2.3rem);line-height:1.2}#text-version h2{font-size:1.35rem}#text-version h3{font-size:1.1rem}
+.altlinks{text-align:center}
+.dossier{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:start}.dossier img{width:100%;border-radius:12px;display:block}.dossier .panel{margin:0}
+.scenario{font-size:1.05rem;margin:0}.quote{font-size:1.08rem;font-weight:600;border-left:5px solid var(--teal-d);padding-left:12px;margin:.4em 0}
+.pick:has(input:checked){border-color:var(--teal-d);background:#e7f6f6}
+@media(max-width:900px){.dossier{grid-template-columns:1fr}.dossier img{max-width:260px}.app{grid-template-columns:112px minmax(0,1fr) 112px;padding:8px;gap:8px}.rail{padding:5px}.rail h2{font-size:.68rem}.tile{grid-template-columns:1fr;min-height:92px;text-align:center}.ico{width:100%;height:54px}.tt{font-size:.72rem}.state{position:absolute;top:4px;right:6px}.card{right:128px}.shead{padding:8px 12px}#stage-scroll{padding:12px}.snav{padding:8px 12px}.choices{grid-template-columns:1fr}.landing{grid-template-columns:1fr}.landing>img{max-height:230px}}
+@media(max-width:620px){header.top{flex-wrap:wrap;height:auto;padding:10px 16px}.app{height:auto;min-height:0;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto}.rail{min-width:0;overflow-x:auto;justify-content:flex-start}.rail ul{display:flex;gap:8px}.rail li{flex:0 0 145px;margin:0}.tile{grid-template-columns:52px 1fr;text-align:left;min-height:72px}.ico{width:52px;height:58px}.rail-left{grid-row:1}.stage{grid-row:2;min-height:70vh}.rail-right{grid-row:3}.card{position:fixed;inset:80px 16px auto 16px;width:auto;max-height:70vh}.shead{flex-wrap:wrap}#face img{width:56px;height:56px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}#stamp.on{opacity:1}}
+@media print{.app,header.top .tools,.skip{display:none}#text-version{max-width:none}}
+summary,button{min-height:44px}summary{padding:10px;cursor:pointer}.reference{border:1px solid #b6c6c5;border-radius:8px;margin:12px 0}.reference p{padding:0 16px}fieldset{min-width:0}.shead .meta{min-width:0}#stamp{display:none;transform:none!important;animation:none!important;max-width:100%;font-size:.85rem}#stamp.on{display:block;opacity:1}.data-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}.data-controls label{min-width:0;font-weight:650}select{max-width:100%;height:auto;white-space:normal}select option{font:inherit}.dataset{border:1px solid var(--line);border-radius:10px;padding:12px}.table-scroll{overflow:auto;max-height:340px;border:1px solid var(--line);margin-top:12px;max-width:100%}table{border-collapse:collapse;min-width:740px;width:100%;font-size:.9rem}caption{text-align:left;padding:8px;font-weight:650}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}thead th{position:sticky;top:0;background:#e1efed;z-index:1}tbody tr:nth-child(even){background:#f7f9f8}.counts{padding:0;list-style:none}.counts li{display:grid;grid-template-columns:100px minmax(0,1fr) 24px;gap:8px;align-items:center;padding:3px 0}.countbar{height:14px;background:var(--teal-d);width:calc(var(--count)*18%);max-width:100%;border-radius:3px}.field{margin-top:16px}.fb{margin:16px 0;padding:12px;border:2px solid var(--teal-d);border-radius:8px}#review-record ul{padding-left:22px;overflow-wrap:anywhere}.table-scroll:focus-visible{outline:3px solid #9c3d00}.data-status{font-weight:650}
+@media(max-width:900px){.shead{display:grid;grid-template-columns:56px minmax(0,1fr)}.shead .meta{grid-column:2}#toggle-card{grid-column:1/-1;justify-self:start}#stamp{grid-column:1/-1;width:100%}.data-controls{grid-template-columns:1fr}}
+@media(max-width:620px){.rail h2{position:sticky;left:0;max-width:100%;white-space:normal;line-height:1.35}}
+.metric-chart{padding:0;list-style:none}.metric-chart li{padding:10px 0;border-bottom:1px solid var(--line)}.metric-series{margin-top:5px}.metric-series>span:first-child{display:block;font-size:.9rem}.metric-bar{display:block;height:13px;min-width:1px;border-radius:3px;background:#176d70}.reference-bar{background:#b66b2f}.record-table{margin-top:12px}.metric-chart li>strong{display:block}.data-controls .pick{align-self:end;font-weight:400}
+.save-tools{padding:10px 18px;border-bottom:1px solid var(--line)}.save-tools>button{margin:0 8px 4px 0}.save-tools p:empty{display:none}.save-tools p{margin:6px 0}.profile{padding:0 16px 12px}.profile li{margin:8px 0}.profile h3{font-size:1rem}.pane select{margin-bottom:10px}.pane button[data-check]{margin-top:16px}dt{font-weight:700}dd{margin:3px 0 14px;white-space:pre-wrap;overflow-wrap:anywhere}textarea{resize:vertical}.reference{overflow-wrap:anywhere}#restore-warning{padding:12px;border:2px solid var(--teal-d);border-radius:8px;max-width:720px}
+</style></head><body>
+<a class="skip" href="#stage-scroll">Skip to the current step</a><a class="skip" href="#text-version">Go to complete text version</a>
+<header class="top"><div><h1 id="h-top" tabindex="-1">Find the insights</h1></div><div class="tools"><button type="button" id="restart" class="quiet">Start again</button></div></header>
+<noscript><p style="padding:12px 20px">Use the complete text version below, or <a href="fallback.html">open the text version</a> or <a href="fallback.pdf">the PDF</a>. Everything in the activity is included.</p></noscript>
+<div id="interactive" class="app" hidden>
+<nav class="rail rail-left" aria-label="Brief and first insight steps"><h2>Brief and first insight</h2><ul class="list" id="rail-left"></ul></nav>
+<main class="stage" aria-label="Current step" data-activity-id="w3-a2-s5" data-version="v-progress-20261113">
+<div class="shead"><div id="face"></div><div class="meta"><strong>Turn profile facts into outreach insights.</strong><span class="muted">Three written insights. Review the evidence and your interpretation.</span></div><div id="stamp" aria-hidden="true"></div><button type="button" id="toggle-card" class="quiet" aria-expanded="false" aria-controls="card">Progress</button></div>
+<div id="stage-scroll" tabindex="-1"><div id="stage-body"></div></div>
+<p id="lockmsg" role="status"></p>
+<div class="snav"><button type="button" id="prev" class="quiet">←</button><button type="button" id="next" class="quiet">Next →</button></div>
+</main>
+<nav class="rail rail-right" aria-label="More insights and record steps"><h2>More insights and record</h2><ul class="list" id="rail-right"></ul></nav>
+<aside class="card" id="card" aria-label="Your insight self-review" hidden><div class="chead"><h2>Your insight self-review</h2><button type="button" id="closecard" class="quiet">Close</button></div><div class="bar" aria-hidden="true"><div id="bar"></div></div><p id="prog"></p><div class="unlocked" id="unlocked" hidden><img src="data:image/webp;base64,UklGRrQEAABXRUJQVlA4IKgEAABwHQCdASqgAHgAPm0ulEakIqIhJnUNGIANiU3bq6g7v7TyApoerzP36CdsZ5gPOF9GvmwdRv6AHlz+zx+5X7VZi94vmxN8GVPYrtQX496BX9f9A/Nt+Xf4v2Bf5P/V/Ru9d3oS/sAh0AlGbjHZxSmVLOBT1j0N2ImdjUgoYNneRXdTenSA/gyd5BRZwuIZhm4NDACkvC/40ueOaYUXj06DWvY/5JETcst2TzSkC3tzT029xQ5wufOb6ZzR+4F94J0P2CsWRaSh7hYkpDzsOYo+Af8FJAHECqBLs7fFZ2MzWpMCQJ1hHpRklRgQmaTm493iHfEAAP78IwpD7gpIC2AMjaqbskkfRKeLSa+lrdLIH8H52DsbrZ3ehyb1rOmy97+29Avr92+DAEfQRbkCcxyDpozvrhI4y2CEVQbsXOEL9Ff02J71QtypZ9G3gh0beDf+IX/CIz/q7EiOBS9rR5tZdgJn8/8m9ZgJO38/8m9VJyt4VZkIdzfopf/jF86RHBgY0Mh/W+dEk6WrZmLTGXwzctLbRfYxrD8bNb2/kvPAity6CQ/zjSnNmRguxafOQAI01OId45Qcd1WXGgCOgKTkTvN1XxTmpjccUuOqzucxPymp/uY7+nS33CAIpeRc8TW17EdfA+fr1L/10Vd/AQ7Do0yTU/9TTf6c6rVCDSB139x6y2eq0He1CBQ7ZZsVQL3n/YXgR4qvTj+hbhqR/tcfSIWYmXXDdjSV+9gqkbAwCSIXqTZrtvzrqvaCLIGOVpt3VAt6MMTYkjzkPU2zGybcSv6pEMvTGNotFJIVSE8PVC06QLcjhvxf5zp7LjI/7ah+EGiH853k7p3uI00TFmICtzUi7N6+H4I4Eev4hvbfUsFFhteHpMrgc/FXjDOBekvZdSf7qV3goziZErWa7IxhCeLqSxqTwWcfb1SRuMPedeWjuja4fwctd8uI9ihd1yOGoeDk3D3lO1yQnZa3x/H64VGqUeS7jmlNkoAx98HhxXgaJoieRk0KRAdXHWl1s7NGvdy0/vPkuSvcDvDVBaxdwYhmKc4CyfFiNvf5UNm3h1raUQfhz4W6gTOSQNeU67vduS32IG7R7qXbWBemaZ6UaE9OI2Ezp+QEy1HZ/rZSdtCg4ez5JJIYEflLty/82H44sm8PsoIPPgpjDwQ5DGpS+DbhlVpBx+kMjReyn5hRWViasjSa/AHPOJ44Zn6dtR9WIycyMYssWnOgRipwQ++LbI3M0VO+wVMk6EDyCGmg6bh7a9XK0yf763c8MX1+UEfGgH0aof1DqKf6auy9SHuAEYmPrPdSc5YYFq4mVicU4ZZFZWK/Ng1owl63LMAFKk1q0hIj3N9pkBRAPsNDDvaFEA7MuoZfDMSCJyPgCa2KQ6mCGzGGE9h7F07B3Ht92CqVVv92MRVsSGus7rEDkP64hmO0g3IZGGK252CyIdvBDqfw8CHrs/wedlz+h1K7Qv8o9c9KSiTxpLpPFqDwd4JLL9KEvuYTfnjeuoysoAlzgoRAF3NPNend/FuDgXyNwDWBFDjp/h5R3MBu2WXvwhiX763pFvkcPYvUCp0fwsvcM+FygAAAAAAA" alt="">Three insights self-reviewed. Check distinct useful points and keep your writing.</div><ul class="list" id="slots"></ul></aside>
+</div>
+<div id="live" class="sr" role="status" aria-live="polite"></div>
+
+<details id="text-version"><summary>Complete text version: everything in the activity, including all feedback</summary><h1>Find the insights</h1>
+<p>Complete text version</p>
+<p>Prepare outreach to Lancre Works using its fictional research profile. Write three insights that connect an observation to a possible business priority, a relevant role and a recent development.</p>
+<p>This is ungraded writing practice. The automatic check reports whether fields are filled; you review the meaning and source support yourself. Your work and checked attempts are saved automatically in this browser. Return here to resume; Restart clears saved work and attempts for this activity. Nothing is submitted. Save an editable draft or download your final text to keep it. Nothing is submitted or sent to a service.</p>
+<h2>Your situation</h2>
+<p>You work at Jin Cloud Solutions, which offers cloud storage and security services. Your marketing team has flagged Lancre Works after an industry webinar campaign. Lancre Works offers software as a service (SaaS) for inventory and asset tracking. Use the supplied fictional profile to prepare a relevant opening conversation.</p>
+<h2>Using the writing workbench or this text version</h2>
+<p>Read the fictional profile below. For each of three insights, select a source section, write an observation and interpretation, explain a relevant role, and reference a recent development. Connect a profile observation to a possible priority and a useful question for outreach. A short paragraph or two is enough; there is no automatic quality score. You can use the same source detail for different useful insights. Use paper or a text editor with this text version if you prefer.</p>
+<p>Use the tiles or Next and previous buttons to move between tasks without clearing writing. Open the profile in each task. Check completeness reports empty fields, not meaning or source support. When fields are filled, use the three self-review statements and select I have reviewed this insight. Changing writing clears that insight&#x27;s review and the final distinct-points check; check and review again. Progress counts self-reviewed insights, not a grade.</p>
+<p>Save editable draft downloads unfinished writing as local JSON. Restore draft asks before replacement; Cancel restore keeps current writing. Invalid or oversized files change nothing. Restored drafts need fresh self-review. Start again asks before clearing writing. Your work and checked attempts are saved automatically in this browser. Return here to resume; Restart clears saved work and attempts for this activity. Nothing is submitted.</p>
+<p>Your three insights shows unfinished drafts too. After reviewing all three insights, check that they add different useful points for outreach, then Download my three insights as text. The downloaded text includes all six labelled fields for all three authored insights. Save editable draft remains available before completion. Open downloaded text with a text editor; keep the editable JSON file if you want to restore writing to this page later.</p>
+<h2>Fictional Lancre Works research profile</h2>
+<h3>Company overview on its website</h3>
+<ul><li>Lancre Works is a startup software as a service provider.</li></ul>
+<ul><li>It offers a cloud-based inventory and asset tracking platform.</li></ul>
+<ul><li>Customers use it to reduce loss, improve stock accuracy, and speed audits.</li></ul>
+<ul><li>The product includes web and mobile apps, role-based access, and integrations.</li></ul>
+<h3>Recent news mentions</h3>
+<ul><li>Announced progress toward System and Organization Controls 2 (SOC 2), Type I.</li></ul>
+<ul><li>Shared an accounting integration template that shortens setup time.</li></ul>
+<ul><li>Stated a review of pricing for the Scale tier.</li></ul>
+<h3>LinkedIn employee profiles</h3>
+<ul><li>Chief executive officer, Maya Rahman. Focus: growth and retention.</li></ul>
+<ul><li>Chief technology officer, Luis Ortega. Focus: reliability and security.</li></ul>
+<ul><li>Head of operations, Janelle Okoro. Focus: audit speed and site visibility.</li></ul>
+<ul><li>Information technology manager, Kenji Tan. Focus: identity and compliance evidence.</li></ul>
+<h3>Recent LinkedIn posts</h3>
+<ul><li>Private beta of an offline-capable mobile app for field teams.</li></ul>
+<ul><li>Hiring for senior engineers and a customer success manager.</li></ul>
+<ul><li>Emphasis on stronger audit logging and vendor risk reviews.</li></ul>
+<h3>Industry database snapshot</h3>
+<ul><li>Typical customer profile: multi-site teams that need clear asset visibility.</li></ul>
+<ul><li>Common drivers: reduce manual steps, improve onboarding, and retain small to midsize accounts.</li></ul>
+<h2>Role choices and stated focus</h2>
+<ul><li>Chief executive officer: Maya Rahman. Stated focus: Growth and retention.</li></ul>
+<ul><li>Chief technology officer: Luis Ortega. Stated focus: Reliability and security.</li></ul>
+<ul><li>Head of operations: Janelle Okoro. Stated focus: Audit speed and site visibility.</li></ul>
+<ul><li>Information technology manager: Kenji Tan. Stated focus: Identity and compliance evidence.</li></ul>
+<h2>Recent development choices and bounded guidance</h2>
+<h3>News: progress toward SOC 2 Type I</h3>
+<p>Announced progress toward System and Organization Controls 2 (SOC 2), Type I.</p>
+<p>Progress toward the review can prompt a question about buyer assurance needs. The profile does not say Type I has been completed.</p>
+<h3>News: accounting integration template</h3>
+<p>Shared an accounting integration template that shortens setup time.</p>
+<p>You could explore onboarding and integration priorities. Do not assume that every customer has an integration problem.</p>
+<h3>News: Scale-tier pricing review</h3>
+<p>Stated a review of pricing for the Scale tier.</p>
+<p>A pricing review may affect packaging or retention priorities. No price increase or customer response is stated.</p>
+<h3>Post: offline-capable mobile app beta</h3>
+<p>Private beta of an offline-capable mobile app for field teams.</p>
+<p>The beta suggests a useful question about field-team workflows. It does not establish production rollout, proven sync reliability or a confirmed purchase need.</p>
+<h3>Post: senior engineers and customer success hiring</h3>
+<p>Hiring for senior engineers and a customer success manager.</p>
+<p>Hiring may suggest delivery, growth or retention priorities. Ask about the purpose; the profile does not establish understaffing or existing service failure.</p>
+<h3>Post: audit logging and vendor risk reviews</h3>
+<p>Emphasis on stronger audit logging and vendor risk reviews.</p>
+<p>You could explore the evidence buyers request in risk reviews. Stronger logging is a stated focus; a current security failure is not stated.</p>
+<h2>Write insight 1</h2>
+<p>Profile section: write your response here or in your own document.</p>
+<p>Observation from the profile: write your response here or in your own document.</p>
+<p>Why might this matter, and how could it shape outreach?: write your response here or in your own document.</p>
+<p>Relevant role: write your response here or in your own document.</p>
+<p>Why this role would care: write your response here or in your own document.</p>
+<p>Recent development referenced: write your response here or in your own document.</p>
+<p>Check completeness: have you filled all six fields? A filled field does not establish accurate reasoning. Review the meaning yourself:</p>
+<ul><li>I can point to the profile detail supporting my observation.</li></ul>
+<ul><li>I have presented a possible priority as a hypothesis or question where it is not confirmed.</li></ul>
+<ul><li>I have explained why the selected role&#x27;s stated focus makes this insight relevant.</li></ul>
+<p>I have reviewed this insight: record your own review when the writing and the three statements above are complete.</p>
+<h2>Write insight 2</h2>
+<p>Profile section: write your response here or in your own document.</p>
+<p>Observation from the profile: write your response here or in your own document.</p>
+<p>Why might this matter, and how could it shape outreach?: write your response here or in your own document.</p>
+<p>Relevant role: write your response here or in your own document.</p>
+<p>Why this role would care: write your response here or in your own document.</p>
+<p>Recent development referenced: write your response here or in your own document.</p>
+<p>Check completeness: have you filled all six fields? A filled field does not establish accurate reasoning. Review the meaning yourself:</p>
+<ul><li>I can point to the profile detail supporting my observation.</li></ul>
+<ul><li>I have presented a possible priority as a hypothesis or question where it is not confirmed.</li></ul>
+<ul><li>I have explained why the selected role&#x27;s stated focus makes this insight relevant.</li></ul>
+<p>I have reviewed this insight: record your own review when the writing and the three statements above are complete.</p>
+<h2>Write insight 3</h2>
+<p>Profile section: write your response here or in your own document.</p>
+<p>Observation from the profile: write your response here or in your own document.</p>
+<p>Why might this matter, and how could it shape outreach?: write your response here or in your own document.</p>
+<p>Relevant role: write your response here or in your own document.</p>
+<p>Why this role would care: write your response here or in your own document.</p>
+<p>Recent development referenced: write your response here or in your own document.</p>
+<p>Check completeness: have you filled all six fields? A filled field does not establish accurate reasoning. Review the meaning yourself:</p>
+<ul><li>I can point to the profile detail supporting my observation.</li></ul>
+<ul><li>I have presented a possible priority as a hypothesis or question where it is not confirmed.</li></ul>
+<ul><li>I have explained why the selected role&#x27;s stated focus makes this insight relevant.</li></ul>
+<p>I have reviewed this insight: record your own review when the writing and the three statements above are complete.</p>
+<h2>Possible insights: read after drafting your own</h2>
+<p>These are possible interpretations, not an answer key. Other source-supported insights can be useful. Nothing in the examples fills your writing fields or restricts your own interpretation.</p>
+<h3>One possible insight about the mobile beta</h3>
+<p>Observation: The profile reports a private beta of an offline-capable mobile app for field teams. Why it might matter: This may make field-team workflows and reliable data exchange useful topics for discovery. I would ask which offline tasks the beta is intended to support before suggesting a solution. Role relevance: Head of operations: audit speed and site visibility connect this role to field-team workflows. Recent development: Recent LinkedIn post: private beta of the offline-capable app.</p>
+<h3>One possible insight about assurance evidence</h3>
+<p>Observation: The profile mentions progress toward SOC 2 Type I and stronger audit logging and vendor risk reviews. Why it might matter: Customer assurance requirements may be a current priority. I would ask what evidence buyers request during vendor reviews and how the team prepares it. Role relevance: Information technology manager: identity and compliance evidence are the role&#x27;s stated focus. Recent development: Recent news: progress toward SOC 2 Type I. Completion is not confirmed.</p>
+<h3>One possible insight about hiring</h3>
+<p>Observation: The profile lists hiring for senior engineers and a customer success manager. Why it might matter: This may reflect delivery and retention priorities as the company grows. I would ask what the new roles are intended to improve before assuming a staffing problem. Role relevance: Chief executive officer: the stated growth and retention focus makes those priorities relevant. Recent development: Recent LinkedIn post: engineering and customer success hiring.</p>
+<h2>Review and keep your insights</h2>
+<p>My three insights add different, useful points for outreach, even if some use the same source detail. Review whether your three insights add different, useful points for outreach. Keep the profile facts, your interpretation and the question you would ask distinct. Return to the course page to mark the step complete; the workbench does not update FutureLearn completion.</p></details>
+<p class="altlinks"><a href="fallback.html">Open the text version</a> · <a href="fallback.pdf">Download the text version as a PDF</a></p>
+<script>
+/* Shared local-only progress and attempt history. No network, analytics or account storage. */
+(function (global) {
+  'use strict';
+  const SCHEMA = 1, LIMIT = 1800000;
+  const clone = value => JSON.parse(JSON.stringify(value));
+  function validateData(value, depth = 0) {
+    if (depth > 60) throw Error('Saved data is too deeply nested');
+    if (value === null || typeof value === 'boolean') return;
+    if (typeof value === 'string') { if (value.length > 100000) throw Error('Saved text is too long'); return; }
+    if (typeof value === 'number') { if (!Number.isFinite(value)) throw Error('Invalid number'); return; }
+    if (typeof value !== 'object') throw Error('Invalid saved value');
+    for (const [key, item] of Object.entries(value)) {
+      if (['__proto__', 'constructor', 'prototype'].includes(key)) throw Error('Unsafe saved key');
+      validateData(item, depth + 1);
+    }
+  }
+  function parse(raw, id, compatibility) {
+    if (raw === null) return null;
+    if (raw.length > LIMIT) throw Error('Saved copy is too large');
+    const value = JSON.parse(raw); validateData(value);
+    if (!value || value.schema !== SCHEMA || value.id !== id || typeof value.epoch !== 'string' || !Number.isInteger(value.revision) || value.revision < 0) throw Error('Invalid saved copy');
+    if (value.cleared === true) return value;
+    if (value.compatibility !== compatibility) throw Error('Saved copy belongs to a different activity edition');
+    if (!value.snapshot || !Array.isArray(value.history)) throw Error('Incomplete saved copy');
+    for (const attempt of value.history) {
+      if (!attempt || typeof attempt.title !== 'string' || typeof attempt.when !== 'string' || !Array.isArray(attempt.answers) || !Array.isArray(attempt.feedback)) throw Error('Invalid attempt');
+      if (attempt.answers.some(x => !x || typeof x.label !== 'string' || typeof x.value !== 'string') || attempt.feedback.some(x => typeof x !== 'string')) throw Error('Invalid attempt detail');
+    }
+    return value;
+  }
+  function createStore(getStorage, id, compatibility, random = () => String(Date.now()) + '-' + Math.random().toString(36).slice(2)) {
+    const key = 'futurelearn:progress:v1:' + id;
+    let baseline = null, epoch = random(), revision = 0, ready = false, paused = false;
+    function load() {
+      let raw;
+      try { raw = getStorage().getItem(key); } catch { ready = false; return {status: 'unavailable'}; }
+      try {
+        const value = parse(raw, id, compatibility);
+        baseline = raw; ready = true; paused = false;
+        if (value) { epoch = value.epoch; revision = value.revision; }
+        return {status: 'ok', value};
+      } catch (error) { baseline = raw; ready = true; paused = true; return {status: 'invalid', message: error.message}; }
+    }
+    function save(snapshot, history) {
+      if (!ready) {
+        const result = load();
+        if (result.status !== 'ok') return result;
+        if (result.value) { paused = true; return {status: 'conflict', value: result.value}; }
+      }
+      if (paused) return {status: 'paused'};
+      try {
+        const storage = getStorage(), current = storage.getItem(key);
+        if (current !== baseline) {
+          paused = true;
+          let value = null;
+          try { value = parse(current, id, compatibility); } catch {}
+          return {status: 'conflict', value, generationChanged: !!value && value.epoch !== epoch};
+        }
+        const value = {schema: SCHEMA, id, compatibility, epoch, revision: revision + 1, snapshot, history};
+        validateData(value);
+        const raw = JSON.stringify(value);
+        if (raw.length > LIMIT) throw Error('Saved work is too large');
+        storage.setItem(key, raw);
+        if (storage.getItem(key) !== raw) { paused = true; return {status: 'conflict'}; }
+        baseline = raw; revision++; return {status: 'ok'};
+      } catch { return {status: 'unavailable'}; }
+    }
+    function erase(legacyKeys = []) {
+      try {
+        const storage = getStorage();
+        // A tombstone contains no learner work and fences delayed saves in older tabs.
+        const value = {schema: SCHEMA, id, epoch: random(), revision: 0, cleared: true};
+        const raw = JSON.stringify(value);
+        storage.setItem(key, raw);
+        if (storage.getItem(key) !== raw) throw Error('Erase did not persist');
+        for (const legacy of legacyKeys) { if (legacy !== key) storage.removeItem(legacy); }
+        if (legacyKeys.some(legacy => legacy !== key && storage.getItem(legacy) !== null)) throw Error('Legacy erase failed');
+        baseline = raw; epoch = value.epoch; revision = 0; ready = true; paused = false;
+        return {status: 'ok', value};
+      } catch { paused = true; return {status: 'unavailable'}; }
+    }
+    return {key, load, save, erase, pause: () => { paused = true; }, get epoch() { return epoch; }};
+  }
+
+  // Presentation is encoded as inert, allowlisted DOM data, never stored/replayed HTML.
+  // Keeping existing keyed nodes retains their directly attached input/click listeners.
+  const TAGS = new Set('main figure figcaption aside header footer nav time output sup sub u s kbd samp mark abbr cite q wbr div section article p span strong b em i small ul ol li dl dt dd h1 h2 h3 h4 h5 h6 label fieldset legend input textarea select option optgroup button a img details summary table caption thead tbody tfoot tr th td blockquote pre code br hr progress meter svg g path circle rect line polyline polygon text title desc'.split(' '));
+  const ATTR = /^(id|class|hidden|disabled|open|checked|selected|type|name|value|for|role|tabindex|maxlength|min|max|step|rows|cols|multiple|placeholder|autocomplete|inputmode|width|height|alt|title|target|rel|colspan|rowspan|scope|viewBox|d|cx|cy|r|x|y|x1|x2|y1|y2|points|fill|stroke|stroke-width|preserveAspectRatio|aria-[a-z-]+|data-[a-z0-9-]+)$/;
+  function createCodec(document, rootIds, media = []) {
+    const urls = [...new Set([...document.querySelectorAll('img[src],a[href]')].map(e => e.getAttribute(e.tagName === 'IMG' ? 'src' : 'href')).concat(media).filter(x => typeof x === 'string'))].sort();
+    const transient = new Set(['pop', 'wob', 'newly-solved']);
+    function attributes(node) {
+      const result = {};
+      for (const a of node.attributes) {
+        if (ATTR.test(a.name)) result[a.name] = a.name === 'class' ? a.value.split(/\s+/).filter(x => !transient.has(x)).join(' ') : a.value;
+        else if ((a.name === 'src' || a.name === 'href') && urls.includes(a.value)) result[a.name] = urls.indexOf(a.value);
+      }
+      const style = {};
+      for (const name of node.style) {
+        const value = node.style.getPropertyValue(name);
+        if (/^(width|height|opacity|transform|background-color|color|border-color|--[a-z-]+)$/.test(name) && /^[a-z0-9\s#%.,()+-]+$/i.test(value) && !/url|expression/i.test(value)) style[name] = value;
+      }
+      if (Object.keys(style).length) result.style = style;
+      return result;
+    }
+    function encode(node) {
+      if (node.nodeType === 3) return ['#', node.data];
+      if (node.nodeType !== 1 || !TAGS.has(node.localName)) return null;
+      const props = {};
+      if (node.matches('input:not([type=file]),textarea,select')) { props.value = node.value; if (node.matches('input[type=checkbox],input[type=radio]')) props.checked = node.checked; }
+      return [node.localName, attributes(node), props, [...node.childNodes].map(encode).filter(Boolean)];
+    }
+    function validate(tree, budget = {n: 0}, depth = 0) {
+      if (++budget.n > 25000 || depth > 50 || !Array.isArray(tree)) throw Error('Invalid saved view');
+      if (tree[0] === '#') { if (tree.length !== 2 || typeof tree[1] !== 'string') throw Error('Invalid text'); return; }
+      if (tree.length !== 4 || !TAGS.has(tree[0]) || !tree[1] || !tree[2] || !Array.isArray(tree[3])) throw Error('Invalid saved element');
+      for (const [name, value] of Object.entries(tree[1])) {
+        if (name === 'href' || name === 'src') { if (!Number.isInteger(value) || !urls[value]) throw Error('Invalid resource'); }
+        else if (name === 'style') {
+          if (!value || typeof value !== 'object' || Array.isArray(value)) throw Error('Invalid style');
+          for (const [k, v] of Object.entries(value)) if (!/^(width|height|opacity|transform|background-color|color|border-color|--[a-z-]+)$/.test(k) || typeof v !== 'string' || !/^[a-z0-9\s#%.,()+-]+$/i.test(v) || /url|expression/i.test(v)) throw Error('Invalid style value');
+        } else if (!ATTR.test(name) || typeof value !== 'string') throw Error('Invalid attribute');
+      }
+      if (Object.keys(tree[2]).some(x => !['value', 'checked'].includes(x)) || (tree[2].value !== undefined && typeof tree[2].value !== 'string') || (tree[2].checked !== undefined && typeof tree[2].checked !== 'boolean')) throw Error('Invalid control');
+      for (const child of tree[3]) validate(child, budget, depth + 1);
+    }
+    const treeKey = tree => tree[0] === '#' ? null : tree[1].id ? 'id:' + tree[1].id : tree[0] === 'input' && tree[1].name ? 'input:' + tree[1].name + ':' + tree[1].value : tree[0] === 'option' ? 'option:' + tree[1].value : tree[0] === 'label' && tree[3].some(x => x[0] === 'input') ? 'label:' + treeKey(tree[3].find(x => x[0] === 'input')) : null;
+    function nodeKey(node) { return node.nodeType === 1 ? treeKey(encode(node)) : null; }
+    function patch(node, tree, svg = false) {
+      if (tree[0] === '#') { if (node?.nodeType === 3) { node.data = tree[1]; return node; } return document.createTextNode(tree[1]); }
+      const inSvg = svg || tree[0] === 'svg';
+      if (!node || node.nodeType !== 1 || node.localName !== tree[0]) node = inSvg ? document.createElementNS('http://www.w3.org/2000/svg', tree[0]) : document.createElement(tree[0]);
+      const attrs = tree[1];
+      for (const a of [...node.attributes]) if ((ATTR.test(a.name) || ['src', 'href', 'style'].includes(a.name)) && !(a.name in attrs)) node.removeAttribute(a.name);
+      for (const [name, value] of Object.entries(attrs)) {
+        if (name === 'style') { node.removeAttribute('style'); for (const [k, v] of Object.entries(value)) node.style.setProperty(k, v); }
+        else node.setAttribute(name, name === 'src' || name === 'href' ? urls[value] : value);
+      }
+      const old = [...node.childNodes], used = new Set(), next = [];
+      for (let i = 0; i < tree[3].length; i++) {
+        const child = tree[3][i], key = treeKey(child);
+        let match = key ? old.find(x => !used.has(x) && nodeKey(x) === key) : null;
+        if (!match && old[i] && !used.has(old[i]) && !nodeKey(old[i]) && ((child[0] === '#' && old[i].nodeType === 3) || old[i].localName === child[0])) match = old[i];
+        if (match) used.add(match);
+        next.push(patch(match, child, inSvg));
+      }
+      node.replaceChildren(...next);
+      for (const [key, value] of Object.entries(tree[2])) if (node.matches('input:not([type=file]),textarea,select')) node[key] = value;
+      return node;
+    }
+    function capture() { return Object.fromEntries(rootIds.map(id => { const tree = encode(document.getElementById(id)); if (!tree) throw Error('Missing supported activity root: ' + id); return [id, tree]; })); }
+    function restore(value) {
+      if (!value || Object.keys(value).sort().join('|') !== [...rootIds].sort().join('|')) throw Error('Saved view does not match');
+      for (const id of rootIds) { validate(value[id]); if (value[id][1]?.id !== id) throw Error('Invalid view root'); }
+      for (const id of rootIds) patch(document.getElementById(id), value[id]);
+    }
+    return {capture, restore, validate};
+  }
+
+  function mount(options) {
+    const document = global.document;
+    const codec = createCodec(document, options.roots || [], options.media || []);
+    const store = createStore(() => global.localStorage, options.id, options.compatibility);
+    let history = [], suspended = true, scheduled = false, lastSnapshot = '', health = 'ready';
+    const dialog = document.createElement('dialog'); dialog.className = 'ap-dialog'; dialog.setAttribute('aria-labelledby', 'ap-title');
+    dialog.innerHTML = '<h2 id="ap-title">Your saved work</h2><p>Work and checked attempts are saved automatically in this browser and device. Returning here restores your progress. This is not an account backup or cross-device sync. On a shared device, use Restart when finished.</p><p id="ap-status" role="status"></p><div class="ap-actions"><button type="button" id="ap-close">Close</button><button type="button" id="ap-load">Load latest saved work</button><button type="button" id="ap-export">Download a backup</button><button type="button" id="ap-import">Restore a backup</button><input type="file" id="ap-import-file" accept=".json,application/json" hidden><button type="button" id="ap-retry">Retry saving</button><button type="button" id="ap-restart">Restart activity</button></div><h3>Past attempts</h3><div id="ap-history"></div>';
+    document.body.append(dialog);
+    const status = dialog.querySelector('#ap-status'), list = dialog.querySelector('#ap-history');
+    const button = document.createElement('button'); button.type = 'button'; button.id = 'saved-work-toggle'; button.className = 'quiet ap-toggle';
+    const holder = document.querySelector('header .tools,.top .tools,#project-tools .tool-buttons,.toolbar') || document.querySelector('header,.intro');
+    (holder || document.body).append(button);
+    const live = document.createElement('span'); live.className = 'ap-sr'; live.setAttribute('role', 'status'); document.body.append(live);
+    const style = document.createElement('style');
+    style.textContent = '.ap-dialog{box-sizing:border-box;width:min(680px,calc(100% - 24px));max-height:85vh;overflow:auto;border:2px solid #0a6b66;border-radius:12px;padding:20px;color:#172d35;background:white;font:16px/1.5 system-ui}.ap-dialog::backdrop{background:#172d3570}.ap-dialog h2{margin-top:0}.ap-actions{display:flex;flex-wrap:wrap;gap:8px}.ap-dialog button{font:inherit;min-height:44px;padding:8px 12px;border:2px solid #0a6b66;border-radius:6px;background:white;color:#075d56;cursor:pointer}.ap-dialog button:focus-visible,.ap-dialog summary:focus-visible{outline:3px solid #172d35;outline-offset:3px}.ap-dialog details{border-top:1px solid #bdcdd1;padding:10px 0}.ap-dialog summary{cursor:pointer;font-weight:650}.ap-dialog dd{white-space:pre-wrap;overflow-wrap:anywhere;margin:0 0 10px}.ap-dialog dt{font-weight:650}.ap-dialog p{overflow-wrap:anywhere}.ap-toggle{font-size:14px!important;min-height:44px!important}.ap-toggle.ap-warning{background:#fff0ce!important;color:#62430b!important}.ap-sr{position:fixed;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}@media print{.ap-dialog,.ap-toggle,.ap-sr{display:none!important}}';
+    document.head.append(style);
+    function message(code) {
+      const messages = {ready: 'Automatic saving is ready.', ok: 'Saved in this browser. Return here to resume.', restored: 'Your saved work and past attempts have been restored.', cleared: 'All saved work and attempts for this activity have been cleared. Downloaded files are unchanged.', unavailable: 'Saving is unavailable or storage is full. Your work is still on this page. Download a backup before leaving, then retry saving.', invalid: 'The saved copy is unreadable or belongs to a different edition. It has been kept unchanged. Download a backup before choosing Restart.', conflict: 'Another tab changed the saved work. Saving is paused to protect both copies. Download your current backup or load the latest saved work.', paused: 'Saving is paused. Download a backup or load the latest saved work.'};
+      health = code; const text = messages[code] || messages.paused;
+      status.textContent = text;
+      button.textContent = ['ok', 'restored'].includes(code) ? 'Saved work · ' + history.length : ['ready', 'cleared'].includes(code) ? 'Saved work' : 'Check saved work';
+      button.classList.toggle('ap-warning', ['unavailable', 'invalid', 'conflict', 'paused'].includes(code));
+      button.setAttribute('aria-label', 'Saved work and ' + history.length + ' past attempts. ' + text);
+      if (!['ready', 'ok', 'restored'].includes(code)) live.textContent = text;
+    }
+    function snapshot() { return {state: clone(options.getState()), view: codec.capture()}; }
+    function apply(value) {
+      suspended = true;
+      try {
+        if (!value || value.cleared) { history = []; options.reset(); }
+        else {
+          codec.restore(value.snapshot.view); options.setState(clone(value.snapshot.state));
+          history = clone(value.history); options.afterRestore?.();
+        }
+        lastSnapshot = JSON.stringify(snapshot());
+      } finally { suspended = false; }
+    }
+    function load() {
+      const loaded = store.load();
+      if (loaded.status !== 'ok') { message(loaded.status); return false; }
+      try { if (loaded.value) apply(loaded.value); message(loaded.value?.cleared ? 'cleared' : loaded.value ? 'restored' : 'ready'); return true; }
+      catch { store.pause(); suspended = false; message('invalid'); return false; }
+    }
+    function capture(force = false) {
+      if (suspended) return;
+      const current = snapshot(), text = JSON.stringify(current);
+      if (!force && text === lastSnapshot) return;
+      const saved = store.save(current, history);
+      if (saved.status === 'conflict' && (saved.value?.cleared || saved.generationChanged)) { const latest = store.load(); if (latest.status === 'ok') { apply(latest.value); message(latest.value?.cleared ? 'cleared' : 'restored'); return; } }
+      if (saved.status === 'ok') lastSnapshot = text;
+      message(saved.status);
+    }
+    function schedule() { if (!suspended && !scheduled) { scheduled = true; queueMicrotask(() => { scheduled = false; capture(); }); } }
+    function renderHistory() {
+      list.replaceChildren();
+      if (!history.length) { const p = document.createElement('p'); p.textContent = 'No checked attempts saved yet. Your unfinished work is saved as you go.'; list.append(p); }
+      history.forEach((attempt, index) => {
+        const details = document.createElement('details'), summary = document.createElement('summary'), when = document.createElement('p'), dl = document.createElement('dl');
+        summary.textContent = (index + 1) + '. ' + attempt.title; when.textContent = new Date(attempt.when).toLocaleString();
+        for (const answer of attempt.answers) { const dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = answer.label; dd.textContent = answer.value; dl.append(dt, dd); }
+        details.append(summary, when, dl);
+        for (const text of attempt.feedback) { const p = document.createElement('p'); p.textContent = text; details.append(p); }
+        list.append(details);
+      });
+    }
+    function recordAttempt(action) {
+      const root = options.currentRoot?.() || document.querySelector('#interactive,main') || document.body;
+      const answers = [...root.querySelectorAll('input:not([type=file]):not([type=hidden]),textarea,select')].filter(e => !e.closest('[hidden]')).map(e => {
+        const label = (e.id && document.querySelector('label[for="' + global.CSS.escape(e.id) + '"]')?.textContent) || e.closest('label')?.textContent || e.closest('fieldset')?.querySelector('legend')?.textContent || e.name || e.id || 'Response';
+        return {label: label.trim(), value: e.matches('input[type=checkbox],input[type=radio]') ? (e.checked ? 'Selected: ' : 'Not selected: ') + e.value : e.tagName === 'SELECT' ? e.selectedOptions[0]?.textContent || e.value : e.value};
+      });
+      const feedback = [...root.querySelectorAll('.fb,.feedback,.field-feedback,[id$="-feedback"],[id^="feedback-"],#completion-status')].filter(e => !e.closest('[hidden]')).map(e => e.textContent.trim()).filter(Boolean);
+      history.push({when: new Date().toISOString(), title: (root.querySelector('h2,h3')?.textContent.trim() || options.title || document.title) + ' · ' + action, answers, feedback});
+      capture(true);
+    }
+    function restart(confirm = true) {
+      if (confirm && !global.confirm('Restart this activity? This permanently clears all saved answers, writing, progress and past attempts for this activity in this browser. Downloaded files are unchanged.')) return false;
+      const result = store.erase(options.legacyKeys || []);
+      if (result.status !== 'ok') { message(result.status); return false; }
+      apply(result.value); message('cleared'); renderHistory();
+      if (dialog.open) dialog.close();
+      (document.querySelector('#h-top,h1') || button).focus?.();
+      return true;
+    }
+    function backup() {
+      const data = JSON.stringify({schema: SCHEMA, id: options.id, compatibility: options.compatibility, epoch: 'backup', revision: 0, snapshot: snapshot(), history}, null, 2);
+      const a = document.createElement('a'), url = global.URL.createObjectURL(new Blob([data], {type: 'application/json'}));
+      a.href = url; a.download = options.id + '-saved-work.json'; a.click(); setTimeout(() => global.URL.revokeObjectURL(url), 1000);
+    }
+    button.addEventListener('click', () => { renderHistory(); dialog.showModal(); });
+    dialog.querySelector('#ap-close').addEventListener('click', () => { dialog.close(); button.focus(); });
+    dialog.querySelector('#ap-load').addEventListener('click', () => { load(); renderHistory(); });
+    dialog.querySelector('#ap-export').addEventListener('click', backup);
+    dialog.querySelector('#ap-import').addEventListener('click', () => dialog.querySelector('#ap-import-file').click());
+    dialog.querySelector('#ap-import-file').addEventListener('change', async event => {
+      const file = event.target.files[0]; event.target.value = ''; if (!file) return;
+      try {
+        if (file.size > LIMIT) throw Error('Backup is too large');
+        const value = parse(await file.text(), options.id, options.compatibility);
+        if (!value || value.cleared) throw Error('Backup has no work');
+        for (const tree of Object.values(value.snapshot.view)) codec.validate(tree);
+        if (!global.confirm('Replace your current work and attempt history with this backup? Download your current backup first if you want to keep both.')) return;
+        const loaded = store.load(); if (loaded.status !== 'ok') { message(loaded.status); return; }
+        apply(value); capture(true); renderHistory();
+      } catch { status.textContent = 'That backup could not be restored. Current work and the saved copy are kept.'; }
+    });
+    dialog.querySelector('#ap-retry').addEventListener('click', () => capture(true));
+    dialog.querySelector('#ap-restart').addEventListener('click', () => restart());
+    document.addEventListener('click', event => {
+      const target = event.target.closest('button');
+      if (!target || target.closest('.ap-dialog') || target === button) return;
+      if (target.type === 'submit' && target.form) return;
+      if ((options.restartIds || ['restart']).includes(target.id)) { event.preventDefault(); event.stopImmediatePropagation(); restart(!(options.confirmedRestartIds || ['erase-confirm']).includes(target.id)); }
+    }, true);
+    document.addEventListener('click', event => {
+      const target = event.target.closest('button');
+      if (!target || target.closest('.ap-dialog') || target === button) return;
+      if (target.type === 'submit' && target.form) return;
+      if (/^(check|complete)-|-(check)$/.test(target.id) || Object.keys(target.dataset).some(k => /^(check|show|reveal|complete)/i.test(k)) || /^(check|compare my|i have reviewed|complete this)/i.test(target.textContent.trim())) recordAttempt(target.textContent.trim());
+      else schedule();
+    });
+    document.addEventListener('submit', event => { if (!event.target.closest('.ap-dialog')) recordAttempt('Check answer'); });
+    document.addEventListener('input', schedule); document.addEventListener('change', schedule);
+    document.addEventListener('toggle', schedule, true);
+    const observer = new global.MutationObserver(schedule);
+    for (const id of options.roots || []) observer.observe(document.getElementById(id), {subtree: true, childList: true, characterData: true, attributes: true});
+    global.addEventListener('storage', event => {
+      if (event.key !== store.key && event.key !== null) return;
+      let value = null; try { value = parse(global.localStorage.getItem(store.key), options.id, options.compatibility); } catch {}
+      if (value && (value.cleared || value.epoch !== store.epoch)) { const latest = store.load(); if (latest.status === 'ok') { apply(latest.value); message(latest.value?.cleared ? 'cleared' : 'restored'); } }
+      else message('conflict');
+    });
+    suspended = false;
+    load();
+    // A migrated legacy capstone has already restored itself; save it in the shared format.
+    if (options.legacyKeys?.length && health === 'ready') { history = clone(options.initialHistory?.() || []); capture(true); }
+    const controller = {capture, restart, load, backup, recordAttempt, get history() { return clone(history); }, get health() { return health; }, get key() { return store.key; }};
+    global.ActivityProgressController = controller;
+    return controller;
+  }
+  const api = {createStore, parse, validateData, createCodec, mount};
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  global.ActivityProgress = api;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>const DATA={"title": "Find the insights", "intro": "Prepare outreach to Lancre Works using its fictional research profile. Write three insights that connect an observation to a possible business priority, a relevant role and a recent development.", "boundary": "This is ungraded writing practice. The automatic check reports whether fields are filled; you review the meaning and source support yourself. Your work and checked attempts are saved automatically in this browser. Return here to resume; Restart clears saved work and attempts for this activity. Nothing is submitted. Save an editable draft or download your final text to keep it. Nothing is submitted or sent to a service.", "scenario": "You work at Jin Cloud Solutions, which offers cloud storage and security services. Your marketing team has flagged Lancre Works after an industry webinar campaign. Lancre Works offers software as a service (SaaS) for inventory and asset tracking. Use the supplied fictional profile to prepare a relevant opening conversation.", "sections": [{"id": "website", "title": "Company overview on its website", "facts": ["Lancre Works is a startup software as a service provider.", "It offers a cloud-based inventory and asset tracking platform.", "Customers use it to reduce loss, improve stock accuracy, and speed audits.", "The product includes web and mobile apps, role-based access, and integrations."]}, {"id": "news", "title": "Recent news mentions", "facts": ["Announced progress toward System and Organization Controls 2 (SOC 2), Type I.", "Shared an accounting integration template that shortens setup time.", "Stated a review of pricing for the Scale tier."]}, {"id": "roles", "title": "LinkedIn employee profiles", "facts": ["Chief executive officer, Maya Rahman. Focus: growth and retention.", "Chief technology officer, Luis Ortega. Focus: reliability and security.", "Head of operations, Janelle Okoro. Focus: audit speed and site visibility.", "Information technology manager, Kenji Tan. Focus: identity and compliance evidence."]}, {"id": "posts", "title": "Recent LinkedIn posts", "facts": ["Private beta of an offline-capable mobile app for field teams.", "Hiring for senior engineers and a customer success manager.", "Emphasis on stronger audit logging and vendor risk reviews."]}, {"id": "database", "title": "Industry database snapshot", "facts": ["Typical customer profile: multi-site teams that need clear asset visibility.", "Common drivers: reduce manual steps, improve onboarding, and retain small to midsize accounts."]}], "roles": [{"id": "ceo", "name": "Chief executive officer: Maya Rahman", "focus": "Growth and retention"}, {"id": "cto", "name": "Chief technology officer: Luis Ortega", "focus": "Reliability and security"}, {"id": "ops", "name": "Head of operations: Janelle Okoro", "focus": "Audit speed and site visibility"}, {"id": "it", "name": "Information technology manager: Kenji Tan", "focus": "Identity and compliance evidence"}], "updates": [{"id": "soc", "label": "News: progress toward SOC 2 Type I", "text": "Announced progress toward System and Organization Controls 2 (SOC 2), Type I.", "guide": "Progress toward the review can prompt a question about buyer assurance needs. The profile does not say Type I has been completed."}, {"id": "integration", "label": "News: accounting integration template", "text": "Shared an accounting integration template that shortens setup time.", "guide": "You could explore onboarding and integration priorities. Do not assume that every customer has an integration problem."}, {"id": "pricing", "label": "News: Scale-tier pricing review", "text": "Stated a review of pricing for the Scale tier.", "guide": "A pricing review may affect packaging or retention priorities. No price increase or customer response is stated."}, {"id": "beta", "label": "Post: offline-capable mobile app beta", "text": "Private beta of an offline-capable mobile app for field teams.", "guide": "The beta suggests a useful question about field-team workflows. It does not establish production rollout, proven sync reliability or a confirmed purchase need."}, {"id": "hiring", "label": "Post: senior engineers and customer success hiring", "text": "Hiring for senior engineers and a customer success manager.", "guide": "Hiring may suggest delivery, growth or retention priorities. Ask about the purpose; the profile does not establish understaffing or existing service failure."}, {"id": "audit", "label": "Post: audit logging and vendor risk reviews", "text": "Emphasis on stronger audit logging and vendor risk reviews.", "guide": "You could explore the evidence buyers request in risk reviews. Stronger logging is a stated focus; a current security failure is not stated."}], "review": ["I can point to the profile detail supporting my observation.", "I have presented a possible priority as a hypothesis or question where it is not confirmed.", "I have explained why the selected role's stated focus makes this insight relevant."], "examples": [{"title": "One possible insight about the mobile beta", "observation": "The profile reports a private beta of an offline-capable mobile app for field teams.", "interpretation": "This may make field-team workflows and reliable data exchange useful topics for discovery. I would ask which offline tasks the beta is intended to support before suggesting a solution.", "role": "Head of operations: audit speed and site visibility connect this role to field-team workflows.", "development": "Recent LinkedIn post: private beta of the offline-capable app."}, {"title": "One possible insight about assurance evidence", "observation": "The profile mentions progress toward SOC 2 Type I and stronger audit logging and vendor risk reviews.", "interpretation": "Customer assurance requirements may be a current priority. I would ask what evidence buyers request during vendor reviews and how the team prepares it.", "role": "Information technology manager: identity and compliance evidence are the role's stated focus.", "development": "Recent news: progress toward SOC 2 Type I. Completion is not confirmed."}, {"title": "One possible insight about hiring", "observation": "The profile lists hiring for senior engineers and a customer success manager.", "interpretation": "This may reflect delivery and retention priorities as the company grows. I would ask what the new roles are intended to improve before assuming a staffing problem.", "role": "Chief executive officer: the stated growth and retention focus makes those priorities relevant.", "development": "Recent LinkedIn post: engineering and customer success hiring."}], "closing": "Review whether your three insights add different, useful points for outreach. Keep the profile facts, your interpretation and the question you would ask distinct. Return to the course page to mark the step complete; the workbench does not update FutureLearn completion."};
+const IMAGES={"start": "data:image/webp;base64,UklGRrQEAABXRUJQVlA4IKgEAABwHQCdASqgAHgAPm0ulEakIqIhJnUNGIANiU3bq6g7v7TyApoerzP36CdsZ5gPOF9GvmwdRv6AHlz+zx+5X7VZi94vmxN8GVPYrtQX496BX9f9A/Nt+Xf4v2Bf5P/V/Ru9d3oS/sAh0AlGbjHZxSmVLOBT1j0N2ImdjUgoYNneRXdTenSA/gyd5BRZwuIZhm4NDACkvC/40ueOaYUXj06DWvY/5JETcst2TzSkC3tzT029xQ5wufOb6ZzR+4F94J0P2CsWRaSh7hYkpDzsOYo+Af8FJAHECqBLs7fFZ2MzWpMCQJ1hHpRklRgQmaTm493iHfEAAP78IwpD7gpIC2AMjaqbskkfRKeLSa+lrdLIH8H52DsbrZ3ehyb1rOmy97+29Avr92+DAEfQRbkCcxyDpozvrhI4y2CEVQbsXOEL9Ff02J71QtypZ9G3gh0beDf+IX/CIz/q7EiOBS9rR5tZdgJn8/8m9ZgJO38/8m9VJyt4VZkIdzfopf/jF86RHBgY0Mh/W+dEk6WrZmLTGXwzctLbRfYxrD8bNb2/kvPAity6CQ/zjSnNmRguxafOQAI01OId45Qcd1WXGgCOgKTkTvN1XxTmpjccUuOqzucxPymp/uY7+nS33CAIpeRc8TW17EdfA+fr1L/10Vd/AQ7Do0yTU/9TTf6c6rVCDSB139x6y2eq0He1CBQ7ZZsVQL3n/YXgR4qvTj+hbhqR/tcfSIWYmXXDdjSV+9gqkbAwCSIXqTZrtvzrqvaCLIGOVpt3VAt6MMTYkjzkPU2zGybcSv6pEMvTGNotFJIVSE8PVC06QLcjhvxf5zp7LjI/7ah+EGiH853k7p3uI00TFmICtzUi7N6+H4I4Eev4hvbfUsFFhteHpMrgc/FXjDOBekvZdSf7qV3goziZErWa7IxhCeLqSxqTwWcfb1SRuMPedeWjuja4fwctd8uI9ihd1yOGoeDk3D3lO1yQnZa3x/H64VGqUeS7jmlNkoAx98HhxXgaJoieRk0KRAdXHWl1s7NGvdy0/vPkuSvcDvDVBaxdwYhmKc4CyfFiNvf5UNm3h1raUQfhz4W6gTOSQNeU67vduS32IG7R7qXbWBemaZ6UaE9OI2Ezp+QEy1HZ/rZSdtCg4ez5JJIYEflLty/82H44sm8PsoIPPgpjDwQ5DGpS+DbhlVpBx+kMjReyn5hRWViasjSa/AHPOJ44Zn6dtR9WIycyMYssWnOgRipwQ++LbI3M0VO+wVMk6EDyCGmg6bh7a9XK0yf763c8MX1+UEfGgH0aof1DqKf6auy9SHuAEYmPrPdSc5YYFq4mVicU4ZZFZWK/Ng1owl63LMAFKk1q0hIj3N9pkBRAPsNDDvaFEA7MuoZfDMSCJyPgCa2KQ6mCGzGGE9h7F07B3Ht92CqVVv92MRVsSGus7rEDkP64hmO0g3IZGGK252CyIdvBDqfw8CHrs/wedlz+h1K7Qv8o9c9KSiTxpLpPFqDwd4JLL9KEvuYTfnjeuoysoAlzgoRAF3NPNend/FuDgXyNwDWBFDjp/h5R3MBu2WXvwhiX763pFvkcPYvUCp0fwsvcM+FygAAAAAAA", "one": "data:image/webp;base64,UklGRrQEAABXRUJQVlA4IKgEAABwHQCdASqgAHgAPm0ulEakIqIhJnUNGIANiU3bq6g7v7TyApoerzP36CdsZ5gPOF9GvmwdRv6AHlz+zx+5X7VZi94vmxN8GVPYrtQX496BX9f9A/Nt+Xf4v2Bf5P/V/Ru9d3oS/sAh0AlGbjHZxSmVLOBT1j0N2ImdjUgoYNneRXdTenSA/gyd5BRZwuIZhm4NDACkvC/40ueOaYUXj06DWvY/5JETcst2TzSkC3tzT029xQ5wufOb6ZzR+4F94J0P2CsWRaSh7hYkpDzsOYo+Af8FJAHECqBLs7fFZ2MzWpMCQJ1hHpRklRgQmaTm493iHfEAAP78IwpD7gpIC2AMjaqbskkfRKeLSa+lrdLIH8H52DsbrZ3ehyb1rOmy97+29Avr92+DAEfQRbkCcxyDpozvrhI4y2CEVQbsXOEL9Ff02J71QtypZ9G3gh0beDf+IX/CIz/q7EiOBS9rR5tZdgJn8/8m9ZgJO38/8m9VJyt4VZkIdzfopf/jF86RHBgY0Mh/W+dEk6WrZmLTGXwzctLbRfYxrD8bNb2/kvPAity6CQ/zjSnNmRguxafOQAI01OId45Qcd1WXGgCOgKTkTvN1XxTmpjccUuOqzucxPymp/uY7+nS33CAIpeRc8TW17EdfA+fr1L/10Vd/AQ7Do0yTU/9TTf6c6rVCDSB139x6y2eq0He1CBQ7ZZsVQL3n/YXgR4qvTj+hbhqR/tcfSIWYmXXDdjSV+9gqkbAwCSIXqTZrtvzrqvaCLIGOVpt3VAt6MMTYkjzkPU2zGybcSv6pEMvTGNotFJIVSE8PVC06QLcjhvxf5zp7LjI/7ah+EGiH853k7p3uI00TFmICtzUi7N6+H4I4Eev4hvbfUsFFhteHpMrgc/FXjDOBekvZdSf7qV3goziZErWa7IxhCeLqSxqTwWcfb1SRuMPedeWjuja4fwctd8uI9ihd1yOGoeDk3D3lO1yQnZa3x/H64VGqUeS7jmlNkoAx98HhxXgaJoieRk0KRAdXHWl1s7NGvdy0/vPkuSvcDvDVBaxdwYhmKc4CyfFiNvf5UNm3h1raUQfhz4W6gTOSQNeU67vduS32IG7R7qXbWBemaZ6UaE9OI2Ezp+QEy1HZ/rZSdtCg4ez5JJIYEflLty/82H44sm8PsoIPPgpjDwQ5DGpS+DbhlVpBx+kMjReyn5hRWViasjSa/AHPOJ44Zn6dtR9WIycyMYssWnOgRipwQ++LbI3M0VO+wVMk6EDyCGmg6bh7a9XK0yf763c8MX1+UEfGgH0aof1DqKf6auy9SHuAEYmPrPdSc5YYFq4mVicU4ZZFZWK/Ng1owl63LMAFKk1q0hIj3N9pkBRAPsNDDvaFEA7MuoZfDMSCJyPgCa2KQ6mCGzGGE9h7F07B3Ht92CqVVv92MRVsSGus7rEDkP64hmO0g3IZGGK252CyIdvBDqfw8CHrs/wedlz+h1K7Qv8o9c9KSiTxpLpPFqDwd4JLL9KEvuYTfnjeuoysoAlzgoRAF3NPNend/FuDgXyNwDWBFDjp/h5R3MBu2WXvwhiX763pFvkcPYvUCp0fwsvcM+FygAAAAAAA", "two": "data:image/webp;base64,UklGRrQEAABXRUJQVlA4IKgEAABwHQCdASqgAHgAPm0ulEakIqIhJnUNGIANiU3bq6g7v7TyApoerzP36CdsZ5gPOF9GvmwdRv6AHlz+zx+5X7VZi94vmxN8GVPYrtQX496BX9f9A/Nt+Xf4v2Bf5P/V/Ru9d3oS/sAh0AlGbjHZxSmVLOBT1j0N2ImdjUgoYNneRXdTenSA/gyd5BRZwuIZhm4NDACkvC/40ueOaYUXj06DWvY/5JETcst2TzSkC3tzT029xQ5wufOb6ZzR+4F94J0P2CsWRaSh7hYkpDzsOYo+Af8FJAHECqBLs7fFZ2MzWpMCQJ1hHpRklRgQmaTm493iHfEAAP78IwpD7gpIC2AMjaqbskkfRKeLSa+lrdLIH8H52DsbrZ3ehyb1rOmy97+29Avr92+DAEfQRbkCcxyDpozvrhI4y2CEVQbsXOEL9Ff02J71QtypZ9G3gh0beDf+IX/CIz/q7EiOBS9rR5tZdgJn8/8m9ZgJO38/8m9VJyt4VZkIdzfopf/jF86RHBgY0Mh/W+dEk6WrZmLTGXwzctLbRfYxrD8bNb2/kvPAity6CQ/zjSnNmRguxafOQAI01OId45Qcd1WXGgCOgKTkTvN1XxTmpjccUuOqzucxPymp/uY7+nS33CAIpeRc8TW17EdfA+fr1L/10Vd/AQ7Do0yTU/9TTf6c6rVCDSB139x6y2eq0He1CBQ7ZZsVQL3n/YXgR4qvTj+hbhqR/tcfSIWYmXXDdjSV+9gqkbAwCSIXqTZrtvzrqvaCLIGOVpt3VAt6MMTYkjzkPU2zGybcSv6pEMvTGNotFJIVSE8PVC06QLcjhvxf5zp7LjI/7ah+EGiH853k7p3uI00TFmICtzUi7N6+H4I4Eev4hvbfUsFFhteHpMrgc/FXjDOBekvZdSf7qV3goziZErWa7IxhCeLqSxqTwWcfb1SRuMPedeWjuja4fwctd8uI9ihd1yOGoeDk3D3lO1yQnZa3x/H64VGqUeS7jmlNkoAx98HhxXgaJoieRk0KRAdXHWl1s7NGvdy0/vPkuSvcDvDVBaxdwYhmKc4CyfFiNvf5UNm3h1raUQfhz4W6gTOSQNeU67vduS32IG7R7qXbWBemaZ6UaE9OI2Ezp+QEy1HZ/rZSdtCg4ez5JJIYEflLty/82H44sm8PsoIPPgpjDwQ5DGpS+DbhlVpBx+kMjReyn5hRWViasjSa/AHPOJ44Zn6dtR9WIycyMYssWnOgRipwQ++LbI3M0VO+wVMk6EDyCGmg6bh7a9XK0yf763c8MX1+UEfGgH0aof1DqKf6auy9SHuAEYmPrPdSc5YYFq4mVicU4ZZFZWK/Ng1owl63LMAFKk1q0hIj3N9pkBRAPsNDDvaFEA7MuoZfDMSCJyPgCa2KQ6mCGzGGE9h7F07B3Ht92CqVVv92MRVsSGus7rEDkP64hmO0g3IZGGK252CyIdvBDqfw8CHrs/wedlz+h1K7Qv8o9c9KSiTxpLpPFqDwd4JLL9KEvuYTfnjeuoysoAlzgoRAF3NPNend/FuDgXyNwDWBFDjp/h5R3MBu2WXvwhiX763pFvkcPYvUCp0fwsvcM+FygAAAAAAA", "three": "data:image/webp;base64,UklGRrQEAABXRUJQVlA4IKgEAABwHQCdASqgAHgAPm0ulEakIqIhJnUNGIANiU3bq6g7v7TyApoerzP36CdsZ5gPOF9GvmwdRv6AHlz+zx+5X7VZi94vmxN8GVPYrtQX496BX9f9A/Nt+Xf4v2Bf5P/V/Ru9d3oS/sAh0AlGbjHZxSmVLOBT1j0N2ImdjUgoYNneRXdTenSA/gyd5BRZwuIZhm4NDACkvC/40ueOaYUXj06DWvY/5JETcst2TzSkC3tzT029xQ5wufOb6ZzR+4F94J0P2CsWRaSh7hYkpDzsOYo+Af8FJAHECqBLs7fFZ2MzWpMCQJ1hHpRklRgQmaTm493iHfEAAP78IwpD7gpIC2AMjaqbskkfRKeLSa+lrdLIH8H52DsbrZ3ehyb1rOmy97+29Avr92+DAEfQRbkCcxyDpozvrhI4y2CEVQbsXOEL9Ff02J71QtypZ9G3gh0beDf+IX/CIz/q7EiOBS9rR5tZdgJn8/8m9ZgJO38/8m9VJyt4VZkIdzfopf/jF86RHBgY0Mh/W+dEk6WrZmLTGXwzctLbRfYxrD8bNb2/kvPAity6CQ/zjSnNmRguxafOQAI01OId45Qcd1WXGgCOgKTkTvN1XxTmpjccUuOqzucxPymp/uY7+nS33CAIpeRc8TW17EdfA+fr1L/10Vd/AQ7Do0yTU/9TTf6c6rVCDSB139x6y2eq0He1CBQ7ZZsVQL3n/YXgR4qvTj+hbhqR/tcfSIWYmXXDdjSV+9gqkbAwCSIXqTZrtvzrqvaCLIGOVpt3VAt6MMTYkjzkPU2zGybcSv6pEMvTGNotFJIVSE8PVC06QLcjhvxf5zp7LjI/7ah+EGiH853k7p3uI00TFmICtzUi7N6+H4I4Eev4hvbfUsFFhteHpMrgc/FXjDOBekvZdSf7qV3goziZErWa7IxhCeLqSxqTwWcfb1SRuMPedeWjuja4fwctd8uI9ihd1yOGoeDk3D3lO1yQnZa3x/H64VGqUeS7jmlNkoAx98HhxXgaJoieRk0KRAdXHWl1s7NGvdy0/vPkuSvcDvDVBaxdwYhmKc4CyfFiNvf5UNm3h1raUQfhz4W6gTOSQNeU67vduS32IG7R7qXbWBemaZ6UaE9OI2Ezp+QEy1HZ/rZSdtCg4ez5JJIYEflLty/82H44sm8PsoIPPgpjDwQ5DGpS+DbhlVpBx+kMjReyn5hRWViasjSa/AHPOJ44Zn6dtR9WIycyMYssWnOgRipwQ++LbI3M0VO+wVMk6EDyCGmg6bh7a9XK0yf763c8MX1+UEfGgH0aof1DqKf6auy9SHuAEYmPrPdSc5YYFq4mVicU4ZZFZWK/Ng1owl63LMAFKk1q0hIj3N9pkBRAPsNDDvaFEA7MuoZfDMSCJyPgCa2KQ6mCGzGGE9h7F07B3Ht92CqVVv92MRVsSGus7rEDkP64hmO0g3IZGGK252CyIdvBDqfw8CHrs/wedlz+h1K7Qv8o9c9KSiTxpLpPFqDwd4JLL9KEvuYTfnjeuoysoAlzgoRAF3NPNend/FuDgXyNwDWBFDjp/h5R3MBu2WXvwhiX763pFvkcPYvUCp0fwsvcM+FygAAAAAAA", "record": "data:image/webp;base64,UklGRrQEAABXRUJQVlA4IKgEAABwHQCdASqgAHgAPm0ulEakIqIhJnUNGIANiU3bq6g7v7TyApoerzP36CdsZ5gPOF9GvmwdRv6AHlz+zx+5X7VZi94vmxN8GVPYrtQX496BX9f9A/Nt+Xf4v2Bf5P/V/Ru9d3oS/sAh0AlGbjHZxSmVLOBT1j0N2ImdjUgoYNneRXdTenSA/gyd5BRZwuIZhm4NDACkvC/40ueOaYUXj06DWvY/5JETcst2TzSkC3tzT029xQ5wufOb6ZzR+4F94J0P2CsWRaSh7hYkpDzsOYo+Af8FJAHECqBLs7fFZ2MzWpMCQJ1hHpRklRgQmaTm493iHfEAAP78IwpD7gpIC2AMjaqbskkfRKeLSa+lrdLIH8H52DsbrZ3ehyb1rOmy97+29Avr92+DAEfQRbkCcxyDpozvrhI4y2CEVQbsXOEL9Ff02J71QtypZ9G3gh0beDf+IX/CIz/q7EiOBS9rR5tZdgJn8/8m9ZgJO38/8m9VJyt4VZkIdzfopf/jF86RHBgY0Mh/W+dEk6WrZmLTGXwzctLbRfYxrD8bNb2/kvPAity6CQ/zjSnNmRguxafOQAI01OId45Qcd1WXGgCOgKTkTvN1XxTmpjccUuOqzucxPymp/uY7+nS33CAIpeRc8TW17EdfA+fr1L/10Vd/AQ7Do0yTU/9TTf6c6rVCDSB139x6y2eq0He1CBQ7ZZsVQL3n/YXgR4qvTj+hbhqR/tcfSIWYmXXDdjSV+9gqkbAwCSIXqTZrtvzrqvaCLIGOVpt3VAt6MMTYkjzkPU2zGybcSv6pEMvTGNotFJIVSE8PVC06QLcjhvxf5zp7LjI/7ah+EGiH853k7p3uI00TFmICtzUi7N6+H4I4Eev4hvbfUsFFhteHpMrgc/FXjDOBekvZdSf7qV3goziZErWa7IxhCeLqSxqTwWcfb1SRuMPedeWjuja4fwctd8uI9ihd1yOGoeDk3D3lO1yQnZa3x/H64VGqUeS7jmlNkoAx98HhxXgaJoieRk0KRAdXHWl1s7NGvdy0/vPkuSvcDvDVBaxdwYhmKc4CyfFiNvf5UNm3h1raUQfhz4W6gTOSQNeU67vduS32IG7R7qXbWBemaZ6UaE9OI2Ezp+QEy1HZ/rZSdtCg4ez5JJIYEflLty/82H44sm8PsoIPPgpjDwQ5DGpS+DbhlVpBx+kMjReyn5hRWViasjSa/AHPOJ44Zn6dtR9WIycyMYssWnOgRipwQ++LbI3M0VO+wVMk6EDyCGmg6bh7a9XK0yf763c8MX1+UEfGgH0aof1DqKf6auy9SHuAEYmPrPdSc5YYFq4mVicU4ZZFZWK/Ng1owl63LMAFKk1q0hIj3N9pkBRAPsNDDvaFEA7MuoZfDMSCJyPgCa2KQ6mCGzGGE9h7F07B3Ht92CqVVv92MRVsSGus7rEDkP64hmO0g3IZGGK252CyIdvBDqfw8CHrs/wedlz+h1K7Qv8o9c9KSiTxpLpPFqDwd4JLL9KEvuYTfnjeuoysoAlzgoRAF3NPNend/FuDgXyNwDWBFDjp/h5R3MBu2WXvwhiX763pFvkcPYvUCp0fwsvcM+FygAAAAAAA"};
+// Shared board engine for the C1 activities: one fixed screen, illustrated tiles left and right open their step in the
+// centre stage. The activity's app.js fills in Board.tiles and the hooks below, then calls Board.start().
+// Tile: { id, title, short, image, side: 'left'|'right', render: () => html, slot: bool }
+const byId = id => document.getElementById(id);
+const safe = v => String(v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const Board = {
+  tiles: [],
+  faces: null,                              // { n, p, w } images for a reacting character; null = the current tile's picture
+  mood: { n: 'Focused.', p: 'Done.', w: 'Not yet.' },
+  cardLabel: (n, total) => `Progress ${n}/${total}`,
+  unlocked: () => true,
+  lockedMsg: () => '',
+  onOpen: () => {},
+  onClick: () => false,                     // return true when the activity handled the click
+  onReset: () => {},
+  st: null,
+  cur: 0,
+
+  idx(id) { return this.tiles.findIndex(t => t.id === id); },
+  slots() { return this.tiles.filter(t => t.slot).map(t => t.id); },
+  say(msg) { byId('live').textContent = ''; setTimeout(() => { byId('live').textContent = msg; }, 30); },
+  face(m) {
+    const f = byId('face'); f.className = m;
+    const src = this.faces ? this.faces[m] : this.tiles[this.cur].image;
+    f.innerHTML = `<img src="${src}" width="72" height="72" alt=""><span class="sr">${safe(this.mood[m])}</span>`;
+  },
+
+  start() {
+    byId('interactive').hidden = false;
+    this.build();
+    this.wire();
+  },
+  build() {
+    this.st = { done: {}, tries: {} };
+    this.onReset();
+    byId('stage-body').innerHTML = this.tiles.map((t, i) => `<section class="pane" id="pane-${t.id}" hidden aria-labelledby="ph-${t.id}">
+      <h2 id="ph-${t.id}" tabindex="-1"><span class="kick">Step ${i + 1} of ${this.tiles.length}</span> ${safe(t.title)}</h2>${t.render()}</section>`).join('');
+    const tile = t => `<li><button type="button" class="tile" data-tile="${t.id}" id="tile-${t.id}">
+      <span class="ico" aria-hidden="true"><img src="${t.image}" alt=""></span><span class="tt">${safe(t.short)}</span><span class="state" aria-hidden="true"></span><span class="sr st-text"></span></button></li>`;
+    byId('rail-left').innerHTML = this.tiles.filter(t => t.side === 'left').map(tile).join('');
+    byId('rail-right').innerHTML = this.tiles.filter(t => t.side === 'right').map(tile).join('');
+    byId('slots').innerHTML = this.slots().map(id => `<li><button type="button" class="slot" data-tile="${id}" id="slot-${id}"><strong>${safe(this.tiles[this.idx(id)].title)}</strong><span class="body muted">Not yet done.</span></button></li>`).join('');
+    this.open(0, true);
+  },
+
+  open(i, silent) {
+    const t = this.tiles[i];
+    if (!this.unlocked(t.id)) { const m = this.lockedMsg(t.id); this.say(m); byId('lockmsg').textContent = m; return; }
+    byId('lockmsg').textContent = '';
+    this.cur = i;
+    this.tiles.forEach(x => { byId('pane-' + x.id).hidden = x.id !== t.id; });
+    this.onOpen(t.id);
+    this.face(this.st.done[t.id] ? 'p' : 'n');
+    this.paint();
+    byId('stage-scroll').scrollTop = 0;
+    if (!silent) byId('ph-' + t.id).focus();
+  },
+  paint() {
+    this.tiles.forEach((t, i) => {
+      const b = byId('tile-' + t.id), done = !!this.st.done[t.id], lock = !this.unlocked(t.id);
+      b.className = 'tile' + (done ? ' done' : '') + (i === this.cur ? ' current' : '') + (lock ? ' locked' : '');
+      b.setAttribute('aria-current', i === this.cur ? 'step' : 'false');
+      b.querySelector('.state').textContent = done ? '✓' : lock ? '🔒' : '';
+      b.querySelector('.st-text').textContent = done ? ' (done)' : lock ? ' (locked)' : i === this.cur ? ' (current)' : ' (not started)';
+    });
+    const s = this.slots(), n = s.filter(id => this.st.done[id]).length;
+    byId('prog').textContent = `${n} of ${s.length} done`;
+    byId('bar').style.width = (s.length ? n / s.length * 100 : 0) + '%';
+    byId('card').classList.toggle('complete', n === s.length);
+    byId('unlocked').hidden = n !== s.length;
+    byId('toggle-card').textContent = this.cardLabel(n, s.length);
+    const last = this.tiles.length - 1, nx = byId('next'), pv = byId('prev');
+    pv.disabled = this.cur === 0; nx.disabled = this.cur === last;
+    nx.textContent = this.cur < last ? 'Next: ' + this.tiles[this.cur + 1].short + ' →' : 'Last step';
+    pv.textContent = this.cur ? '← ' + this.tiles[this.cur - 1].short : '←';
+  },
+  nextOpen() {
+    for (let k = 1; k <= this.tiles.length; k++) {
+      const j = (this.cur + k) % this.tiles.length, t = this.tiles[j];
+      if (!this.st.done[t.id] && this.unlocked(t.id)) return j;
+    }
+    return -1;
+  },
+
+  // Reactions
+  stamp(text) { const s = byId('stamp'); s.textContent = text; s.classList.remove('on'); void s.offsetWidth; s.classList.add('on'); },
+  wrong(fb) { this.face('w'); fb.classList.remove('wob'); void fb.offsetWidth; fb.classList.add('wob'); this.say(this.mood.w); },
+  fill(id, html) { const s = byId('slot-' + id); if (!s) return; const b = s.querySelector('.body'); b.className = 'body'; b.innerHTML = html; },
+  fly(id) {
+    const slot = byId('slot-' + id);
+    const pop = () => { if (slot) { slot.classList.add('filled', 'pop'); setTimeout(() => slot.classList.remove('pop'), 700); } };
+    if (!slot || reduced()) { pop(); return; }
+    const from = byId('tile-' + id).querySelector('.ico').getBoundingClientRect();
+    const to = (byId('card').hidden ? byId('toggle-card') : slot).getBoundingClientRect();
+    const c = document.createElement('div'); c.className = 'flyer'; c.textContent = '✓';
+    Object.assign(c.style, { left: from.left + 'px', top: from.top + 'px', width: from.width + 'px', height: from.height + 'px' });
+    document.body.appendChild(c);
+    const a = c.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${to.left + 12 - from.left}px,${to.top + 12 - from.top}px) scale(1.4)`, opacity: .2 }], { duration: 650, easing: 'cubic-bezier(.3,.7,.2,1)' });
+    a.onfinish = () => { c.remove(); pop(); };
+  },
+  // A step is finished: tick its tile, fill its slot, react, and offer the next open step inside `holder`.
+  complete(id, holder, stampText, slotHtml) {
+    this.st.done[id] = true;
+    if (slotHtml !== undefined) { this.fill(id, slotHtml); this.fly(id); }
+    this.face('p');
+    if (stampText) this.stamp(stampText);
+    const j = this.nextOpen();
+    if (holder && !holder.querySelector('[data-advance]')) {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'go'; b.dataset.advance = '1';
+      b.textContent = j >= 0 ? 'Continue to ' + this.tiles[j].short : 'All done';
+      holder.appendChild(b);
+    }
+    this.paint();
+    this.say(this.mood.p);
+  },
+  // Count a failed check; true once the "Show me the answer" escape should appear (after two).
+  failed(id) { this.st.tries[id] = (this.st.tries[id] || 0) + 1; return this.st.tries[id] >= 2; },
+
+  showCard(on) {
+    byId('card').hidden = !on;
+    byId('toggle-card').setAttribute('aria-expanded', String(on));
+    if (on) byId('closecard').focus();
+  },
+  wire() {
+    document.addEventListener('click', e => {
+      const t = e.target.closest('button');
+      if (!t || this.onClick(t)) return;
+      if (t.dataset.tile) this.open(this.idx(t.dataset.tile));
+      else if (t.dataset.advance) { const j = this.nextOpen(); if (j >= 0) this.open(j); else this.say('Every step is done.'); }
+      else if (t.id === 'prev') this.open(this.cur - 1);
+      else if (t.id === 'next') this.open(this.cur + 1);
+      else if (t.id === 'restart') { this.build(); byId('h-top').focus(); }
+      else if (t.id === 'toggle-card') this.showCard(byId('card').hidden);
+      else if (t.id === 'closecard') { this.showCard(false); byId('toggle-card').focus(); }
+      else if (t.id === 'casefile' && byId('casedlg')) byId('casedlg').showModal();
+      else if (t.id === 'closecase') byId('casedlg').close();
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !byId('card').hidden) { this.showCard(false); byId('toggle-card').focus(); } });
+  }
+};
+
+const IDS=['one','two','three'],FIELDS=['source','observation','interpretation','role','relevance','update'];
+const LABELS={source:'Profile section',observation:'Observation from the profile',interpretation:'Why might this matter, and how could it shape outreach?',role:'Relevant role',relevance:'Why this role would care',update:'Recent development referenced'};
+const FORMAT='c2-find-insights-v1';
+let checked={},pending=null;
+function profile(){return `<details class="reference"><summary>Open the fictional company profile</summary><div class="profile">${DATA.sections.map(s=>`<h3>${safe(s.title)}</h3><ul>${s.facts.map(f=>`<li>${safe(f)}</li>`).join('')}</ul>`).join('')}</div></details>`;}
+function examples(){return `<details class="reference"><summary>See possible insights after drafting your own</summary><div class="profile"><p>These are possible interpretations, not an answer key. Other source-supported insights can be useful. Nothing here fills your writing fields.</p>${DATA.examples.map(e=>`<h3>${safe(e.title)}</h3><p><strong>Observation:</strong> ${safe(e.observation)}</p><p><strong>Why it might matter:</strong> ${safe(e.interpretation)}</p><p><strong>Role relevance:</strong> ${safe(e.role)}</p><p><strong>Recent development:</strong> ${safe(e.development)}</p>`).join('')}</div></details>`;}
+function input(id,f){const opts=f==='source'?DATA.sections.map(s=>[s.id,s.title]):f==='role'?DATA.roles.map(r=>[r.id,r.name]):f==='update'?DATA.updates.map(u=>[u.id,u.label]):null;return `<label class="field" for="${id}-${f}">${safe(LABELS[f])}</label>${opts?`<select id="${id}-${f}" data-write="${id}"><option value="">Choose one</option>${opts.map(([v,t])=>`<option value="${v}">${safe(t)}</option>`).join('')}</select>`:`<textarea id="${id}-${f}" data-write="${id}" rows="4" maxlength="4000"></textarea>`}`;}
+function pane(id,i){return `<p>Write insight ${i+1} in your own words. Connect a profile observation to a possible priority and a useful question for outreach. A short paragraph or two is enough; there is no automatic quality score.</p>${profile()}${FIELDS.map(f=>input(id,f)+(f==='role'?`<p id="role-guide-${id}" class="muted"></p>`:f==='update'?`<section id="update-guide-${id}" class="panel" hidden></section>`:'')).join('')}<button type="button" data-check="${id}">Check completeness</button><section id="fb-${id}" class="fb" role="status" tabindex="-1" hidden></section><fieldset><legend>Review the meaning yourself</legend>${DATA.review.map((t,j)=>`<label class="pick"><input type="checkbox" data-review="${id}" id="${id}-review-${j}"><span>${safe(t)}</span></label>`).join('')}</fieldset><p>Completeness is checked automatically. Source support and reasoning are your judgement.</p><div class="actions"><button type="button" data-complete="${id}" disabled>I have reviewed this insight</button><button type="button" data-continue="${id}" hidden>Continue</button></div>${examples()}`;}
+function read(id){return Object.fromEntries(FIELDS.map(f=>[f,byId(id+'-'+f).value]));}
+function signature(id){return JSON.stringify(read(id));}
+function missing(id){const v=read(id);return FIELDS.filter(f=>!v[f].trim());}
+function reviewed(id){return DATA.review.every((_,j)=>byId(id+'-review-'+j).checked);}
+function current(id){return checked[id]===signature(id)&&!missing(id).length;}
+function sync(id){byId('pane-'+id).querySelector('[data-complete]').disabled=!(current(id)&&reviewed(id))||!!Board.st.done[id];}
+function invalidate(id){delete checked[id];delete Board.st.done[id];DATA.review.forEach((_,j)=>byId(id+'-review-'+j).checked=false);byId('distinct').checked=false;byId('fb-'+id).hidden=true;byId('pane-'+id).querySelector('[data-continue]').hidden=true;Board.fill(id,'Draft changed: check and review again.');byId('stamp').textContent='';byId('stamp').classList.remove('on');sync(id);Board.paint();updateRecord();}
+function guides(id){const v=read(id),r=DATA.roles.find(r=>r.id===v.role),u=DATA.updates.find(u=>u.id===v.update);byId('role-guide-'+id).textContent=r?'Stated focus: '+r.focus:'';byId('update-guide-'+id).hidden=!u;byId('update-guide-'+id).innerHTML=u?`<p><strong>Profile detail:</strong> ${safe(u.text)}</p><p>${safe(u.guide)}</p>`:'';}
+function describe(f,v){if(!v)return 'Not entered yet.';if(f==='source')return DATA.sections.find(s=>s.id===v)?.title||v;if(f==='role')return DATA.roles.find(r=>r.id===v)?.name||v;if(f==='update')return DATA.updates.find(u=>u.id===v)?.label||v;return v;}
+function updateRecord(){if(!byId('written-record'))return;byId('written-record').innerHTML=IDS.map((id,i)=>`<section class="panel"><h3>Insight ${i+1}</h3><p>${Board.st.done[id]?'Self-reviewed by you.':'Draft: self-review not complete.'}</p><dl>${FIELDS.map(f=>`<dt>${safe(LABELS[f])}</dt><dd>${safe(describe(f,read(id)[f]))}</dd>`).join('')}</dl></section>`).join('');byId('download').disabled=!IDS.every(id=>Board.st.done[id])||!byId('distinct').checked;}
+function download(text,name,type){const url=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+function notify(msg){byId('save-status').textContent=msg;Board.say(msg);}
+Board.tiles=[{id:'start',title:'Read the brief and profile',short:'Brief and profile',image:IMAGES.start,side:'left',render:()=>`<p>${safe(DATA.intro)}</p><p>${safe(DATA.boundary)}</p><section class="panel"><h3>Your situation</h3><p>${safe(DATA.scenario)}</p></section>${profile()}<p>For each of three insights, select a source section, write an observation and interpretation, explain a relevant role, and reference a recent development. Review the profile facts separately from your hypotheses. You can use the same source detail for different useful insights.</p><p>The source profile and worksheet are reproduced in the complete text and PDF versions below. Use those to write offline if you prefer.</p><button type="button" id="begin">Write my first insight</button>`},...IDS.map((id,i)=>({id,title:'Write insight '+(i+1),short:'Insight '+(i+1),side:i<1?'left':'right',image:IMAGES[id],slot:true,render:()=>pane(id,i)})),{id:'record',title:'Review and keep your insights',short:'Your three insights',image:IMAGES.record,side:'right',render:()=>`<p>Your current writing appears below, including unfinished drafts. No prose has been graded.</p><div id="written-record"></div><label class="pick"><input type="checkbox" id="distinct"><span>My three insights add different, useful points for outreach, even if some use the same source detail.</span></label><button type="button" id="download" disabled>Download my three insights as text</button><p id="download-status" role="status"></p><p>${safe(DATA.closing)}</p>`}];
+Board.cardLabel=(n,t)=>`Insights reviewed ${n}/${t}`;
+Board.mood={n:'Writing practice.',p:'Self-review recorded.',w:'Review your draft.'};
+Board.onReset=()=>{checked={};pending=null;byId('stamp').textContent='';byId('stamp').classList.remove('on');byId('card').hidden=true;byId('toggle-card').setAttribute('aria-expanded','false');if(byId('restore-warning'))byId('restore-warning').hidden=true;};
+Board.onOpen=id=>{if(IDS.includes(id))guides(id);if(id==='record')updateRecord();};
+Board.onClick=b=>{
+ if(b.id==='restart'){if(IDS.some(id=>FIELDS.some(f=>read(id)[f]))&&!confirm('Start again and clear all writing on this page? Save an editable draft first if you want to keep it.'))return true;return false;}
+ if(b.id==='begin'){Board.open(1);return true;}
+ const id=b.dataset.check||b.dataset.complete||b.dataset.continue;
+ if(b.dataset.check){const absent=missing(id),fb=byId('fb-'+id);fb.hidden=false;if(absent.length){delete checked[id];fb.textContent='Still to fill: '+absent.map(f=>LABELS[f]).join('; ')+'. Your existing writing is kept.';}else{checked[id]=signature(id);fb.textContent='All fields contain a response. This does not verify the meaning or source support. Use the three self-review statements below, then record your review.';}sync(id);fb.focus();return true;}
+ if(b.dataset.complete){if(!current(id)||!reviewed(id))return true;Board.complete(id,null,'Self-reviewed','Your review recorded');sync(id);const next=byId('pane-'+id).querySelector('[data-continue]');next.hidden=false;next.focus();updateRecord();return true;}
+ if(b.dataset.continue){Board.open(Board.idx(id)+1);return true;}
+ if(b.id==='save-work'){download(JSON.stringify({format:FORMAT,insights:IDS.map(read)},null,2),'my-lancre-insights-draft.json','application/json');notify('Editable draft downloaded. Keep the file to restore your writing later.');return true;}
+ if(b.id==='restore-work'){byId('restore-file').click();return true;}
+ if(b.id==='restore-cancel'){pending=null;byId('restore-warning').hidden=true;notify('Restore cancelled. Your current writing is kept.');return true;}
+ if(b.id==='restore-confirm'){if(!pending)return true;IDS.forEach((id,i)=>{FIELDS.forEach(f=>byId(id+'-'+f).value=pending[i][f]);invalidate(id);guides(id);});pending=null;byId('restore-warning').hidden=true;updateRecord();notify('Draft restored. Check completeness and review each insight again.');Board.open(1);return true;}
+ if(b.id==='download'){if(b.disabled)return true;const lines=[DATA.title,'Learner-authored insights; self-reviewed, not automatically graded.',''];IDS.forEach((id,i)=>{lines.push('Insight '+(i+1),...FIELDS.map(f=>LABELS[f]+': '+describe(f,read(id)[f])),'');});download(lines.join('\n'),'my-lancre-insights.txt','text/plain;charset=utf-8');byId('download-status').textContent='Your three written insights have been downloaded.';return true;}
+ return false;
+};
+Board.start();
+const toolbar=document.createElement('section');toolbar.className='save-tools';toolbar.setAttribute('aria-label','Keep or restore your writing');toolbar.innerHTML='<button type="button" id="save-work">Save editable draft</button><button type="button" id="restore-work" class="quiet">Restore draft</button><input id="restore-file" type="file" accept=".json,application/json" hidden><p id="save-status" role="status"></p><div id="restore-warning" hidden><p>Replace all current writing with the selected saved draft? This also clears self-review status.</p><button type="button" id="restore-confirm">Replace my current writing</button><button type="button" id="restore-cancel" class="quiet">Cancel restore</button></div>';byId('interactive').before(toolbar);
+document.addEventListener('input',e=>{const id=e.target.dataset.write;if(id){invalidate(id);guides(id);}});
+document.addEventListener('change',e=>{if(e.target.dataset.write){invalidate(e.target.dataset.write);guides(e.target.dataset.write);}if(e.target.dataset.review){const id=e.target.dataset.review;if(!reviewed(id)){byId('stamp').textContent='';byId('stamp').classList.remove('on');delete Board.st.done[id];byId('distinct').checked=false;byId('pane-'+id).querySelector('[data-continue]').hidden=true;Board.fill(id,'Self-review reopened.');Board.paint();}sync(id);updateRecord();}if(e.target.id==='distinct')updateRecord();});
+byId('restore-file').addEventListener('change',async e=>{const file=e.target.files[0];pending=null;byId('restore-warning').hidden=true;if(!file)return;try{if(file.size>200000)throw Error();const v=JSON.parse(await file.text());if(v.format!==FORMAT||!Array.isArray(v.insights)||v.insights.length!==3)throw Error();const answers=v.insights.map(row=>{if(!row||typeof row!=='object')throw Error();const clean={};for(const f of FIELDS){if(typeof row[f]!=='string'||row[f].length>4000)throw Error();if(['source','role','update'].includes(f)&&row[f]&&!({source:DATA.sections,role:DATA.roles,update:DATA.updates}[f]).some(o=>o.id===row[f]))throw Error();clean[f]=row[f];}return clean;});pending=answers;byId('restore-warning').hidden=false;notify('Draft file read. Confirm below to replace your current writing.');byId('restore-confirm').focus();}catch{notify('That is not a valid saved draft for this activity. Your current writing is kept.');}e.target.value='';});
+
+/* Shared progress adapter; learner decisions and feedback remain owned by this activity. */
+ActivityProgress.mount({id: "c2-find-insights", compatibility: "state-v1:202bc6ca5e289a5cb056", title: document.title, media: [...(typeof IMG !== 'undefined' ? Object.values(IMG) : []), ...(typeof IMAGES !== 'undefined' ? Object.values(IMAGES) : []), ...(typeof CARLA !== 'undefined' ? Object.values(CARLA) : [])], roots:['stage-body','slots','stamp'],getState:()=>({board:Board.st,cur:Board.cur,checked}),setState:value=>{Board.st=value.board;Board.cur=value.cur;checked=value.checked;},afterRestore:()=>{Board.paint();Board.face(Board.st.done[Board.tiles[Board.cur].id]?'p':'n');},reset:()=>{Board.build();byId('card').hidden=true;byId('toggle-card').setAttribute('aria-expanded','false');byId('stamp').textContent='';byId('stamp').classList.remove('on');},currentRoot:()=>byId('pane-'+Board.tiles[Board.cur].id)});
+</script></body></html>
