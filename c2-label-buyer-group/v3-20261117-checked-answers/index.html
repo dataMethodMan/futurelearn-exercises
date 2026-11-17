@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Label the buyer group</title><style>*{box-sizing:border-box}[hidden]{display:none!important}
+:root{--navy:#14213d;--teal:#1fa3a3;--teal-d:#0b6b6b;--amber:#f4a261;--paper:#faf6ee;--coral:#e76f51;--ink:#172b36;--line:#c9d6da;--ok:#2f8f60}
+html{color-scheme:light}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 system-ui,sans-serif}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-9999px;top:0}.skip:focus{left:8px;z-index:100;background:white;padding:8px}
+a{color:#07516d}
+header.top{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--navy);color:white;height:64px}
+header.top h1{font-size:1.15rem;margin:0}
+header.top .tools{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+header.top button{background:transparent;color:white;border-color:white;margin:0}
+.app{display:grid;grid-template-columns:190px minmax(0,1fr) 190px;gap:14px;padding:14px 18px;height:calc(100vh - 64px);min-height:560px;position:relative}
+.rail,.card,.stage{background:white;border:1px solid var(--line);border-radius:14px;min-height:0}
+.rail{padding:10px;overflow:auto;display:flex;flex-direction:column;justify-content:center}.rail h2,.card h2{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:#35505e;margin:2px 4px 8px}
+ul.list{list-style:none;margin:0;padding:0}ul.list li{margin:0 0 8px}
+button{font:inherit;cursor:pointer;min-height:44px;padding:10px 14px;border-radius:8px;border:2px solid var(--teal-d);background:var(--teal-d);color:white}
+button.quiet{background:white;color:var(--teal-d)}button:disabled{opacity:.45;cursor:default}
+.tile{position:relative;display:grid;grid-template-columns:58px 1fr auto;align-items:center;gap:8px;width:100%;text-align:left;background:#eef1f2;color:#40545d;border:2px solid transparent;border-radius:12px;padding:6px;min-height:86px;transition:transform .2s,background .2s,box-shadow .2s}
+.rail-left .tile:hover{transform:translateX(3px)}.rail-right .tile:hover{transform:translateX(-3px)}
+.ico{display:block;width:58px;height:70px;border-radius:8px;overflow:hidden;background:#d7dfe2}.ico img{width:100%;height:100%;display:block;object-fit:cover}
+.tt{font-weight:700;line-height:1.15;font-size:.82rem}.state{font-size:1rem}
+.tile.current{background:white;color:var(--navy);border:2px solid var(--teal);box-shadow:0 0 0 4px #1fa3a329;animation:pulse 2.4s ease-in-out infinite}
+.tile.done{background:#e3f4ec;color:#154a33;border:2px solid var(--ok)}.tile.locked{opacity:.65}
+@keyframes pulse{50%{box-shadow:0 0 0 8px #1fa3a314}}
+.stage{display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 34px #14213d1f;position:relative}
+.shead{display:flex;gap:14px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,#e9f7f6,white)}
+#face img{display:block;width:72px;height:72px;object-fit:cover;border-radius:50%;border:4px solid var(--teal);transition:transform .25s}#face.p img{border-color:var(--amber)}#face.w img{border-color:var(--coral)}
+.shead .meta{flex:1}.shead .meta strong{display:block;font-size:1.05rem}.muted{color:#35505e}
+#stamp{border:3px solid var(--teal-d);color:var(--teal-d);font-weight:800;letter-spacing:.03em;font-size:1.05rem;padding:4px 10px;border-radius:6px;transform:rotate(-6deg);opacity:0;max-width:220px;text-align:center}
+#stamp.on{animation:stamp 1.1s ease-out forwards}
+@keyframes stamp{0%{opacity:0;transform:rotate(-6deg) scale(2.2)}25%{opacity:1;transform:rotate(-6deg) scale(1)}85%{opacity:1}100%{opacity:0}}
+#stage-scroll{flex:1;overflow-y:auto;padding:16px 22px;overscroll-behavior:contain}
+.pane h2{font-size:1.4rem;margin:.1em 0 .5em;outline-offset:6px}.kick{display:block;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-d)}
+fieldset{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0;min-width:0}fieldset.done{border:2px solid var(--ok)}legend{font-weight:700;padding:0 6px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px}.choices.one{grid-template-columns:1fr}
+.pick{display:flex;gap:10px;align-items:flex-start;min-height:44px;padding:8px;border:1px solid #dbe4e7;border-radius:8px;cursor:pointer}.pick input{width:22px;height:22px;flex:0 0 22px;margin-top:2px;accent-color:var(--teal-d)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.go{background:var(--amber);border-color:var(--amber);color:var(--navy);font-weight:700}
+.fb p{margin:.4em 0}.fb .ok{font-weight:700;color:#1d5a3c}.wob{animation:wob .35s}@keyframes wob{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.landing{display:grid;grid-template-columns:minmax(260px,1fr) minmax(300px,1fr);gap:22px;align-items:center}.landing>img{display:block;width:100%;max-height:330px;object-fit:cover;border-radius:14px}.landing h3{font-size:1.5rem;margin:.2em 0}
+.field{display:block;font-weight:600;margin-top:14px}input[type=text],textarea,select{font:inherit;display:block;width:100%;padding:10px;border:1px solid #627784;border-radius:6px;min-height:44px;background:white;color:inherit}textarea{min-height:120px}
+.panel{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:10px 0}
+.snav{display:flex;justify-content:space-between;gap:8px;padding:10px 20px;border-top:1px solid var(--line);background:#f6fafa}
+#lockmsg{padding:0 20px;margin:0;color:#8a3b1c}
+.card{position:absolute;right:222px;top:118px;z-index:20;width:min(390px,calc(100vw - 40px));max-height:calc(100% - 140px);padding:12px;overflow:auto;box-shadow:0 14px 42px #14213d44}
+.chead{display:flex;justify-content:space-between;align-items:center;gap:8px}.chead h2{margin:0 4px}
+.card .bar{height:10px;border-radius:6px;background:#e1e8ea;overflow:hidden;margin:10px 4px 12px}
+#bar{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--amber));transition:width .6s}
+#prog{margin:0 4px 8px;font-weight:600}
+.slot{display:block;width:100%;text-align:left;background:#f1f4f5;color:#5b6d76;border:2px dashed #b9c6cb;border-radius:12px;padding:10px 12px;min-height:60px}
+.slot strong{display:block;font-size:.9rem}.slot .body{display:block;font-size:.85rem;font-weight:400}.slot ul{margin:.3em 0 0;padding-left:1.1em}.slot li{margin:0 0 3px}
+.slot.filled{background:#e7f6f6;color:var(--ink);border:2px solid var(--teal)}.slot.pop{animation:pop .6s}
+@keyframes pop{40%{transform:scale(1.04);box-shadow:0 0 0 6px #1fa3a333}}
+.card.complete{box-shadow:0 0 0 3px var(--amber),0 8px 30px #f4a26166}
+.unlocked{display:flex;gap:12px;align-items:center;margin:4px 4px 10px;font-weight:700;color:#8a4a12}.unlocked img{width:56px;height:56px;border-radius:10px;object-fit:cover}
+.flyer{position:fixed;z-index:50;display:grid;place-items:center;border-radius:10px;background:var(--ok);color:white;font-weight:800;pointer-events:none}
+dialog{max-width:720px;border:1px solid var(--line);border-radius:14px;padding:20px}dialog::backdrop{background:#14213d88}
+:focus-visible{outline:3px solid #9c3d00;outline-offset:3px}
+#text-version{max-width:860px;margin:18px auto;padding:0 18px 24px}#text-version>summary{font:inherit;min-height:48px;padding:12px;cursor:pointer;font-weight:700}
+#text-version h1{font-size:clamp(1.5rem,4vw,2.3rem);line-height:1.2}#text-version h2{font-size:1.35rem}#text-version h3{font-size:1.1rem}
+.altlinks{text-align:center}
+.dossier{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:start}.dossier img{width:100%;border-radius:12px;display:block}.dossier .panel{margin:0}
+.scenario{font-size:1.05rem;margin:0}.quote{font-size:1.08rem;font-weight:600;border-left:5px solid var(--teal-d);padding-left:12px;margin:.4em 0}
+.pick:has(input:checked){border-color:var(--teal-d);background:#e7f6f6}
+@media(max-width:900px){.dossier{grid-template-columns:1fr}.dossier img{max-width:260px}.app{grid-template-columns:112px minmax(0,1fr) 112px;padding:8px;gap:8px}.rail{padding:5px}.rail h2{font-size:.68rem}.tile{grid-template-columns:1fr;min-height:92px;text-align:center}.ico{width:100%;height:54px}.tt{font-size:.72rem}.state{position:absolute;top:4px;right:6px}.card{right:128px}.shead{padding:8px 12px}#stage-scroll{padding:12px}.snav{padding:8px 12px}.choices{grid-template-columns:1fr}.landing{grid-template-columns:1fr}.landing>img{max-height:230px}}
+@media(max-width:620px){header.top{flex-wrap:wrap;height:auto;padding:10px 16px}.app{height:auto;min-height:0;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto}.rail{min-width:0;overflow-x:auto;justify-content:flex-start}.rail ul{display:flex;gap:8px}.rail li{flex:0 0 145px;margin:0}.tile{grid-template-columns:52px 1fr;text-align:left;min-height:72px}.ico{width:52px;height:58px}.rail-left{grid-row:1}.stage{grid-row:2;min-height:70vh}.rail-right{grid-row:3}.card{position:fixed;inset:80px 16px auto 16px;width:auto;max-height:70vh}.shead{flex-wrap:wrap}#face img{width:56px;height:56px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}#stamp.on{opacity:1}}
+@media print{.app,header.top .tools,.skip{display:none}#text-version{max-width:none}}
+summary,button{min-height:44px}summary{padding:10px;cursor:pointer}.reference{border:1px solid #b6c6c5;border-radius:8px;margin:12px 0}.reference p{padding:0 16px}fieldset{min-width:0}.shead .meta{min-width:0}#stamp{display:none;transform:none!important;animation:none!important;max-width:100%;font-size:.85rem}#stamp.on{display:block;opacity:1}.data-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}.data-controls label{min-width:0;font-weight:650}select{max-width:100%;height:auto;white-space:normal}select option{font:inherit}.dataset{border:1px solid var(--line);border-radius:10px;padding:12px}.table-scroll{overflow:auto;max-height:340px;border:1px solid var(--line);margin-top:12px;max-width:100%}table{border-collapse:collapse;min-width:740px;width:100%;font-size:.9rem}caption{text-align:left;padding:8px;font-weight:650}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}thead th{position:sticky;top:0;background:#e1efed;z-index:1}tbody tr:nth-child(even){background:#f7f9f8}.counts{padding:0;list-style:none}.counts li{display:grid;grid-template-columns:100px minmax(0,1fr) 24px;gap:8px;align-items:center;padding:3px 0}.countbar{height:14px;background:var(--teal-d);width:calc(var(--count)*18%);max-width:100%;border-radius:3px}.field{margin-top:16px}.fb{margin:16px 0;padding:12px;border:2px solid var(--teal-d);border-radius:8px}#review-record ul{padding-left:22px;overflow-wrap:anywhere}.table-scroll:focus-visible{outline:3px solid #9c3d00}.data-status{font-weight:650}
+@media(max-width:900px){.shead{display:grid;grid-template-columns:56px minmax(0,1fr)}.shead .meta{grid-column:2}#toggle-card{grid-column:1/-1;justify-self:start}#stamp{grid-column:1/-1;width:100%}.data-controls{grid-template-columns:1fr}}
+@media(max-width:620px){.rail h2{position:sticky;left:0;max-width:100%;white-space:normal;line-height:1.35}}
+.metric-chart{padding:0;list-style:none}.metric-chart li{padding:10px 0;border-bottom:1px solid var(--line)}.metric-series{margin-top:5px}.metric-series>span:first-child{display:block;font-size:.9rem}.metric-bar{display:block;height:13px;min-width:1px;border-radius:3px;background:#176d70}.reference-bar{background:#b66b2f}.record-table{margin-top:12px}.metric-chart li>strong{display:block}.data-controls .pick{align-self:end;font-weight:400}
+.save-tools{padding:10px 18px;border-bottom:1px solid var(--line)}.save-tools>button{margin:0 8px 4px 0}.save-tools p:empty{display:none}.save-tools p{margin:6px 0}.profile{padding:0 16px 12px}.profile li{margin:8px 0}.profile h3{font-size:1rem}.pane select{margin-bottom:10px}.pane button[data-check]{margin-top:16px}dt{font-weight:700}dd{margin:3px 0 14px;white-space:pre-wrap;overflow-wrap:anywhere}textarea{resize:vertical}.reference{overflow-wrap:anywhere}#restore-warning{padding:12px;border:2px solid var(--teal-d);border-radius:8px;max-width:720px}
+</style></head><body>
+<a class="skip" href="#stage-scroll">Skip to the current step</a><a class="skip" href="#text-version">Go to complete text version</a>
+<header class="top"><div><h1 id="h-top" tabindex="-1">Label the buyer group</h1></div><div class="tools"><button type="button" id="restart" class="quiet">Start again</button></div></header>
+<noscript><p style="padding:12px 20px">Use the complete text version below, or <a href="fallback.html">open the text version</a> or <a href="fallback.pdf">the PDF</a>. Everything in the activity is included.</p></noscript>
+<div id="interactive" class="app" hidden>
+<nav class="rail rail-left" aria-label="Case and stakeholders steps"><h2>Case and stakeholders</h2><ul class="list" id="rail-left"></ul></nav>
+<main class="stage" aria-label="Current step" data-activity-id="w3-a3-s5" data-version="v3-20261117-checked-answers">
+<div class="shead"><div id="face"></div><div class="meta"><strong>Map the people. Check the evidence.</strong><span class="muted">Correct the role and ratings, then plan each conversation.</span></div><div id="stamp" aria-hidden="true"></div><button type="button" id="toggle-card" class="quiet" aria-expanded="false" aria-controls="card">Progress</button></div>
+<div id="stage-scroll" tabindex="-1"><div id="stage-body"></div></div>
+<p id="lockmsg" role="status"></p>
+<div class="snav"><button type="button" id="prev" class="quiet">←</button><button type="button" id="next" class="quiet">Next →</button></div>
+</main>
+<nav class="rail rail-right" aria-label="More stakeholders and map steps"><h2>More stakeholders and map</h2><ul class="list" id="rail-right"></ul></nav>
+<aside class="card" id="card" aria-label="Your stakeholder map" hidden><div class="chead"><h2>Your stakeholder map</h2><button type="button" id="closecard" class="quiet">Close</button></div><div class="bar" aria-hidden="true"><div id="bar"></div></div><p id="prog"></p><div class="unlocked" id="unlocked" hidden><img src="data:image/webp;base64,UklGRqwFAABXRUJQVlA4IKAFAADwHwCdASqgAHgAPm00lkckIyIhKHPZ6IANiUAay/5PhuTB6XiKPnhhf0h0GfqM8w/m1+jr/Veof/gOpA9ADpSP3Pyo/xT/QO0v/B6qrrKdDfYDtI/4/Hg9qT6Adwn5h/4TwBo9/97/LfVn/4PIR+Q/6f9kPgJ/k39Q6if7G///3Iv1N//5fQ9HHe74QUdxk1CIaRjx6IJGgpKI1igU9bu6XVvIMmVQxNRc2QmH/imVBXpSLWPNvb9s8Sgg9diXGd6UmMlhM/OOebyqYi/fZPrrAZXrIq+YyFpoTBPlRyKP1JUKIXukWnuRlQSFEIbrdgwCyVp/1dPKCIwrKQKQc3Gnfhg/ejnlSAAA/vu4o0fuznxQAA2Q1Mz65yr8Vd2v1m1Z2IknNhBbG/m77rVKf51sSv3K1zPjZgr5J/5xh4+/RPAaGZ2WGVkrk9vw+UhfXhknmwTUlz+eB1tGzb/YXLPHXEgiI/MkUfY6tuvCXKdXiIbXLnTJanaeuZ8bMFfJP/OMPH36J4DQzOywyslcnt+HykL68Mk82CakufzwPtC3/0gLdgVE9oXb/PeO61NEnYYhp6YFjdwwpqBZVLVvYNmlxc35hqO9RG4MVl6e0NkeqFeop0KL1EY5RSNGLEN/eKxVoC5jD724/jlTAa5nN9FAideRp06rQ8Zrk7cIGYr6GkIcrZJEzBlYZ93XB+8nYW+3ueIdMaiWaClpGPymlsuyJS1nMXD1J7El8g9CcstOqWT7I8icx0OBT/wof9nfgIk+OEEyTtUzDktBxg+nfZqh8ERIuHGN5HOHUrF+Ss+ufxfyUPS+HHbliuWkAHOYQYezf4NZGtkgryc8XWa0UKtRaBG6pTkxXomr2pTmDwI9tB3Hs+H8or71qj1NJKcehbI/CpmYdOMMEmU8o9x5crQyQaBzKy4SnzVAMp4pmocdVsysvkW/X9YyWP3mFNJ+aPSqxxwhwWVC16x4+fyyqFbq96X4UxHrF+EXCaph3SIBdccj80wa3Lxqt6Ck5hCbWgP2xQBAjYhRDR7GpbuyLxqlvoCQEpq8DTE5VDrTfVF6PIGIokU13bEEfRdoi3YNzbqHWWP4crGPP3OC/QRX7w10V/ych7T8z+RFu8CHLuPvgPbsBGCA6uAHMEr57SIZrLsYx6293LkpGL0f9VPVP8j/7+6twSg6fJ157oTuvtaoGavYRn8Kg/CpqBk2oRn1hNi/oRiPQlQx4vAXmqGuU3OK1wTp4gSoItsRhZKtvnVSSOKCkbBGAbwH4Joc0vxednMaDOFiuUkX1i3OTfibHhOnst7iCxH6Aov/EBbsDFC5g9XndIKYM9jCC7g8qknzI54BqKDodgHn1pqi4Z6a5Lgsbq90SmKmiWfyU5J+XPVTNyNoJTBGubNDiHW0rS3xWjF6XH0hacW5n7tT6Svwvkii1E4pyPVQtLP9Q0/VzNYOVXLpP44AH2LdQwTvrpp52Qytxj+Lg1kBNxaBh8UZdnMe6k+rXrnKRty25do5BnKhW1jX5rXNRJEtceA0JFLEWnJhHg5aA9n5cmPoiq3WftGFRNR+FosOIR3u1zeAP85+AMK6i38uq3392csLWq+o0nHXM+NmCurGnUVar1jkO61b0nEi5ELIy06WSXaww1ed6++W9mznvzMAHU8tUVIKxSGOmHRYzYa4hD0uIxMfae8n9ns1/+w37+UznpI1qmlUfaDUAFQzkLo9UK9RToUXqIxyoA15j2pthdMvS4gCLZP2fC5vX0ZuKt2J7ZvLRHNgJbIJX4rUvsJzJGp+QZmrfyXzupUHgWgmmh9kSRiQDgF+zYAAWCcVGlf7U+Mwh3wdafxd5P9K6ZOFQxAzneYU0n5o9Hkyemf4Uwziz6HAEWyfs+FzNxW744TsCkkdSHXRmjrOhlDNMLzXsl89gAAAAAA=" alt="">Four stakeholders checked. Review the overall sequence and keep your map.</div><ul class="list" id="slots"></ul></aside>
+</div>
+<div id="live" class="sr" role="status" aria-live="polite"></div>
+
+<details id="text-version"><summary>Complete text version: everything in the activity, including all feedback</summary><h1>Label the buyer group</h1>
+<p>Complete text version</p>
+<p>Build a stakeholder map for Solitude Innovations. Identify each person&#x27;s primary role, rate influence and interest, and write an engagement sequence with strategies and questions to confirm.</p>
+<p>This is ungraded practice with checked answers for primary role, influence and interest. All three must match the case and rating criteria before you can move to the next stakeholder. If a choice is incorrect, revisit the evidence and try again. Written reasons, engagement order, strategies and gaps are self-reviewed. Work and checked attempts save automatically in this browser and device when storage is available. Restart clears this activity&#x27;s saved work and attempts. Nothing is submitted.</p>
+<h2>The case</h2>
+<p>You are a sales representative for Anarres Systems, a cybersecurity startup that serves emerging tech startups. Solitude Innovations builds artificial intelligence (AI) analytics tools and is preparing a new release for larger customers. It needs stronger security and audit readiness. Your company offers a platform with threat monitoring and access controls that can be embedded into their system. The timeline is tight, and the budget is under review. Map the stakeholders, their goals and concerns, and the order in which you would engage them.</p>
+<h2>Role and rating criteria</h2>
+<p>Decision-maker: approves major changes in this case. Influencer: shapes the plan or selection. Blocker: can delay progress if risk, governance or commercial conditions are unresolved. End user: works with the tools and experiences their daily impact.</p>
+<p>These are primary roles for this exercise, not fixed personality types. A stakeholder may also influence others. Addressing a governance concern is part of building a sound plan.</p>
+<p>Use these rating criteria for this exercise. Influence: High means authority to approve or delay approval; Medium means responsibility for shaping tool selection and rollout without final approval; Low means contributing user feedback without approval, budget or rollout authority. Interest: High means direct responsibility for enterprise security and growth, operational delivery, or daily tool use; Medium means financial governance and commercial review rather than those direct responsibilities; Low means no stated involvement or affected goal. These criteria make this case a checked practice task; real account maps need confirmation and may use different scales.</p>
+<p>An engagement order is a proposed sequence of purposeful conversations, not a rule to withhold information from people until their turn. You may need an early sponsor check and a later approval discussion with the same person. This map records one main conversation per stakeholder.</p>
+<h2>How to complete the activity</h2>
+<p>Work through Maria, Kevin, Jada and Leo in that order. For each person, choose a primary role, influence and interest; write reasons for the ratings, an engagement position and its purpose, a strategy and its purpose, and a question or gap to confirm. Role choices: Decision-maker, Influencer, Blocker, End user. Rating choices: High, Medium, Low. Use engagement positions 1 to 4 once each across your final map.</p>
+<p>Select Check my answers. Incorrect choices show which assumption needs another look and a question directing you back to the case and criteria. Correct the choices and check again. Missing fields are listed; your writing is kept. You cannot move to the next stakeholder through Continue, Next or the side tiles until all three choices are correct, all fields contain a response, and you confirm the two review statements. Free writing is not automatically graded. On paper, use the same check-and-revise process with the answer explanations below.</p>
+<ul><li>My reasons use the case evidence; I have labelled missing facts as questions to confirm.</li></ul>
+<ul><li>My strategy addresses this person&#x27;s stated goals or concerns, and my engagement position has a clear purpose.</li></ul>
+<p>Changing an answer reopens its check and later stakeholder confirmations while retaining all writing. Saved work retains current writing, checked attempts and feedback in this browser and device when storage is available. Earlier attempts remain accessible after a retry. Save editable draft and Restore draft provide an additional editable copy; restoring asks before replacing writing and requires fresh checks. Restart asks for confirmation and clears this activity&#x27;s saved work and attempts; Cancel retains them. Downloads are not erased. Old-edition writing and attempts are retained but require fresh checks under these criteria.</p>
+<h2>Maria Lopez - Chief information officer (CIO)</h2>
+<p>Owns enterprise architecture and signs off on major changes. Reports to the chief executive officer (CEO) and board. She is focused on security, compliance, vendor risk, and scalable growth. She will not approve unless the plan shows risk mitigation and a clear path to scale.</p>
+<h3>Your map</h3>
+<p>Primary buyer role: write your response.</p>
+<p>Influence rating: write your response.</p>
+<p>Why this influence rating?: write your response.</p>
+<p>Interest rating: write your response.</p>
+<p>Why this interest rating?: write your response.</p>
+<p>Engagement position (1-4): write your response.</p>
+<p>Why this position in your sequence?: write your response.</p>
+<p>Your engagement strategy: write your response.</p>
+<p>Why does that strategy fit?: write your response.</p>
+<p>Notes or gaps to confirm: write your response.</p>
+<h3>Check and revisit your assumptions</h3>
+<p>Role: Decision-maker. The case explicitly says Maria signs off on major changes and sets approval conditions. Other people shape the plan, but this is the clearest primary approval role.</p>
+<p>Influence: High. She signs off on major changes and requires risk mitigation and a path to scale.</p>
+<p>Interest: High. The project affects her stated security, compliance and growth goals.</p>
+<p>If a role is incorrect, ask who approves major changes, who shapes selection and timing, who can delay approval over an unresolved condition, and who uses the tools daily. If influence is incorrect, distinguish approval or delay authority, rollout responsibility and user feedback. If interest is incorrect, distinguish direct enterprise responsibility, operational delivery or daily use from financial governance and review. Revise the incorrect choices using the criteria, then check again before moving on.</p>
+<h2>Kevin Tan - Head of information technology (IT) operations</h2>
+<p>Runs uptime, monitoring, and integrations. His team must execute the migration. He cares about rollout risk, implementation plans, observability, and low disruption. He influences tool selection and timeline because his team carries the operational load.</p>
+<h3>Your map</h3>
+<p>Primary buyer role: write your response.</p>
+<p>Influence rating: write your response.</p>
+<p>Why this influence rating?: write your response.</p>
+<p>Interest rating: write your response.</p>
+<p>Why this interest rating?: write your response.</p>
+<p>Engagement position (1-4): write your response.</p>
+<p>Why this position in your sequence?: write your response.</p>
+<p>Your engagement strategy: write your response.</p>
+<p>Why does that strategy fit?: write your response.</p>
+<p>Notes or gaps to confirm: write your response.</p>
+<h3>Check and revisit your assumptions</h3>
+<p>Role: Influencer. The case explicitly describes Kevin shaping tool selection and timing through operational responsibility. It does not assign him the final major-change approval role.</p>
+<p>Influence: Medium. His operational responsibilities shape the technical plan and timeline; the case assigns major-change sign-off to Maria.</p>
+<p>Interest: High. His team must execute the migration and manage its operational impact.</p>
+<p>If a role is incorrect, ask who approves major changes, who shapes selection and timing, who can delay approval over an unresolved condition, and who uses the tools daily. If influence is incorrect, distinguish approval or delay authority, rollout responsibility and user feedback. If interest is incorrect, distinguish direct enterprise responsibility, operational delivery or daily use from financial governance and review. Revise the incorrect choices using the criteria, then check again before moving on.</p>
+<h2>Jada Singh - Finance Manager</h2>
+<p>Owns budget controls, payment terms, and cost governance. Requires return on investment (ROI) evidence, a spending forecast with clear limits and safeguards so costs do not spiral, and early visibility of contract terms. She can delay approval if financial risks are not addressed.</p>
+<h3>Your map</h3>
+<p>Primary buyer role: write your response.</p>
+<p>Influence rating: write your response.</p>
+<p>Why this influence rating?: write your response.</p>
+<p>Interest rating: write your response.</p>
+<p>Why this interest rating?: write your response.</p>
+<p>Engagement position (1-4): write your response.</p>
+<p>Why this position in your sequence?: write your response.</p>
+<p>Your engagement strategy: write your response.</p>
+<p>Why does that strategy fit?: write your response.</p>
+<p>Notes or gaps to confirm: write your response.</p>
+<h3>Check and revisit your assumptions</h3>
+<p>Role: Blocker. Jada can delay approval when financial risks are unresolved. Blocker describes that governance gate in this case; it does not make her concerns unreasonable or mean she cannot help the plan.</p>
+<p>Influence: High. Her budget and terms controls can delay approval if financial risks remain open.</p>
+<p>Interest: Medium. Her stated involvement is financial governance and commercial review. Under this exercise&#x27;s criteria that is Medium interest; it does not mean her concerns matter less.</p>
+<p>If a role is incorrect, ask who approves major changes, who shapes selection and timing, who can delay approval over an unresolved condition, and who uses the tools daily. If influence is incorrect, distinguish approval or delay authority, rollout responsibility and user feedback. If interest is incorrect, distinguish direct enterprise responsibility, operational delivery or daily use from financial governance and review. Revise the incorrect choices using the criteria, then check again before moving on.</p>
+<h2>Leo Chen - Senior Developer</h2>
+<p>Daily user of build and deploy tools. Wants fast pipelines, self-service environments, and reliable, well-documented ways to handle incidents so they can be resolved quickly. Advocates for features that keep developers productive and flags tools that slow the team.</p>
+<h3>Your map</h3>
+<p>Primary buyer role: write your response.</p>
+<p>Influence rating: write your response.</p>
+<p>Why this influence rating?: write your response.</p>
+<p>Interest rating: write your response.</p>
+<p>Why this interest rating?: write your response.</p>
+<p>Engagement position (1-4): write your response.</p>
+<p>Why this position in your sequence?: write your response.</p>
+<p>Your engagement strategy: write your response.</p>
+<p>Why does that strategy fit?: write your response.</p>
+<p>Notes or gaps to confirm: write your response.</p>
+<h3>Check and revisit your assumptions</h3>
+<p>Role: End user. Leo works with the tools daily and describes their direct workflow impact. His advocacy can also influence others, but daily use is his clearest primary role here.</p>
+<p>Influence: Low. The case describes daily use and advocacy, without approval, budget or rollout authority. Under this exercise&#x27;s criteria that is Low influence; his feedback still matters.</p>
+<p>Interest: High. The selected tools directly affect his everyday productivity and incident handling.</p>
+<p>If a role is incorrect, ask who approves major changes, who shapes selection and timing, who can delay approval over an unresolved condition, and who uses the tools daily. If influence is incorrect, distinguish approval or delay authority, rollout responsibility and user feedback. If interest is incorrect, distinguish direct enterprise responsibility, operational delivery or daily use from financial governance and review. Revise the incorrect choices using the criteria, then check again before moving on.</p>
+<h2>All retry feedback</h2>
+<p>The interactive check marks each of the three choices Correct or Try again. A correct choice shows the corresponding answer explanation above. Blank choices say: Choose an answer using the case and the rating criteria. The following are the diagnostic messages for each incorrect choice.</p>
+<h3>Maria Lopez</h3>
+<p>You chose Influencer. Who has the stated authority to sign off on major changes? Shaping a plan is different from giving final approval.</p>
+<p>You chose Blocker. Who has the stated authority to sign off on major changes? Shaping a plan is different from giving final approval.</p>
+<p>You chose End user. Who has the stated authority to sign off on major changes? Shaping a plan is different from giving final approval.</p>
+<p>Re-read Maria Lopez&#x27;s responsibilities. Does this person approve or delay approval, shape selection and rollout, or contribute user feedback? Match that evidence to High, Medium or Low in the criteria.</p>
+<p>Re-read Maria Lopez&#x27;s involvement. Is it direct enterprise responsibility, operational delivery or daily use, financial governance and review, or no stated involvement? Use the interest criteria; importance alone does not determine this rating.</p>
+<h3>Kevin Tan</h3>
+<p>You chose Decision-maker. Who shapes tool selection and timing through operational responsibility? Check whether final approval is actually assigned to this person.</p>
+<p>You chose Blocker. Who shapes tool selection and timing through operational responsibility? Check whether final approval is actually assigned to this person.</p>
+<p>You chose End user. Who shapes tool selection and timing through operational responsibility? Check whether final approval is actually assigned to this person.</p>
+<p>Re-read Kevin Tan&#x27;s responsibilities. Does this person approve or delay approval, shape selection and rollout, or contribute user feedback? Match that evidence to High, Medium or Low in the criteria.</p>
+<p>Re-read Kevin Tan&#x27;s involvement. Is it direct enterprise responsibility, operational delivery or daily use, financial governance and review, or no stated involvement? Use the interest criteria; importance alone does not determine this rating.</p>
+<h3>Jada Singh</h3>
+<p>You chose Decision-maker. Who can delay approval if a stated condition remains unresolved? This role describes a governance gate, not an unhelpful personality.</p>
+<p>You chose Influencer. Who can delay approval if a stated condition remains unresolved? This role describes a governance gate, not an unhelpful personality.</p>
+<p>You chose End user. Who can delay approval if a stated condition remains unresolved? This role describes a governance gate, not an unhelpful personality.</p>
+<p>Re-read Jada Singh&#x27;s responsibilities. Does this person approve or delay approval, shape selection and rollout, or contribute user feedback? Match that evidence to High, Medium or Low in the criteria.</p>
+<p>Re-read Jada Singh&#x27;s involvement. Is it direct enterprise responsibility, operational delivery or daily use, financial governance and review, or no stated involvement? Use the interest criteria; importance alone does not determine this rating.</p>
+<h3>Leo Chen</h3>
+<p>You chose Decision-maker. Who works with the tools daily? Distinguish daily experience and advocacy from approval or budget control.</p>
+<p>You chose Influencer. Who works with the tools daily? Distinguish daily experience and advocacy from approval or budget control.</p>
+<p>You chose Blocker. Who works with the tools daily? Distinguish daily experience and advocacy from approval or budget control.</p>
+<p>Re-read Leo Chen&#x27;s responsibilities. Does this person approve or delay approval, shape selection and rollout, or contribute user feedback? Match that evidence to High, Medium or Low in the criteria.</p>
+<p>Re-read Leo Chen&#x27;s involvement. Is it direct enterprise responsibility, operational delivery or daily use, financial governance and review, or no stated involvement? Use the interest criteria; importance alone does not determine this rating.</p>
+<p>Revisit your assumptions before continuing. Use the full case and rating criteria above. Change the choices you need to reconsider, then select Check my answers again. Your earlier attempt remains in Saved work.</p>
+<p>All three choices fit the case. All fields contain a response. Review your written reasons and plan; the activity does not grade free writing.</p>
+<p>If fields are missing, Still to fill lists their field labels. Your writing is kept. If navigation is locked: Complete the earlier stakeholder: correct the role, influence and interest choices, then confirm your review. Your writing is kept.</p>
+<h2>One possible engagement plan</h2>
+<p>The checked roles and ratings follow the criteria. This conversation order is an example rather than a required answer. Explain your own plan.</p>
+<h3>1. Kevin Tan</h3>
+<p>Clarify technical feasibility, rollout risks and implementation needs before building the wider proposal.</p>
+<p>Strategy: Review a rollout plan and ask how to limit disruption to uptime, monitoring and integrations. The conversation addresses his team&#x27;s delivery responsibilities and stated concerns.</p>
+<p>Question to confirm: What implementation timing, dependencies and rollback approach would the team need to confirm?</p>
+<h3>2. Jada Singh</h3>
+<p>Check budget controls, return on investment evidence and contract terms early enough to address commercial risks.</p>
+<p>Strategy: Discuss a cost and savings summary, spending limits, safeguards and the terms she needs to review. These are the financial conditions and information needs stated in the case.</p>
+<p>Question to confirm: Which spending limits, return on investment evidence and contract terms still need agreement?</p>
+<h3>3. Leo Chen</h3>
+<p>Gather practical user evidence to test the emerging plan before a final approval conversation. Earlier user input can also be reasonable if you explain that choice.</p>
+<p>Strategy: Offer a focused demonstration and ask Leo to test workflow speed, self-service and incident handling. This connects the evaluation to the daily work and productivity concerns he describes.</p>
+<p>Question to confirm: Which developer workflows and incident-handling needs should the team validate?</p>
+<h3>4. Maria Lopez</h3>
+<p>Use a later approval discussion to present a case supported by technical, financial and user input. This does not mean excluding Maria from early alignment or an initial sponsor check.</p>
+<p>Strategy: Present a clear plan connecting risk mitigation, security and a path to scale. It addresses the conditions she sets for approval.</p>
+<p>Question to confirm: Which risk evidence and scaling criteria would Maria need before approving a major change?</p>
+<h2>Review and keep your map</h2>
+<p>After all four stakeholders are confirmed, the final map opens. Use each engagement position once, review the purpose of the sequence, and download your stakeholder map as text. The download includes all ten fields for every person. Keep your map current as you learn more. The checked classifications use this exercise&#x27;s stated criteria. Your engagement sequence is a reasoned plan, not a single required ordering. Return to the course page to mark the step complete; this activity does not update course completion.</p></details>
+<p class="altlinks"><a href="fallback.html">Open the text version</a> · <a href="fallback.pdf">Download the text version as a PDF</a></p>
+<script>/* Shared local-only progress and attempt history. No network, analytics or account storage. */
+(function (global) {
+  'use strict';
+  const SCHEMA = 1, LIMIT = 1800000;
+  const clone = value => JSON.parse(JSON.stringify(value));
+  function validateData(value, depth = 0) {
+    if (depth > 60) throw Error('Saved data is too deeply nested');
+    if (value === null || typeof value === 'boolean') return;
+    if (typeof value === 'string') { if (value.length > 100000) throw Error('Saved text is too long'); return; }
+    if (typeof value === 'number') { if (!Number.isFinite(value)) throw Error('Invalid number'); return; }
+    if (typeof value !== 'object') throw Error('Invalid saved value');
+    for (const [key, item] of Object.entries(value)) {
+      if (['__proto__', 'constructor', 'prototype'].includes(key)) throw Error('Unsafe saved key');
+      validateData(item, depth + 1);
+    }
+  }
+  function parse(raw, id, compatibility) {
+    if (raw === null) return null;
+    if (raw.length > LIMIT) throw Error('Saved copy is too large');
+    const value = JSON.parse(raw); validateData(value);
+    if (!value || value.schema !== SCHEMA || value.id !== id || typeof value.epoch !== 'string' || !Number.isInteger(value.revision) || value.revision < 0) throw Error('Invalid saved copy');
+    if (value.cleared === true) return value;
+    if (value.compatibility !== compatibility) throw Error('Saved copy belongs to a different activity edition');
+    if (!value.snapshot || !Array.isArray(value.history)) throw Error('Incomplete saved copy');
+    for (const attempt of value.history) {
+      if (!attempt || typeof attempt.title !== 'string' || typeof attempt.when !== 'string' || !Array.isArray(attempt.answers) || !Array.isArray(attempt.feedback)) throw Error('Invalid attempt');
+      if (attempt.answers.some(x => !x || typeof x.label !== 'string' || typeof x.value !== 'string') || attempt.feedback.some(x => typeof x !== 'string')) throw Error('Invalid attempt detail');
+    }
+    return value;
+  }
+  function createStore(getStorage, id, compatibility, random = () => String(Date.now()) + '-' + Math.random().toString(36).slice(2)) {
+    const key = 'futurelearn:progress:v1:' + id;
+    let baseline = null, epoch = random(), revision = 0, ready = false, paused = false;
+    function load() {
+      let raw;
+      try { raw = getStorage().getItem(key); } catch { ready = false; return {status: 'unavailable'}; }
+      try {
+        const value = parse(raw, id, compatibility);
+        baseline = raw; ready = true; paused = false;
+        if (value) { epoch = value.epoch; revision = value.revision; }
+        return {status: 'ok', value};
+      } catch (error) { baseline = raw; ready = true; paused = true; return {status: 'invalid', message: error.message}; }
+    }
+    function save(snapshot, history) {
+      if (!ready) {
+        const result = load();
+        if (result.status !== 'ok') return result;
+        if (result.value) { paused = true; return {status: 'conflict', value: result.value}; }
+      }
+      if (paused) return {status: 'paused'};
+      try {
+        const storage = getStorage(), current = storage.getItem(key);
+        if (current !== baseline) {
+          paused = true;
+          let value = null;
+          try { value = parse(current, id, compatibility); } catch {}
+          return {status: 'conflict', value, generationChanged: !!value && value.epoch !== epoch};
+        }
+        const value = {schema: SCHEMA, id, compatibility, epoch, revision: revision + 1, snapshot, history};
+        validateData(value);
+        const raw = JSON.stringify(value);
+        if (raw.length > LIMIT) throw Error('Saved work is too large');
+        storage.setItem(key, raw);
+        if (storage.getItem(key) !== raw) { paused = true; return {status: 'conflict'}; }
+        baseline = raw; revision++; return {status: 'ok'};
+      } catch { return {status: 'unavailable'}; }
+    }
+    function erase(legacyKeys = []) {
+      try {
+        const storage = getStorage();
+        // A tombstone contains no learner work and fences delayed saves in older tabs.
+        const value = {schema: SCHEMA, id, epoch: random(), revision: 0, cleared: true};
+        const raw = JSON.stringify(value);
+        storage.setItem(key, raw);
+        if (storage.getItem(key) !== raw) throw Error('Erase did not persist');
+        for (const legacy of legacyKeys) { if (legacy !== key) storage.removeItem(legacy); }
+        if (legacyKeys.some(legacy => legacy !== key && storage.getItem(legacy) !== null)) throw Error('Legacy erase failed');
+        baseline = raw; epoch = value.epoch; revision = 0; ready = true; paused = false;
+        return {status: 'ok', value};
+      } catch { paused = true; return {status: 'unavailable'}; }
+    }
+    return {key, load, save, erase, pause: () => { paused = true; }, get epoch() { return epoch; }};
+  }
+
+  // Presentation is encoded as inert, allowlisted DOM data, never stored/replayed HTML.
+  // Keeping existing keyed nodes retains their directly attached input/click listeners.
+  const TAGS = new Set('main figure figcaption aside header footer nav time output sup sub u s kbd samp mark abbr cite q wbr div section article p span strong b em i small ul ol li dl dt dd h1 h2 h3 h4 h5 h6 label fieldset legend input textarea select option optgroup button a img details summary table caption thead tbody tfoot tr th td blockquote pre code br hr progress meter svg g path circle rect line polyline polygon text title desc'.split(' '));
+  const ATTR = /^(id|class|hidden|disabled|open|checked|selected|type|name|value|for|role|tabindex|maxlength|min|max|step|rows|cols|multiple|placeholder|autocomplete|inputmode|width|height|alt|title|target|rel|colspan|rowspan|scope|viewBox|d|cx|cy|r|x|y|x1|x2|y1|y2|points|fill|stroke|stroke-width|preserveAspectRatio|aria-[a-z-]+|data-[a-z0-9-]+)$/;
+  function createCodec(document, rootIds, media = []) {
+    const urls = [...new Set([...document.querySelectorAll('img[src],a[href]')].map(e => e.getAttribute(e.tagName === 'IMG' ? 'src' : 'href')).concat(media).filter(x => typeof x === 'string'))].sort();
+    const transient = new Set(['pop', 'wob', 'newly-solved']);
+    function attributes(node) {
+      const result = {};
+      for (const a of node.attributes) {
+        if (ATTR.test(a.name)) result[a.name] = a.name === 'class' ? a.value.split(/\s+/).filter(x => !transient.has(x)).join(' ') : a.value;
+        else if ((a.name === 'src' || a.name === 'href') && urls.includes(a.value)) result[a.name] = urls.indexOf(a.value);
+      }
+      const style = {};
+      for (const name of node.style) {
+        const value = node.style.getPropertyValue(name);
+        if (/^(width|height|opacity|transform|background-color|color|border-color|--[a-z-]+)$/.test(name) && /^[a-z0-9\s#%.,()+-]+$/i.test(value) && !/url|expression/i.test(value)) style[name] = value;
+      }
+      if (Object.keys(style).length) result.style = style;
+      return result;
+    }
+    function encode(node) {
+      if (node.nodeType === 3) return ['#', node.data];
+      if (node.nodeType !== 1 || !TAGS.has(node.localName)) return null;
+      const props = {};
+      if (node.matches('input:not([type=file]),textarea,select')) { props.value = node.value; if (node.matches('input[type=checkbox],input[type=radio]')) props.checked = node.checked; }
+      return [node.localName, attributes(node), props, [...node.childNodes].map(encode).filter(Boolean)];
+    }
+    function validate(tree, budget = {n: 0}, depth = 0) {
+      if (++budget.n > 25000 || depth > 50 || !Array.isArray(tree)) throw Error('Invalid saved view');
+      if (tree[0] === '#') { if (tree.length !== 2 || typeof tree[1] !== 'string') throw Error('Invalid text'); return; }
+      if (tree.length !== 4 || !TAGS.has(tree[0]) || !tree[1] || !tree[2] || !Array.isArray(tree[3])) throw Error('Invalid saved element');
+      for (const [name, value] of Object.entries(tree[1])) {
+        if (name === 'href' || name === 'src') { if (!Number.isInteger(value) || !urls[value]) throw Error('Invalid resource'); }
+        else if (name === 'style') {
+          if (!value || typeof value !== 'object' || Array.isArray(value)) throw Error('Invalid style');
+          for (const [k, v] of Object.entries(value)) if (!/^(width|height|opacity|transform|background-color|color|border-color|--[a-z-]+)$/.test(k) || typeof v !== 'string' || !/^[a-z0-9\s#%.,()+-]+$/i.test(v) || /url|expression/i.test(v)) throw Error('Invalid style value');
+        } else if (!ATTR.test(name) || typeof value !== 'string') throw Error('Invalid attribute');
+      }
+      if (Object.keys(tree[2]).some(x => !['value', 'checked'].includes(x)) || (tree[2].value !== undefined && typeof tree[2].value !== 'string') || (tree[2].checked !== undefined && typeof tree[2].checked !== 'boolean')) throw Error('Invalid control');
+      for (const child of tree[3]) validate(child, budget, depth + 1);
+    }
+    const treeKey = tree => tree[0] === '#' ? null : tree[1].id ? 'id:' + tree[1].id : tree[0] === 'input' && tree[1].name ? 'input:' + tree[1].name + ':' + tree[1].value : tree[0] === 'option' ? 'option:' + tree[1].value : tree[0] === 'label' && tree[3].some(x => x[0] === 'input') ? 'label:' + treeKey(tree[3].find(x => x[0] === 'input')) : null;
+    function nodeKey(node) { return node.nodeType === 1 ? treeKey(encode(node)) : null; }
+    function patch(node, tree, svg = false) {
+      if (tree[0] === '#') { if (node?.nodeType === 3) { node.data = tree[1]; return node; } return document.createTextNode(tree[1]); }
+      const inSvg = svg || tree[0] === 'svg';
+      if (!node || node.nodeType !== 1 || node.localName !== tree[0]) node = inSvg ? document.createElementNS('http://www.w3.org/2000/svg', tree[0]) : document.createElement(tree[0]);
+      const attrs = tree[1];
+      for (const a of [...node.attributes]) if ((ATTR.test(a.name) || ['src', 'href', 'style'].includes(a.name)) && !(a.name in attrs)) node.removeAttribute(a.name);
+      for (const [name, value] of Object.entries(attrs)) {
+        if (name === 'style') { node.removeAttribute('style'); for (const [k, v] of Object.entries(value)) node.style.setProperty(k, v); }
+        else node.setAttribute(name, name === 'src' || name === 'href' ? urls[value] : value);
+      }
+      const old = [...node.childNodes], used = new Set(), next = [];
+      for (let i = 0; i < tree[3].length; i++) {
+        const child = tree[3][i], key = treeKey(child);
+        let match = key ? old.find(x => !used.has(x) && nodeKey(x) === key) : null;
+        if (!match && old[i] && !used.has(old[i]) && !nodeKey(old[i]) && ((child[0] === '#' && old[i].nodeType === 3) || old[i].localName === child[0])) match = old[i];
+        if (match) used.add(match);
+        next.push(patch(match, child, inSvg));
+      }
+      node.replaceChildren(...next);
+      for (const [key, value] of Object.entries(tree[2])) if (node.matches('input:not([type=file]),textarea,select')) node[key] = value;
+      return node;
+    }
+    function capture() { return Object.fromEntries(rootIds.map(id => { const tree = encode(document.getElementById(id)); if (!tree) throw Error('Missing supported activity root: ' + id); return [id, tree]; })); }
+    function restore(value) {
+      if (!value || Object.keys(value).sort().join('|') !== [...rootIds].sort().join('|')) throw Error('Saved view does not match');
+      for (const id of rootIds) { validate(value[id]); if (value[id][1]?.id !== id) throw Error('Invalid view root'); }
+      for (const id of rootIds) patch(document.getElementById(id), value[id]);
+    }
+    return {capture, restore, validate};
+  }
+
+  function mount(options) {
+    const document = global.document;
+    const codec = createCodec(document, options.roots || [], options.media || []);
+    const store = createStore(() => global.localStorage, options.id, options.compatibility);
+    let history = [], suspended = true, scheduled = false, lastSnapshot = '', health = 'ready';
+    const dialog = document.createElement('dialog'); dialog.className = 'ap-dialog'; dialog.setAttribute('aria-labelledby', 'ap-title');
+    dialog.innerHTML = '<h2 id="ap-title">Your saved work</h2><p>Work and checked attempts are saved automatically in this browser and device. Returning here restores your progress. This is not an account backup or cross-device sync. On a shared device, use Restart when finished.</p><p id="ap-status" role="status"></p><div class="ap-actions"><button type="button" id="ap-close">Close</button><button type="button" id="ap-load">Load latest saved work</button><button type="button" id="ap-export">Download a backup</button><button type="button" id="ap-import">Restore a backup</button><input type="file" id="ap-import-file" accept=".json,application/json" hidden><button type="button" id="ap-retry">Retry saving</button><button type="button" id="ap-restart">Restart activity</button></div><h3>Past attempts</h3><div id="ap-history"></div>';
+    document.body.append(dialog);
+    const status = dialog.querySelector('#ap-status'), list = dialog.querySelector('#ap-history');
+    const button = document.createElement('button'); button.type = 'button'; button.id = 'saved-work-toggle'; button.className = 'quiet ap-toggle';
+    const holder = document.querySelector('header .tools,.top .tools,#project-tools .tool-buttons,.toolbar') || document.querySelector('header,.intro');
+    (holder || document.body).append(button);
+    const live = document.createElement('span'); live.className = 'ap-sr'; live.setAttribute('role', 'status'); document.body.append(live);
+    const style = document.createElement('style');
+    style.textContent = '.ap-dialog{box-sizing:border-box;width:min(680px,calc(100% - 24px));max-height:85vh;overflow:auto;border:2px solid #0a6b66;border-radius:12px;padding:20px;color:#172d35;background:white;font:16px/1.5 system-ui}.ap-dialog::backdrop{background:#172d3570}.ap-dialog h2{margin-top:0}.ap-actions{display:flex;flex-wrap:wrap;gap:8px}.ap-dialog button{font:inherit;min-height:44px;padding:8px 12px;border:2px solid #0a6b66;border-radius:6px;background:white;color:#075d56;cursor:pointer}.ap-dialog button:focus-visible,.ap-dialog summary:focus-visible{outline:3px solid #172d35;outline-offset:3px}.ap-dialog details{border-top:1px solid #bdcdd1;padding:10px 0}.ap-dialog summary{cursor:pointer;font-weight:650}.ap-dialog dd{white-space:pre-wrap;overflow-wrap:anywhere;margin:0 0 10px}.ap-dialog dt{font-weight:650}.ap-dialog p{overflow-wrap:anywhere}.ap-toggle{font-size:14px!important;min-height:44px!important}.ap-toggle.ap-warning{background:#fff0ce!important;color:#62430b!important}.ap-sr{position:fixed;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}@media print{.ap-dialog,.ap-toggle,.ap-sr{display:none!important}}';
+    document.head.append(style);
+    function message(code) {
+      const messages = {ready: 'Automatic saving is ready.', ok: 'Saved in this browser. Return here to resume.', restored: 'Your saved work and past attempts have been restored.', cleared: 'All saved work and attempts for this activity have been cleared. Downloaded files are unchanged.', unavailable: 'Saving is unavailable or storage is full. Your work is still on this page. Download a backup before leaving, then retry saving.', invalid: 'The saved copy is unreadable or belongs to a different edition. It has been kept unchanged. Download a backup before choosing Restart.', conflict: 'Another tab changed the saved work. Saving is paused to protect both copies. Download your current backup or load the latest saved work.', paused: 'Saving is paused. Download a backup or load the latest saved work.'};
+      health = code; const text = messages[code] || messages.paused;
+      status.textContent = text;
+      button.textContent = ['ok', 'restored'].includes(code) ? 'Saved work · ' + history.length : ['ready', 'cleared'].includes(code) ? 'Saved work' : 'Check saved work';
+      button.classList.toggle('ap-warning', ['unavailable', 'invalid', 'conflict', 'paused'].includes(code));
+      button.setAttribute('aria-label', 'Saved work and ' + history.length + ' past attempts. ' + text);
+      if (!['ready', 'ok', 'restored'].includes(code)) live.textContent = text;
+    }
+    function snapshot() { return {state: clone(options.getState()), view: codec.capture()}; }
+    function apply(value) {
+      suspended = true;
+      try {
+        if (!value || value.cleared) { history = []; options.reset(); }
+        else {
+          codec.restore(value.snapshot.view); options.setState(clone(value.snapshot.state));
+          history = clone(value.history); options.afterRestore?.();
+        }
+        lastSnapshot = JSON.stringify(snapshot());
+      } finally { suspended = false; }
+    }
+    function load() {
+      const loaded = store.load();
+      if (loaded.status !== 'ok') { message(loaded.status); return false; }
+      try { if (loaded.value) apply(loaded.value); message(loaded.value?.cleared ? 'cleared' : loaded.value ? 'restored' : 'ready'); return true; }
+      catch { store.pause(); suspended = false; message('invalid'); return false; }
+    }
+    function capture(force = false) {
+      if (suspended) return;
+      const current = snapshot(), text = JSON.stringify(current);
+      if (!force && text === lastSnapshot) return;
+      const saved = store.save(current, history);
+      if (saved.status === 'conflict' && (saved.value?.cleared || saved.generationChanged)) { const latest = store.load(); if (latest.status === 'ok') { apply(latest.value); message(latest.value?.cleared ? 'cleared' : 'restored'); return; } }
+      if (saved.status === 'ok') lastSnapshot = text;
+      message(saved.status);
+    }
+    function schedule() { if (!suspended && !scheduled) { scheduled = true; queueMicrotask(() => { scheduled = false; capture(); }); } }
+    function renderHistory() {
+      list.replaceChildren();
+      if (!history.length) { const p = document.createElement('p'); p.textContent = 'No checked attempts saved yet. Your unfinished work is saved as you go.'; list.append(p); }
+      history.forEach((attempt, index) => {
+        const details = document.createElement('details'), summary = document.createElement('summary'), when = document.createElement('p'), dl = document.createElement('dl');
+        summary.textContent = (index + 1) + '. ' + attempt.title; when.textContent = new Date(attempt.when).toLocaleString();
+        for (const answer of attempt.answers) { const dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = answer.label; dd.textContent = answer.value; dl.append(dt, dd); }
+        details.append(summary, when, dl);
+        for (const text of attempt.feedback) { const p = document.createElement('p'); p.textContent = text; details.append(p); }
+        list.append(details);
+      });
+    }
+    function recordAttempt(action) {
+      const root = options.currentRoot?.() || document.querySelector('#interactive,main') || document.body;
+      const answers = [...root.querySelectorAll('input:not([type=file]):not([type=hidden]),textarea,select')].filter(e => !e.closest('[hidden]')).map(e => {
+        const label = (e.id && document.querySelector('label[for="' + global.CSS.escape(e.id) + '"]')?.textContent) || e.closest('label')?.textContent || e.closest('fieldset')?.querySelector('legend')?.textContent || e.name || e.id || 'Response';
+        return {label: label.trim(), value: e.matches('input[type=checkbox],input[type=radio]') ? (e.checked ? 'Selected: ' : 'Not selected: ') + e.value : e.tagName === 'SELECT' ? e.selectedOptions[0]?.textContent || e.value : e.value};
+      });
+      const feedback = [...root.querySelectorAll('.fb,.feedback,.field-feedback,[id$="-feedback"],[id^="feedback-"],#completion-status')].filter(e => !e.closest('[hidden]')).map(e => e.textContent.trim()).filter(Boolean);
+      history.push({when: new Date().toISOString(), title: (root.querySelector('h2,h3')?.textContent.trim() || options.title || document.title) + ' · ' + action, answers, feedback});
+      capture(true);
+    }
+    function restart(confirm = true) {
+      if (confirm && !global.confirm('Restart this activity? This permanently clears all saved answers, writing, progress and past attempts for this activity in this browser. Downloaded files are unchanged.')) return false;
+      const result = store.erase(options.legacyKeys || []);
+      if (result.status !== 'ok') { message(result.status); return false; }
+      apply(result.value); message('cleared'); renderHistory();
+      if (dialog.open) dialog.close();
+      (document.querySelector('#h-top,h1') || button).focus?.();
+      return true;
+    }
+    function backup() {
+      const data = JSON.stringify({schema: SCHEMA, id: options.id, compatibility: options.compatibility, epoch: 'backup', revision: 0, snapshot: snapshot(), history}, null, 2);
+      const a = document.createElement('a'), url = global.URL.createObjectURL(new Blob([data], {type: 'application/json'}));
+      a.href = url; a.download = options.id + '-saved-work.json'; a.click(); setTimeout(() => global.URL.revokeObjectURL(url), 1000);
+    }
+    button.addEventListener('click', () => { renderHistory(); dialog.showModal(); });
+    dialog.querySelector('#ap-close').addEventListener('click', () => { dialog.close(); button.focus(); });
+    dialog.querySelector('#ap-load').addEventListener('click', () => { load(); renderHistory(); });
+    dialog.querySelector('#ap-export').addEventListener('click', backup);
+    dialog.querySelector('#ap-import').addEventListener('click', () => dialog.querySelector('#ap-import-file').click());
+    dialog.querySelector('#ap-import-file').addEventListener('change', async event => {
+      const file = event.target.files[0]; event.target.value = ''; if (!file) return;
+      try {
+        if (file.size > LIMIT) throw Error('Backup is too large');
+        const value = parse(await file.text(), options.id, options.compatibility);
+        if (!value || value.cleared) throw Error('Backup has no work');
+        for (const tree of Object.values(value.snapshot.view)) codec.validate(tree);
+        if (!global.confirm('Replace your current work and attempt history with this backup? Download your current backup first if you want to keep both.')) return;
+        const loaded = store.load(); if (loaded.status !== 'ok') { message(loaded.status); return; }
+        apply(value); capture(true); renderHistory();
+      } catch { status.textContent = 'That backup could not be restored. Current work and the saved copy are kept.'; }
+    });
+    dialog.querySelector('#ap-retry').addEventListener('click', () => capture(true));
+    dialog.querySelector('#ap-restart').addEventListener('click', () => restart());
+    document.addEventListener('click', event => {
+      const target = event.target.closest('button');
+      if (!target || target.closest('.ap-dialog') || target === button) return;
+      if (target.type === 'submit' && target.form) return;
+      if ((options.restartIds || ['restart']).includes(target.id)) { event.preventDefault(); event.stopImmediatePropagation(); restart(!(options.confirmedRestartIds || ['erase-confirm']).includes(target.id)); }
+    }, true);
+    document.addEventListener('click', event => {
+      const target = event.target.closest('button');
+      if (!target || target.closest('.ap-dialog') || target === button) return;
+      if (target.type === 'submit' && target.form) return;
+      if (/^(check|complete)-|-(check)$/.test(target.id) || Object.keys(target.dataset).some(k => /^(check|show|reveal|complete)/i.test(k)) || /^(check|compare my|i have reviewed|complete this)/i.test(target.textContent.trim())) recordAttempt(target.textContent.trim());
+      else schedule();
+    });
+    document.addEventListener('submit', event => { if (!event.target.closest('.ap-dialog')) recordAttempt('Check answer'); });
+    document.addEventListener('input', schedule); document.addEventListener('change', schedule);
+    document.addEventListener('toggle', schedule, true);
+    const observer = new global.MutationObserver(schedule);
+    for (const id of options.roots || []) observer.observe(document.getElementById(id), {subtree: true, childList: true, characterData: true, attributes: true});
+    global.addEventListener('storage', event => {
+      if (event.key !== store.key && event.key !== null) return;
+      let value = null; try { value = parse(global.localStorage.getItem(store.key), options.id, options.compatibility); } catch {}
+      if (value && (value.cleared || value.epoch !== store.epoch)) { const latest = store.load(); if (latest.status === 'ok') { apply(latest.value); message(latest.value?.cleared ? 'cleared' : 'restored'); } }
+      else message('conflict');
+    });
+    suspended = false;
+    load();
+    // A migrated legacy capstone has already restored itself; save it in the shared format.
+    if (options.legacyKeys?.length && health === 'ready') { history = clone(options.initialHistory?.() || []); capture(true); }
+    const controller = {capture, restart, load, backup, recordAttempt, get history() { return clone(history); }, get health() { return health; }, get key() { return store.key; }};
+    global.ActivityProgressController = controller;
+    return controller;
+  }
+  const api = {createStore, parse, validateData, createCodec, mount};
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  global.ActivityProgress = api;
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>const DATA={"title": "Label the buyer group", "intro": "Build a stakeholder map for Solitude Innovations. Identify each person's primary role, rate influence and interest, and write an engagement sequence with strategies and questions to confirm.", "boundary": "This is ungraded practice with checked answers for primary role, influence and interest. All three must match the case and rating criteria before you can move to the next stakeholder. If a choice is incorrect, revisit the evidence and try again. Written reasons, engagement order, strategies and gaps are self-reviewed. Work and checked attempts save automatically in this browser and device when storage is available. Restart clears this activity's saved work and attempts. Nothing is submitted.", "scenario": "You are a sales representative for Anarres Systems, a cybersecurity startup that serves emerging tech startups. Solitude Innovations builds artificial intelligence (AI) analytics tools and is preparing a new release for larger customers. It needs stronger security and audit readiness. Your company offers a platform with threat monitoring and access controls that can be embedded into their system. The timeline is tight, and the budget is under review. Map the stakeholders, their goals and concerns, and the order in which you would engage them.", "definitions": ["Decision-maker: approves major changes in this case. Influencer: shapes the plan or selection. Blocker: can delay progress if risk, governance or commercial conditions are unresolved. End user: works with the tools and experiences their daily impact.", "These are primary roles for this exercise, not fixed personality types. A stakeholder may also influence others. Addressing a governance concern is part of building a sound plan.", "Use these rating criteria for this exercise. Influence: High means authority to approve or delay approval; Medium means responsibility for shaping tool selection and rollout without final approval; Low means contributing user feedback without approval, budget or rollout authority. Interest: High means direct responsibility for enterprise security and growth, operational delivery, or daily tool use; Medium means financial governance and commercial review rather than those direct responsibilities; Low means no stated involvement or affected goal. These criteria make this case a checked practice task; real account maps need confirmation and may use different scales.", "An engagement order is a proposed sequence of purposeful conversations, not a rule to withhold information from people until their turn. You may need an early sponsor check and a later approval discussion with the same person. This map records one main conversation per stakeholder."], "roleOptions": ["Decision-maker", "Influencer", "Blocker", "End user"], "ratings": ["High", "Medium", "Low"], "people": [{"id": "maria", "name": "Maria Lopez", "title": "Chief information officer (CIO)", "case": "Owns enterprise architecture and signs off on major changes. Reports to the chief executive officer (CEO) and board. She is focused on security, compliance, vendor risk, and scalable growth. She will not approve unless the plan shows risk mitigation and a clear path to scale.", "role": "Decision-maker", "roleWhy": "The case explicitly says Maria signs off on major changes and sets approval conditions. Other people shape the plan, but this is the clearest primary approval role.", "influence": "High", "influenceWhy": "She signs off on major changes and requires risk mitigation and a path to scale.", "interest": "High", "interestWhy": "The project affects her stated security, compliance and growth goals.", "order": 4, "orderWhy": "Use a later approval discussion to present a case supported by technical, financial and user input. This does not mean excluding Maria from early alignment or an initial sponsor check.", "strategy": "Present a clear plan connecting risk mitigation, security and a path to scale.", "strategyWhy": "It addresses the conditions she sets for approval.", "gap": "Which risk evidence and scaling criteria would Maria need before approving a major change?"}, {"id": "kevin", "name": "Kevin Tan", "title": "Head of information technology (IT) operations", "case": "Runs uptime, monitoring, and integrations. His team must execute the migration. He cares about rollout risk, implementation plans, observability, and low disruption. He influences tool selection and timeline because his team carries the operational load.", "role": "Influencer", "roleWhy": "The case explicitly describes Kevin shaping tool selection and timing through operational responsibility. It does not assign him the final major-change approval role.", "influence": "Medium", "influenceWhy": "His operational responsibilities shape the technical plan and timeline; the case assigns major-change sign-off to Maria.", "interest": "High", "interestWhy": "His team must execute the migration and manage its operational impact.", "order": 1, "orderWhy": "Clarify technical feasibility, rollout risks and implementation needs before building the wider proposal.", "strategy": "Review a rollout plan and ask how to limit disruption to uptime, monitoring and integrations.", "strategyWhy": "The conversation addresses his team's delivery responsibilities and stated concerns.", "gap": "What implementation timing, dependencies and rollback approach would the team need to confirm?"}, {"id": "jada", "name": "Jada Singh", "title": "Finance Manager", "case": "Owns budget controls, payment terms, and cost governance. Requires return on investment (ROI) evidence, a spending forecast with clear limits and safeguards so costs do not spiral, and early visibility of contract terms. She can delay approval if financial risks are not addressed.", "role": "Blocker", "roleWhy": "Jada can delay approval when financial risks are unresolved. Blocker describes that governance gate in this case; it does not make her concerns unreasonable or mean she cannot help the plan.", "influence": "High", "influenceWhy": "Her budget and terms controls can delay approval if financial risks remain open.", "interest": "Medium", "interestWhy": "Her stated involvement is financial governance and commercial review. Under this exercise's criteria that is Medium interest; it does not mean her concerns matter less.", "order": 2, "orderWhy": "Check budget controls, return on investment evidence and contract terms early enough to address commercial risks.", "strategy": "Discuss a cost and savings summary, spending limits, safeguards and the terms she needs to review.", "strategyWhy": "These are the financial conditions and information needs stated in the case.", "gap": "Which spending limits, return on investment evidence and contract terms still need agreement?"}, {"id": "leo", "name": "Leo Chen", "title": "Senior Developer", "case": "Daily user of build and deploy tools. Wants fast pipelines, self-service environments, and reliable, well-documented ways to handle incidents so they can be resolved quickly. Advocates for features that keep developers productive and flags tools that slow the team.", "role": "End user", "roleWhy": "Leo works with the tools daily and describes their direct workflow impact. His advocacy can also influence others, but daily use is his clearest primary role here.", "influence": "Low", "influenceWhy": "The case describes daily use and advocacy, without approval, budget or rollout authority. Under this exercise's criteria that is Low influence; his feedback still matters.", "interest": "High", "interestWhy": "The selected tools directly affect his everyday productivity and incident handling.", "order": 3, "orderWhy": "Gather practical user evidence to test the emerging plan before a final approval conversation. Earlier user input can also be reasonable if you explain that choice.", "strategy": "Offer a focused demonstration and ask Leo to test workflow speed, self-service and incident handling.", "strategyWhy": "This connects the evaluation to the daily work and productivity concerns he describes.", "gap": "Which developer workflows and incident-handling needs should the team validate?"}], "review": ["My reasons use the case evidence; I have labelled missing facts as questions to confirm.", "My strategy addresses this person's stated goals or concerns, and my engagement position has a clear purpose."], "closing": "Keep your map current as you learn more. The checked classifications use this exercise's stated criteria. Your engagement sequence is a reasoned plan, not a single required ordering. Return to the course page to mark the step complete; this activity does not update course completion."};
+const IMAGES={"start": "data:image/webp;base64,UklGRqwFAABXRUJQVlA4IKAFAADwHwCdASqgAHgAPm00lkckIyIhKHPZ6IANiUAay/5PhuTB6XiKPnhhf0h0GfqM8w/m1+jr/Veof/gOpA9ADpSP3Pyo/xT/QO0v/B6qrrKdDfYDtI/4/Hg9qT6Adwn5h/4TwBo9/97/LfVn/4PIR+Q/6f9kPgJ/k39Q6if7G///3Iv1N//5fQ9HHe74QUdxk1CIaRjx6IJGgpKI1igU9bu6XVvIMmVQxNRc2QmH/imVBXpSLWPNvb9s8Sgg9diXGd6UmMlhM/OOebyqYi/fZPrrAZXrIq+YyFpoTBPlRyKP1JUKIXukWnuRlQSFEIbrdgwCyVp/1dPKCIwrKQKQc3Gnfhg/ejnlSAAA/vu4o0fuznxQAA2Q1Mz65yr8Vd2v1m1Z2IknNhBbG/m77rVKf51sSv3K1zPjZgr5J/5xh4+/RPAaGZ2WGVkrk9vw+UhfXhknmwTUlz+eB1tGzb/YXLPHXEgiI/MkUfY6tuvCXKdXiIbXLnTJanaeuZ8bMFfJP/OMPH36J4DQzOywyslcnt+HykL68Mk82CakufzwPtC3/0gLdgVE9oXb/PeO61NEnYYhp6YFjdwwpqBZVLVvYNmlxc35hqO9RG4MVl6e0NkeqFeop0KL1EY5RSNGLEN/eKxVoC5jD724/jlTAa5nN9FAideRp06rQ8Zrk7cIGYr6GkIcrZJEzBlYZ93XB+8nYW+3ueIdMaiWaClpGPymlsuyJS1nMXD1J7El8g9CcstOqWT7I8icx0OBT/wof9nfgIk+OEEyTtUzDktBxg+nfZqh8ERIuHGN5HOHUrF+Ss+ufxfyUPS+HHbliuWkAHOYQYezf4NZGtkgryc8XWa0UKtRaBG6pTkxXomr2pTmDwI9tB3Hs+H8or71qj1NJKcehbI/CpmYdOMMEmU8o9x5crQyQaBzKy4SnzVAMp4pmocdVsysvkW/X9YyWP3mFNJ+aPSqxxwhwWVC16x4+fyyqFbq96X4UxHrF+EXCaph3SIBdccj80wa3Lxqt6Ck5hCbWgP2xQBAjYhRDR7GpbuyLxqlvoCQEpq8DTE5VDrTfVF6PIGIokU13bEEfRdoi3YNzbqHWWP4crGPP3OC/QRX7w10V/ych7T8z+RFu8CHLuPvgPbsBGCA6uAHMEr57SIZrLsYx6293LkpGL0f9VPVP8j/7+6twSg6fJ157oTuvtaoGavYRn8Kg/CpqBk2oRn1hNi/oRiPQlQx4vAXmqGuU3OK1wTp4gSoItsRhZKtvnVSSOKCkbBGAbwH4Joc0vxednMaDOFiuUkX1i3OTfibHhOnst7iCxH6Aov/EBbsDFC5g9XndIKYM9jCC7g8qknzI54BqKDodgHn1pqi4Z6a5Lgsbq90SmKmiWfyU5J+XPVTNyNoJTBGubNDiHW0rS3xWjF6XH0hacW5n7tT6Svwvkii1E4pyPVQtLP9Q0/VzNYOVXLpP44AH2LdQwTvrpp52Qytxj+Lg1kBNxaBh8UZdnMe6k+rXrnKRty25do5BnKhW1jX5rXNRJEtceA0JFLEWnJhHg5aA9n5cmPoiq3WftGFRNR+FosOIR3u1zeAP85+AMK6i38uq3392csLWq+o0nHXM+NmCurGnUVar1jkO61b0nEi5ELIy06WSXaww1ed6++W9mznvzMAHU8tUVIKxSGOmHRYzYa4hD0uIxMfae8n9ns1/+w37+UznpI1qmlUfaDUAFQzkLo9UK9RToUXqIxyoA15j2pthdMvS4gCLZP2fC5vX0ZuKt2J7ZvLRHNgJbIJX4rUvsJzJGp+QZmrfyXzupUHgWgmmh9kSRiQDgF+zYAAWCcVGlf7U+Mwh3wdafxd5P9K6ZOFQxAzneYU0n5o9Hkyemf4Uwziz6HAEWyfs+FzNxW744TsCkkdSHXRmjrOhlDNMLzXsl89gAAAAAA=", "maria": "data:image/webp;base64,UklGRqwFAABXRUJQVlA4IKAFAADwHwCdASqgAHgAPm00lkckIyIhKHPZ6IANiUAay/5PhuTB6XiKPnhhf0h0GfqM8w/m1+jr/Veof/gOpA9ADpSP3Pyo/xT/QO0v/B6qrrKdDfYDtI/4/Hg9qT6Adwn5h/4TwBo9/97/LfVn/4PIR+Q/6f9kPgJ/k39Q6if7G///3Iv1N//5fQ9HHe74QUdxk1CIaRjx6IJGgpKI1igU9bu6XVvIMmVQxNRc2QmH/imVBXpSLWPNvb9s8Sgg9diXGd6UmMlhM/OOebyqYi/fZPrrAZXrIq+YyFpoTBPlRyKP1JUKIXukWnuRlQSFEIbrdgwCyVp/1dPKCIwrKQKQc3Gnfhg/ejnlSAAA/vu4o0fuznxQAA2Q1Mz65yr8Vd2v1m1Z2IknNhBbG/m77rVKf51sSv3K1zPjZgr5J/5xh4+/RPAaGZ2WGVkrk9vw+UhfXhknmwTUlz+eB1tGzb/YXLPHXEgiI/MkUfY6tuvCXKdXiIbXLnTJanaeuZ8bMFfJP/OMPH36J4DQzOywyslcnt+HykL68Mk82CakufzwPtC3/0gLdgVE9oXb/PeO61NEnYYhp6YFjdwwpqBZVLVvYNmlxc35hqO9RG4MVl6e0NkeqFeop0KL1EY5RSNGLEN/eKxVoC5jD724/jlTAa5nN9FAideRp06rQ8Zrk7cIGYr6GkIcrZJEzBlYZ93XB+8nYW+3ueIdMaiWaClpGPymlsuyJS1nMXD1J7El8g9CcstOqWT7I8icx0OBT/wof9nfgIk+OEEyTtUzDktBxg+nfZqh8ERIuHGN5HOHUrF+Ss+ufxfyUPS+HHbliuWkAHOYQYezf4NZGtkgryc8XWa0UKtRaBG6pTkxXomr2pTmDwI9tB3Hs+H8or71qj1NJKcehbI/CpmYdOMMEmU8o9x5crQyQaBzKy4SnzVAMp4pmocdVsysvkW/X9YyWP3mFNJ+aPSqxxwhwWVC16x4+fyyqFbq96X4UxHrF+EXCaph3SIBdccj80wa3Lxqt6Ck5hCbWgP2xQBAjYhRDR7GpbuyLxqlvoCQEpq8DTE5VDrTfVF6PIGIokU13bEEfRdoi3YNzbqHWWP4crGPP3OC/QRX7w10V/ych7T8z+RFu8CHLuPvgPbsBGCA6uAHMEr57SIZrLsYx6293LkpGL0f9VPVP8j/7+6twSg6fJ157oTuvtaoGavYRn8Kg/CpqBk2oRn1hNi/oRiPQlQx4vAXmqGuU3OK1wTp4gSoItsRhZKtvnVSSOKCkbBGAbwH4Joc0vxednMaDOFiuUkX1i3OTfibHhOnst7iCxH6Aov/EBbsDFC5g9XndIKYM9jCC7g8qknzI54BqKDodgHn1pqi4Z6a5Lgsbq90SmKmiWfyU5J+XPVTNyNoJTBGubNDiHW0rS3xWjF6XH0hacW5n7tT6Svwvkii1E4pyPVQtLP9Q0/VzNYOVXLpP44AH2LdQwTvrpp52Qytxj+Lg1kBNxaBh8UZdnMe6k+rXrnKRty25do5BnKhW1jX5rXNRJEtceA0JFLEWnJhHg5aA9n5cmPoiq3WftGFRNR+FosOIR3u1zeAP85+AMK6i38uq3392csLWq+o0nHXM+NmCurGnUVar1jkO61b0nEi5ELIy06WSXaww1ed6++W9mznvzMAHU8tUVIKxSGOmHRYzYa4hD0uIxMfae8n9ns1/+w37+UznpI1qmlUfaDUAFQzkLo9UK9RToUXqIxyoA15j2pthdMvS4gCLZP2fC5vX0ZuKt2J7ZvLRHNgJbIJX4rUvsJzJGp+QZmrfyXzupUHgWgmmh9kSRiQDgF+zYAAWCcVGlf7U+Mwh3wdafxd5P9K6ZOFQxAzneYU0n5o9Hkyemf4Uwziz6HAEWyfs+FzNxW744TsCkkdSHXRmjrOhlDNMLzXsl89gAAAAAA=", "kevin": "data:image/webp;base64,UklGRqwFAABXRUJQVlA4IKAFAADwHwCdASqgAHgAPm00lkckIyIhKHPZ6IANiUAay/5PhuTB6XiKPnhhf0h0GfqM8w/m1+jr/Veof/gOpA9ADpSP3Pyo/xT/QO0v/B6qrrKdDfYDtI/4/Hg9qT6Adwn5h/4TwBo9/97/LfVn/4PIR+Q/6f9kPgJ/k39Q6if7G///3Iv1N//5fQ9HHe74QUdxk1CIaRjx6IJGgpKI1igU9bu6XVvIMmVQxNRc2QmH/imVBXpSLWPNvb9s8Sgg9diXGd6UmMlhM/OOebyqYi/fZPrrAZXrIq+YyFpoTBPlRyKP1JUKIXukWnuRlQSFEIbrdgwCyVp/1dPKCIwrKQKQc3Gnfhg/ejnlSAAA/vu4o0fuznxQAA2Q1Mz65yr8Vd2v1m1Z2IknNhBbG/m77rVKf51sSv3K1zPjZgr5J/5xh4+/RPAaGZ2WGVkrk9vw+UhfXhknmwTUlz+eB1tGzb/YXLPHXEgiI/MkUfY6tuvCXKdXiIbXLnTJanaeuZ8bMFfJP/OMPH36J4DQzOywyslcnt+HykL68Mk82CakufzwPtC3/0gLdgVE9oXb/PeO61NEnYYhp6YFjdwwpqBZVLVvYNmlxc35hqO9RG4MVl6e0NkeqFeop0KL1EY5RSNGLEN/eKxVoC5jD724/jlTAa5nN9FAideRp06rQ8Zrk7cIGYr6GkIcrZJEzBlYZ93XB+8nYW+3ueIdMaiWaClpGPymlsuyJS1nMXD1J7El8g9CcstOqWT7I8icx0OBT/wof9nfgIk+OEEyTtUzDktBxg+nfZqh8ERIuHGN5HOHUrF+Ss+ufxfyUPS+HHbliuWkAHOYQYezf4NZGtkgryc8XWa0UKtRaBG6pTkxXomr2pTmDwI9tB3Hs+H8or71qj1NJKcehbI/CpmYdOMMEmU8o9x5crQyQaBzKy4SnzVAMp4pmocdVsysvkW/X9YyWP3mFNJ+aPSqxxwhwWVC16x4+fyyqFbq96X4UxHrF+EXCaph3SIBdccj80wa3Lxqt6Ck5hCbWgP2xQBAjYhRDR7GpbuyLxqlvoCQEpq8DTE5VDrTfVF6PIGIokU13bEEfRdoi3YNzbqHWWP4crGPP3OC/QRX7w10V/ych7T8z+RFu8CHLuPvgPbsBGCA6uAHMEr57SIZrLsYx6293LkpGL0f9VPVP8j/7+6twSg6fJ157oTuvtaoGavYRn8Kg/CpqBk2oRn1hNi/oRiPQlQx4vAXmqGuU3OK1wTp4gSoItsRhZKtvnVSSOKCkbBGAbwH4Joc0vxednMaDOFiuUkX1i3OTfibHhOnst7iCxH6Aov/EBbsDFC5g9XndIKYM9jCC7g8qknzI54BqKDodgHn1pqi4Z6a5Lgsbq90SmKmiWfyU5J+XPVTNyNoJTBGubNDiHW0rS3xWjF6XH0hacW5n7tT6Svwvkii1E4pyPVQtLP9Q0/VzNYOVXLpP44AH2LdQwTvrpp52Qytxj+Lg1kBNxaBh8UZdnMe6k+rXrnKRty25do5BnKhW1jX5rXNRJEtceA0JFLEWnJhHg5aA9n5cmPoiq3WftGFRNR+FosOIR3u1zeAP85+AMK6i38uq3392csLWq+o0nHXM+NmCurGnUVar1jkO61b0nEi5ELIy06WSXaww1ed6++W9mznvzMAHU8tUVIKxSGOmHRYzYa4hD0uIxMfae8n9ns1/+w37+UznpI1qmlUfaDUAFQzkLo9UK9RToUXqIxyoA15j2pthdMvS4gCLZP2fC5vX0ZuKt2J7ZvLRHNgJbIJX4rUvsJzJGp+QZmrfyXzupUHgWgmmh9kSRiQDgF+zYAAWCcVGlf7U+Mwh3wdafxd5P9K6ZOFQxAzneYU0n5o9Hkyemf4Uwziz6HAEWyfs+FzNxW744TsCkkdSHXRmjrOhlDNMLzXsl89gAAAAAA=", "jada": "data:image/webp;base64,UklGRqwFAABXRUJQVlA4IKAFAADwHwCdASqgAHgAPm00lkckIyIhKHPZ6IANiUAay/5PhuTB6XiKPnhhf0h0GfqM8w/m1+jr/Veof/gOpA9ADpSP3Pyo/xT/QO0v/B6qrrKdDfYDtI/4/Hg9qT6Adwn5h/4TwBo9/97/LfVn/4PIR+Q/6f9kPgJ/k39Q6if7G///3Iv1N//5fQ9HHe74QUdxk1CIaRjx6IJGgpKI1igU9bu6XVvIMmVQxNRc2QmH/imVBXpSLWPNvb9s8Sgg9diXGd6UmMlhM/OOebyqYi/fZPrrAZXrIq+YyFpoTBPlRyKP1JUKIXukWnuRlQSFEIbrdgwCyVp/1dPKCIwrKQKQc3Gnfhg/ejnlSAAA/vu4o0fuznxQAA2Q1Mz65yr8Vd2v1m1Z2IknNhBbG/m77rVKf51sSv3K1zPjZgr5J/5xh4+/RPAaGZ2WGVkrk9vw+UhfXhknmwTUlz+eB1tGzb/YXLPHXEgiI/MkUfY6tuvCXKdXiIbXLnTJanaeuZ8bMFfJP/OMPH36J4DQzOywyslcnt+HykL68Mk82CakufzwPtC3/0gLdgVE9oXb/PeO61NEnYYhp6YFjdwwpqBZVLVvYNmlxc35hqO9RG4MVl6e0NkeqFeop0KL1EY5RSNGLEN/eKxVoC5jD724/jlTAa5nN9FAideRp06rQ8Zrk7cIGYr6GkIcrZJEzBlYZ93XB+8nYW+3ueIdMaiWaClpGPymlsuyJS1nMXD1J7El8g9CcstOqWT7I8icx0OBT/wof9nfgIk+OEEyTtUzDktBxg+nfZqh8ERIuHGN5HOHUrF+Ss+ufxfyUPS+HHbliuWkAHOYQYezf4NZGtkgryc8XWa0UKtRaBG6pTkxXomr2pTmDwI9tB3Hs+H8or71qj1NJKcehbI/CpmYdOMMEmU8o9x5crQyQaBzKy4SnzVAMp4pmocdVsysvkW/X9YyWP3mFNJ+aPSqxxwhwWVC16x4+fyyqFbq96X4UxHrF+EXCaph3SIBdccj80wa3Lxqt6Ck5hCbWgP2xQBAjYhRDR7GpbuyLxqlvoCQEpq8DTE5VDrTfVF6PIGIokU13bEEfRdoi3YNzbqHWWP4crGPP3OC/QRX7w10V/ych7T8z+RFu8CHLuPvgPbsBGCA6uAHMEr57SIZrLsYx6293LkpGL0f9VPVP8j/7+6twSg6fJ157oTuvtaoGavYRn8Kg/CpqBk2oRn1hNi/oRiPQlQx4vAXmqGuU3OK1wTp4gSoItsRhZKtvnVSSOKCkbBGAbwH4Joc0vxednMaDOFiuUkX1i3OTfibHhOnst7iCxH6Aov/EBbsDFC5g9XndIKYM9jCC7g8qknzI54BqKDodgHn1pqi4Z6a5Lgsbq90SmKmiWfyU5J+XPVTNyNoJTBGubNDiHW0rS3xWjF6XH0hacW5n7tT6Svwvkii1E4pyPVQtLP9Q0/VzNYOVXLpP44AH2LdQwTvrpp52Qytxj+Lg1kBNxaBh8UZdnMe6k+rXrnKRty25do5BnKhW1jX5rXNRJEtceA0JFLEWnJhHg5aA9n5cmPoiq3WftGFRNR+FosOIR3u1zeAP85+AMK6i38uq3392csLWq+o0nHXM+NmCurGnUVar1jkO61b0nEi5ELIy06WSXaww1ed6++W9mznvzMAHU8tUVIKxSGOmHRYzYa4hD0uIxMfae8n9ns1/+w37+UznpI1qmlUfaDUAFQzkLo9UK9RToUXqIxyoA15j2pthdMvS4gCLZP2fC5vX0ZuKt2J7ZvLRHNgJbIJX4rUvsJzJGp+QZmrfyXzupUHgWgmmh9kSRiQDgF+zYAAWCcVGlf7U+Mwh3wdafxd5P9K6ZOFQxAzneYU0n5o9Hkyemf4Uwziz6HAEWyfs+FzNxW744TsCkkdSHXRmjrOhlDNMLzXsl89gAAAAAA=", "leo": "data:image/webp;base64,UklGRqwFAABXRUJQVlA4IKAFAADwHwCdASqgAHgAPm00lkckIyIhKHPZ6IANiUAay/5PhuTB6XiKPnhhf0h0GfqM8w/m1+jr/Veof/gOpA9ADpSP3Pyo/xT/QO0v/B6qrrKdDfYDtI/4/Hg9qT6Adwn5h/4TwBo9/97/LfVn/4PIR+Q/6f9kPgJ/k39Q6if7G///3Iv1N//5fQ9HHe74QUdxk1CIaRjx6IJGgpKI1igU9bu6XVvIMmVQxNRc2QmH/imVBXpSLWPNvb9s8Sgg9diXGd6UmMlhM/OOebyqYi/fZPrrAZXrIq+YyFpoTBPlRyKP1JUKIXukWnuRlQSFEIbrdgwCyVp/1dPKCIwrKQKQc3Gnfhg/ejnlSAAA/vu4o0fuznxQAA2Q1Mz65yr8Vd2v1m1Z2IknNhBbG/m77rVKf51sSv3K1zPjZgr5J/5xh4+/RPAaGZ2WGVkrk9vw+UhfXhknmwTUlz+eB1tGzb/YXLPHXEgiI/MkUfY6tuvCXKdXiIbXLnTJanaeuZ8bMFfJP/OMPH36J4DQzOywyslcnt+HykL68Mk82CakufzwPtC3/0gLdgVE9oXb/PeO61NEnYYhp6YFjdwwpqBZVLVvYNmlxc35hqO9RG4MVl6e0NkeqFeop0KL1EY5RSNGLEN/eKxVoC5jD724/jlTAa5nN9FAideRp06rQ8Zrk7cIGYr6GkIcrZJEzBlYZ93XB+8nYW+3ueIdMaiWaClpGPymlsuyJS1nMXD1J7El8g9CcstOqWT7I8icx0OBT/wof9nfgIk+OEEyTtUzDktBxg+nfZqh8ERIuHGN5HOHUrF+Ss+ufxfyUPS+HHbliuWkAHOYQYezf4NZGtkgryc8XWa0UKtRaBG6pTkxXomr2pTmDwI9tB3Hs+H8or71qj1NJKcehbI/CpmYdOMMEmU8o9x5crQyQaBzKy4SnzVAMp4pmocdVsysvkW/X9YyWP3mFNJ+aPSqxxwhwWVC16x4+fyyqFbq96X4UxHrF+EXCaph3SIBdccj80wa3Lxqt6Ck5hCbWgP2xQBAjYhRDR7GpbuyLxqlvoCQEpq8DTE5VDrTfVF6PIGIokU13bEEfRdoi3YNzbqHWWP4crGPP3OC/QRX7w10V/ych7T8z+RFu8CHLuPvgPbsBGCA6uAHMEr57SIZrLsYx6293LkpGL0f9VPVP8j/7+6twSg6fJ157oTuvtaoGavYRn8Kg/CpqBk2oRn1hNi/oRiPQlQx4vAXmqGuU3OK1wTp4gSoItsRhZKtvnVSSOKCkbBGAbwH4Joc0vxednMaDOFiuUkX1i3OTfibHhOnst7iCxH6Aov/EBbsDFC5g9XndIKYM9jCC7g8qknzI54BqKDodgHn1pqi4Z6a5Lgsbq90SmKmiWfyU5J+XPVTNyNoJTBGubNDiHW0rS3xWjF6XH0hacW5n7tT6Svwvkii1E4pyPVQtLP9Q0/VzNYOVXLpP44AH2LdQwTvrpp52Qytxj+Lg1kBNxaBh8UZdnMe6k+rXrnKRty25do5BnKhW1jX5rXNRJEtceA0JFLEWnJhHg5aA9n5cmPoiq3WftGFRNR+FosOIR3u1zeAP85+AMK6i38uq3392csLWq+o0nHXM+NmCurGnUVar1jkO61b0nEi5ELIy06WSXaww1ed6++W9mznvzMAHU8tUVIKxSGOmHRYzYa4hD0uIxMfae8n9ns1/+w37+UznpI1qmlUfaDUAFQzkLo9UK9RToUXqIxyoA15j2pthdMvS4gCLZP2fC5vX0ZuKt2J7ZvLRHNgJbIJX4rUvsJzJGp+QZmrfyXzupUHgWgmmh9kSRiQDgF+zYAAWCcVGlf7U+Mwh3wdafxd5P9K6ZOFQxAzneYU0n5o9Hkyemf4Uwziz6HAEWyfs+FzNxW744TsCkkdSHXRmjrOhlDNMLzXsl89gAAAAAA=", "record": "data:image/webp;base64,UklGRqwFAABXRUJQVlA4IKAFAADwHwCdASqgAHgAPm00lkckIyIhKHPZ6IANiUAay/5PhuTB6XiKPnhhf0h0GfqM8w/m1+jr/Veof/gOpA9ADpSP3Pyo/xT/QO0v/B6qrrKdDfYDtI/4/Hg9qT6Adwn5h/4TwBo9/97/LfVn/4PIR+Q/6f9kPgJ/k39Q6if7G///3Iv1N//5fQ9HHe74QUdxk1CIaRjx6IJGgpKI1igU9bu6XVvIMmVQxNRc2QmH/imVBXpSLWPNvb9s8Sgg9diXGd6UmMlhM/OOebyqYi/fZPrrAZXrIq+YyFpoTBPlRyKP1JUKIXukWnuRlQSFEIbrdgwCyVp/1dPKCIwrKQKQc3Gnfhg/ejnlSAAA/vu4o0fuznxQAA2Q1Mz65yr8Vd2v1m1Z2IknNhBbG/m77rVKf51sSv3K1zPjZgr5J/5xh4+/RPAaGZ2WGVkrk9vw+UhfXhknmwTUlz+eB1tGzb/YXLPHXEgiI/MkUfY6tuvCXKdXiIbXLnTJanaeuZ8bMFfJP/OMPH36J4DQzOywyslcnt+HykL68Mk82CakufzwPtC3/0gLdgVE9oXb/PeO61NEnYYhp6YFjdwwpqBZVLVvYNmlxc35hqO9RG4MVl6e0NkeqFeop0KL1EY5RSNGLEN/eKxVoC5jD724/jlTAa5nN9FAideRp06rQ8Zrk7cIGYr6GkIcrZJEzBlYZ93XB+8nYW+3ueIdMaiWaClpGPymlsuyJS1nMXD1J7El8g9CcstOqWT7I8icx0OBT/wof9nfgIk+OEEyTtUzDktBxg+nfZqh8ERIuHGN5HOHUrF+Ss+ufxfyUPS+HHbliuWkAHOYQYezf4NZGtkgryc8XWa0UKtRaBG6pTkxXomr2pTmDwI9tB3Hs+H8or71qj1NJKcehbI/CpmYdOMMEmU8o9x5crQyQaBzKy4SnzVAMp4pmocdVsysvkW/X9YyWP3mFNJ+aPSqxxwhwWVC16x4+fyyqFbq96X4UxHrF+EXCaph3SIBdccj80wa3Lxqt6Ck5hCbWgP2xQBAjYhRDR7GpbuyLxqlvoCQEpq8DTE5VDrTfVF6PIGIokU13bEEfRdoi3YNzbqHWWP4crGPP3OC/QRX7w10V/ych7T8z+RFu8CHLuPvgPbsBGCA6uAHMEr57SIZrLsYx6293LkpGL0f9VPVP8j/7+6twSg6fJ157oTuvtaoGavYRn8Kg/CpqBk2oRn1hNi/oRiPQlQx4vAXmqGuU3OK1wTp4gSoItsRhZKtvnVSSOKCkbBGAbwH4Joc0vxednMaDOFiuUkX1i3OTfibHhOnst7iCxH6Aov/EBbsDFC5g9XndIKYM9jCC7g8qknzI54BqKDodgHn1pqi4Z6a5Lgsbq90SmKmiWfyU5J+XPVTNyNoJTBGubNDiHW0rS3xWjF6XH0hacW5n7tT6Svwvkii1E4pyPVQtLP9Q0/VzNYOVXLpP44AH2LdQwTvrpp52Qytxj+Lg1kBNxaBh8UZdnMe6k+rXrnKRty25do5BnKhW1jX5rXNRJEtceA0JFLEWnJhHg5aA9n5cmPoiq3WftGFRNR+FosOIR3u1zeAP85+AMK6i38uq3392csLWq+o0nHXM+NmCurGnUVar1jkO61b0nEi5ELIy06WSXaww1ed6++W9mznvzMAHU8tUVIKxSGOmHRYzYa4hD0uIxMfae8n9ns1/+w37+UznpI1qmlUfaDUAFQzkLo9UK9RToUXqIxyoA15j2pthdMvS4gCLZP2fC5vX0ZuKt2J7ZvLRHNgJbIJX4rUvsJzJGp+QZmrfyXzupUHgWgmmh9kSRiQDgF+zYAAWCcVGlf7U+Mwh3wdafxd5P9K6ZOFQxAzneYU0n5o9Hkyemf4Uwziz6HAEWyfs+FzNxW744TsCkkdSHXRmjrOhlDNMLzXsl89gAAAAAA="};
+// Shared board engine for the C1 activities: one fixed screen, illustrated tiles left and right open their step in the
+// centre stage. The activity's app.js fills in Board.tiles and the hooks below, then calls Board.start().
+// Tile: { id, title, short, image, side: 'left'|'right', render: () => html, slot: bool }
+const byId = id => document.getElementById(id);
+const safe = v => String(v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const Board = {
+  tiles: [],
+  faces: null,                              // { n, p, w } images for a reacting character; null = the current tile's picture
+  mood: { n: 'Focused.', p: 'Done.', w: 'Not yet.' },
+  cardLabel: (n, total) => `Progress ${n}/${total}`,
+  unlocked: () => true,
+  lockedMsg: () => '',
+  onOpen: () => {},
+  onClick: () => false,                     // return true when the activity handled the click
+  onReset: () => {},
+  st: null,
+  cur: 0,
+
+  idx(id) { return this.tiles.findIndex(t => t.id === id); },
+  slots() { return this.tiles.filter(t => t.slot).map(t => t.id); },
+  say(msg) { byId('live').textContent = ''; setTimeout(() => { byId('live').textContent = msg; }, 30); },
+  face(m) {
+    const f = byId('face'); f.className = m;
+    const src = this.faces ? this.faces[m] : this.tiles[this.cur].image;
+    f.innerHTML = `<img src="${src}" width="72" height="72" alt=""><span class="sr">${safe(this.mood[m])}</span>`;
+  },
+
+  start() {
+    byId('interactive').hidden = false;
+    this.build();
+    this.wire();
+  },
+  build() {
+    this.st = { done: {}, tries: {} };
+    this.onReset();
+    byId('stage-body').innerHTML = this.tiles.map((t, i) => `<section class="pane" id="pane-${t.id}" hidden aria-labelledby="ph-${t.id}">
+      <h2 id="ph-${t.id}" tabindex="-1"><span class="kick">Step ${i + 1} of ${this.tiles.length}</span> ${safe(t.title)}</h2>${t.render()}</section>`).join('');
+    const tile = t => `<li><button type="button" class="tile" data-tile="${t.id}" id="tile-${t.id}">
+      <span class="ico" aria-hidden="true"><img src="${t.image}" alt=""></span><span class="tt">${safe(t.short)}</span><span class="state" aria-hidden="true"></span><span class="sr st-text"></span></button></li>`;
+    byId('rail-left').innerHTML = this.tiles.filter(t => t.side === 'left').map(tile).join('');
+    byId('rail-right').innerHTML = this.tiles.filter(t => t.side === 'right').map(tile).join('');
+    byId('slots').innerHTML = this.slots().map(id => `<li><button type="button" class="slot" data-tile="${id}" id="slot-${id}"><strong>${safe(this.tiles[this.idx(id)].title)}</strong><span class="body muted">Not yet done.</span></button></li>`).join('');
+    this.open(0, true);
+  },
+
+  open(i, silent) {
+    const t = this.tiles[i];
+    if (!this.unlocked(t.id)) { const m = this.lockedMsg(t.id); this.say(m); byId('lockmsg').textContent = m; return; }
+    byId('lockmsg').textContent = '';
+    this.cur = i;
+    this.tiles.forEach(x => { byId('pane-' + x.id).hidden = x.id !== t.id; });
+    this.onOpen(t.id);
+    this.face(this.st.done[t.id] ? 'p' : 'n');
+    this.paint();
+    byId('stage-scroll').scrollTop = 0;
+    if (!silent) byId('ph-' + t.id).focus();
+  },
+  paint() {
+    this.tiles.forEach((t, i) => {
+      const b = byId('tile-' + t.id), done = !!this.st.done[t.id], lock = !this.unlocked(t.id);
+      b.className = 'tile' + (done ? ' done' : '') + (i === this.cur ? ' current' : '') + (lock ? ' locked' : '');
+      b.setAttribute('aria-current', i === this.cur ? 'step' : 'false');
+      b.querySelector('.state').textContent = done ? '✓' : lock ? '🔒' : '';
+      b.querySelector('.st-text').textContent = done ? ' (done)' : lock ? ' (locked)' : i === this.cur ? ' (current)' : ' (not started)';
+    });
+    const s = this.slots(), n = s.filter(id => this.st.done[id]).length;
+    byId('prog').textContent = `${n} of ${s.length} done`;
+    byId('bar').style.width = (s.length ? n / s.length * 100 : 0) + '%';
+    byId('card').classList.toggle('complete', n === s.length);
+    byId('unlocked').hidden = n !== s.length;
+    byId('toggle-card').textContent = this.cardLabel(n, s.length);
+    const last = this.tiles.length - 1, nx = byId('next'), pv = byId('prev');
+    pv.disabled = this.cur === 0; nx.disabled = this.cur === last;
+    nx.textContent = this.cur < last ? 'Next: ' + this.tiles[this.cur + 1].short + ' →' : 'Last step';
+    pv.textContent = this.cur ? '← ' + this.tiles[this.cur - 1].short : '←';
+  },
+  nextOpen() {
+    for (let k = 1; k <= this.tiles.length; k++) {
+      const j = (this.cur + k) % this.tiles.length, t = this.tiles[j];
+      if (!this.st.done[t.id] && this.unlocked(t.id)) return j;
+    }
+    return -1;
+  },
+
+  // Reactions
+  stamp(text) { const s = byId('stamp'); s.textContent = text; s.classList.remove('on'); void s.offsetWidth; s.classList.add('on'); },
+  wrong(fb) { this.face('w'); fb.classList.remove('wob'); void fb.offsetWidth; fb.classList.add('wob'); this.say(this.mood.w); },
+  fill(id, html) { const s = byId('slot-' + id); if (!s) return; const b = s.querySelector('.body'); b.className = 'body'; b.innerHTML = html; },
+  fly(id) {
+    const slot = byId('slot-' + id);
+    const pop = () => { if (slot) { slot.classList.add('filled', 'pop'); setTimeout(() => slot.classList.remove('pop'), 700); } };
+    if (!slot || reduced()) { pop(); return; }
+    const from = byId('tile-' + id).querySelector('.ico').getBoundingClientRect();
+    const to = (byId('card').hidden ? byId('toggle-card') : slot).getBoundingClientRect();
+    const c = document.createElement('div'); c.className = 'flyer'; c.textContent = '✓';
+    Object.assign(c.style, { left: from.left + 'px', top: from.top + 'px', width: from.width + 'px', height: from.height + 'px' });
+    document.body.appendChild(c);
+    const a = c.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${to.left + 12 - from.left}px,${to.top + 12 - from.top}px) scale(1.4)`, opacity: .2 }], { duration: 650, easing: 'cubic-bezier(.3,.7,.2,1)' });
+    a.onfinish = () => { c.remove(); pop(); };
+  },
+  // A step is finished: tick its tile, fill its slot, react, and offer the next open step inside `holder`.
+  complete(id, holder, stampText, slotHtml) {
+    this.st.done[id] = true;
+    if (slotHtml !== undefined) { this.fill(id, slotHtml); this.fly(id); }
+    this.face('p');
+    if (stampText) this.stamp(stampText);
+    const j = this.nextOpen();
+    if (holder && !holder.querySelector('[data-advance]')) {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'go'; b.dataset.advance = '1';
+      b.textContent = j >= 0 ? 'Continue to ' + this.tiles[j].short : 'All done';
+      holder.appendChild(b);
+    }
+    this.paint();
+    this.say(this.mood.p);
+  },
+  // Count a failed check; true once the "Show me the answer" escape should appear (after two).
+  failed(id) { this.st.tries[id] = (this.st.tries[id] || 0) + 1; return this.st.tries[id] >= 2; },
+
+  showCard(on) {
+    byId('card').hidden = !on;
+    byId('toggle-card').setAttribute('aria-expanded', String(on));
+    if (on) byId('closecard').focus();
+  },
+  wire() {
+    document.addEventListener('click', e => {
+      const t = e.target.closest('button');
+      if (!t || this.onClick(t)) return;
+      if (t.dataset.tile) this.open(this.idx(t.dataset.tile));
+      else if (t.dataset.advance) { const j = this.nextOpen(); if (j >= 0) this.open(j); else this.say('Every step is done.'); }
+      else if (t.id === 'prev') this.open(this.cur - 1);
+      else if (t.id === 'next') this.open(this.cur + 1);
+      else if (t.id === 'restart') { this.build(); byId('h-top').focus(); }
+      else if (t.id === 'toggle-card') this.showCard(byId('card').hidden);
+      else if (t.id === 'closecard') { this.showCard(false); byId('toggle-card').focus(); }
+      else if (t.id === 'casefile' && byId('casedlg')) byId('casedlg').showModal();
+      else if (t.id === 'closecase') byId('casedlg').close();
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !byId('card').hidden) { this.showCard(false); byId('toggle-card').focus(); } });
+  }
+};
+
+/* Case-specific assessment. Free writing and engagement order are not graded. */
+const Assessment = (() => {
+  const roleHints = {
+    'Decision-maker': 'Who has the stated authority to sign off on major changes? Shaping a plan is different from giving final approval.',
+    'Influencer': 'Who shapes tool selection and timing through operational responsibility? Check whether final approval is actually assigned to this person.',
+    'Blocker': 'Who can delay approval if a stated condition remains unresolved? This role describes a governance gate, not an unhelpful personality.',
+    'End user': 'Who works with the tools daily? Distinguish daily experience and advocacy from approval or budget control.'
+  };
+  function check(person, values) {
+    const fields = ['role', 'influence', 'interest'].map(field => {
+      const correct = values[field] === person[field];
+      let message;
+      if (!values[field]) message = 'Choose an answer using the case and the rating criteria.';
+      else if (correct) message = person[field + 'Why'];
+      else if (field === 'role') message = 'You chose ' + values.role + '. ' + roleHints[person.role];
+      else if (field === 'influence') message = 'Re-read ' + person.name + "'s responsibilities. Does this person approve or delay approval, shape selection and rollout, or contribute user feedback? Match that evidence to High, Medium or Low in the criteria.";
+      else message = 'Re-read ' + person.name + "'s involvement. Is it direct enterprise responsibility, operational delivery or daily use, financial governance and review, or no stated involvement? Use the interest criteria; importance alone does not determine this rating.";
+      return {field, correct, message};
+    });
+    return {correct: fields.every(item => item.correct), fields};
+  }
+  return {check};
+})();
+if (typeof module !== 'undefined') module.exports = Assessment;
+
+const PEOPLE=DATA.people,IDS=PEOPLE.map(p=>p.id),FIELDS=['role','influence','influenceReason','interest','interestReason','order','orderReason','strategy','strategyReason','gap'];
+const LABELS={role:'Primary buyer role',influence:'Influence rating',influenceReason:'Why this influence rating?',interest:'Interest rating',interestReason:'Why this interest rating?',order:'Engagement position (1-4)',orderReason:'Why this position in your sequence?',strategy:'Your engagement strategy',strategyReason:'Why does that strategy fit?',gap:'Notes or gaps to confirm'};
+const FORMAT='c2-buyer-map-v1';let checked={},pending=null;
+function opts(f){return f==='role'?DATA.roleOptions:f==='influence'||f==='interest'?DATA.ratings:f==='order'?['1','2','3','4']:null;}
+function reference(){return `<details class="reference"><summary>Open the case, role guidance and rating criteria</summary><div class="profile"><p>${safe(DATA.scenario)}</p>${PEOPLE.map(p=>`<h3>${safe(p.name+' — '+p.title)}</h3><p>${safe(p.case)}</p>`).join('')}<h3>Role, influence, interest and sequence</h3>${DATA.definitions.map(t=>`<p>${safe(t)}</p>`).join('')}</div></details>`;}
+function sample(){return `<details class="reference"><summary>Compare with one sample map after drafting</summary><div class="profile"><p>The role and rating answers below follow the case and the stated criteria. The engagement order, strategies and questions are one possible plan. This reference does not fill or complete your map.</p>${[...PEOPLE].sort((a,b)=>a.order-b.order).map(p=>`<h3>${p.order}. ${safe(p.name)}</h3><p><strong>Primary role:</strong> ${safe(p.role)}. ${safe(p.roleWhy)}</p><p><strong>Influence:</strong> ${safe(p.influence)}. ${safe(p.influenceWhy)}</p><p><strong>Interest:</strong> ${safe(p.interest)}. ${safe(p.interestWhy)}</p><p><strong>Sequence reason:</strong> ${safe(p.orderWhy)}</p><p><strong>Strategy:</strong> ${safe(p.strategy)} ${safe(p.strategyWhy)}</p><p><strong>Question to confirm:</strong> ${safe(p.gap)}</p>`).join('')}</div></details>`;}
+function field(id,f){const o=opts(f);return `<label class="field" for="${id}-${f}">${safe(LABELS[f])}</label>${o?`<select id="${id}-${f}" data-write="${id}"><option value="">Choose one</option>${o.map(v=>`<option value="${v}">${safe(v)}</option>`).join('')}</select>`:`<textarea id="${id}-${f}" data-write="${id}" rows="3" maxlength="4000"></textarea>`}`;}
+function task(p){return `<section class="panel"><h3>${safe(p.title)}</h3><p>${safe(p.case)}</p></section>${reference()}<p>Map ${safe(p.name)} before comparing with the sample. Explain your own ratings, engagement position and strategy. Record a question where the case leaves a gap.</p>${FIELDS.map(f=>field(p.id,f)).join('')}<button type="button" data-check="${p.id}">Check my answers</button><section id="fb-${p.id}" class="fb" tabindex="-1" role="status" hidden></section><fieldset><legend>Review your reasons and plan</legend>${DATA.review.map((t,j)=>`<label class="pick"><input type="checkbox" id="${p.id}-review-${j}" data-review="${p.id}"><span>${safe(t)}</span></label>`).join('')}</fieldset><p>Role, influence and interest must all be correct before you continue. Written reasons and plans are self-reviewed.</p><div class="actions"><button type="button" data-complete="${p.id}" disabled>Confirm this stakeholder</button><button type="button" data-continue="${p.id}" hidden>Continue</button></div>${sample()}`;}
+function read(id){return Object.fromEntries(FIELDS.map(f=>[f,byId(id+'-'+f).value]));}
+function missing(id){const v=read(id);return FIELDS.filter(f=>!v[f].trim());}
+function signature(id){return JSON.stringify(read(id));}
+function reviewed(id){return DATA.review.every((_,j)=>byId(id+'-review-'+j).checked);}
+function valid(id){return checked[id]===signature(id)&&!missing(id).length&&Assessment.check(PEOPLE.find(p=>p.id===id),read(id)).correct;}
+function sync(id){byId('pane-'+id).querySelector('[data-complete]').disabled=!(valid(id)&&reviewed(id))||!!Board.st.done[id];}
+function clearStamp(){byId('stamp').textContent='';byId('stamp').classList.remove('on');}
+function invalidate(id){reopenFrom(id);delete checked[id];delete Board.st.done[id];DATA.review.forEach((_,j)=>byId(id+'-review-'+j).checked=false);byId('sequence-review').checked=false;byId('fb-'+id).hidden=true;byId('pane-'+id).querySelector('[data-continue]').hidden=true;Board.fill(id,'Draft changed: check and review again.');clearStamp();sync(id);Board.paint();updateRecord();}
+function sequence(values){return values.length===4&&values.every(v=>['1','2','3','4'].includes(v))&&new Set(values).size===4;}
+function updateRecord(){if(!byId('written-record'))return;const unique=sequence(IDS.map(id=>read(id).order));byId('sequence-status').textContent=unique?'Your sequence uses each position once. Review the purpose of each conversation.':'Choose positions 1, 2, 3 and 4 once each across the four stakeholders. Current writing is kept.';byId('written-record').innerHTML=[...PEOPLE].sort((a,b)=>(Number(read(a.id).order)||9)-(Number(read(b.id).order)||9)).map(p=>`<section class="panel"><h3>${safe(read(p.id).order||'?')}. ${safe(p.name)}</h3><p>${Board.st.done[p.id]?'Role and ratings correct; reasons and plan self-reviewed.':'Draft: review not complete.'}</p><dl>${FIELDS.map(f=>`<dt>${safe(LABELS[f])}</dt><dd>${safe(read(p.id)[f]||'Not entered yet.')}</dd>`).join('')}</dl></section>`).join('');byId('download').disabled=!(unique&&IDS.every(id=>Board.st.done[id])&&byId('sequence-review').checked);}
+function download(text,name,type){const u=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
+function notify(msg){byId('save-status').textContent=msg;Board.say(msg);}
+Board.tiles=[{id:'start',title:'Read the case and plan your map',short:'Case and guidance',side:'left',image:IMAGES.start,render:()=>`<p>${safe(DATA.intro)}</p><p>${safe(DATA.boundary)}</p><p>${safe(DATA.scenario)}</p>${reference()}<p>Build all four rows of your map. Use the case and rating criteria to choose a primary role, influence and interest. Your engagement order, strategies and gaps remain editable. Use each engagement position once. Check role, influence and interest for each person. Correct mistakes before moving forward. The sample engagement order is optional.</p><p>The full source worksheet task is available in the complete text and PDF versions below. External downloads or word-processing software are optional.</p><button type="button" id="begin">Map the first stakeholder</button>`},...PEOPLE.map((p,i)=>({id:p.id,title:p.name,short:p.name,side:i<2?'left':'right',image:IMAGES[p.id],slot:true,render:()=>task(p)})),{id:'record',title:'Review and keep your stakeholder map',short:'Your engagement map',side:'right',image:IMAGES.record,render:()=>`<p>Your current writing is shown in your proposed engagement order, including unfinished rows. Return to any stakeholder to edit.</p><p id="sequence-status" role="status"></p><div id="written-record"></div><label class="pick"><input type="checkbox" id="sequence-review"><span>I have reviewed the purpose of each conversation and how the sequence addresses technical, financial, user and approval needs.</span></label><button type="button" id="download" disabled>Download my stakeholder map as text</button><p id="download-status" role="status"></p>${sample()}<p>${safe(DATA.closing)}</p>`}];
+Board.cardLabel=(n,t)=>`Stakeholders reviewed ${n}/${t}`;Board.mood={n:'Mapping the case.',p:'Review recorded.',w:'Review the case.'};
+Board.onReset=()=>{checked={};pending=null;clearStamp();byId('card').hidden=true;byId('toggle-card').setAttribute('aria-expanded','false');if(byId('restore-warning'))byId('restore-warning').hidden=true;};
+Board.onOpen=id=>{if(id==='record')updateRecord();};
+Board.onClick=b=>{
+ if(b.id==='restart'){if(IDS.some(id=>FIELDS.some(f=>read(id)[f]))&&!confirm('Start again and clear all writing? Save an editable draft first if you want to keep it.'))return true;return false;}
+ if(b.id==='begin'){Board.open(1);return true;}
+ const id=b.dataset.check||b.dataset.complete||b.dataset.continue,p=PEOPLE.find(p=>p.id===id);
+ if(b.dataset.check){const absent=missing(id),v=read(id),fb=byId('fb-'+id),result=Assessment.check(p,v);fb.hidden=false;checked[id]=signature(id);fb.innerHTML=feedback(p,v,result,absent);sync(id);Board.paint();fb.focus();return true;}
+ if(b.dataset.complete){if(!valid(id)||!reviewed(id))return true;Board.complete(id,null,'Answers correct','Role and ratings checked; plan reviewed');sync(id);const n=byId('pane-'+id).querySelector('[data-continue]');n.hidden=false;n.focus();updateRecord();return true;}
+ if(b.dataset.continue){Board.open(Board.idx(id)+1);return true;}
+ if(b.id==='save-work'){download(JSON.stringify({format:FORMAT,map:IDS.map(read)},null,2),'my-buyer-map-draft.json','application/json');notify('Editable draft downloaded. Keep it to restore your unfinished map later.');return true;}
+ if(b.id==='restore-work'){byId('restore-file').click();return true;}
+ if(b.id==='restore-cancel'){pending=null;byId('restore-warning').hidden=true;notify('Restore cancelled. Current writing kept.');return true;}
+ if(b.id==='restore-confirm'){if(!pending)return true;IDS.forEach((id,i)=>{FIELDS.forEach(f=>byId(id+'-'+f).value=pending[i][f]);invalidate(id);});pending=null;byId('restore-warning').hidden=true;updateRecord();notify('Draft restored. Check and review all four stakeholders again.');Board.open(1);return true;}
+ if(b.id==='download'){if(b.disabled)return true;const lines=[DATA.title,'Role and ratings checked against the case criteria; written reasons and engagement plan self-reviewed.',''];[...PEOPLE].sort((a,b)=>Number(read(a.id).order)-Number(read(b.id).order)).forEach(p=>{lines.push(p.name+' — '+p.title,...FIELDS.map(f=>LABELS[f]+': '+read(p.id)[f]),'');});download(lines.join('\n'),'my-stakeholder-map.txt','text/plain;charset=utf-8');byId('download-status').textContent='Your four-person stakeholder map has been downloaded.';return true;}
+ return false;
+};
+
+function feedback(p,v,result,absent){
+ return `<p><strong>${result.correct?'All three choices fit the case.':'Revisit your assumptions before continuing.'}</strong></p>`+result.fields.map(f=>`<p><strong>${safe(LABELS[f.field])}: ${f.correct?'Correct.':'Try again.'}</strong> ${safe(f.message)}</p>`).join('')+(absent.length?`<p>Still to fill: ${absent.map(f=>safe(LABELS[f])).join('; ')}. Your writing is kept.</p>`:'<p>All fields contain a response. Review your written reasons and plan; the activity does not grade free writing.</p>')+(!result.correct?'<p>Use the full case and rating criteria above. Change the choices you need to reconsider, then select Check my answers again. Your earlier attempt remains in Saved work.</p>':'');
+}
+function reopenFrom(id,preserveCurrent=false){IDS.slice(IDS.indexOf(id)).forEach(next=>{delete Board.st.done[next];if(!(preserveCurrent&&next===id)){delete checked[next];DATA.review.forEach((_,j)=>byId(next+'-review-'+j).checked=false);byId('fb-'+next).hidden=true;}byId('pane-'+next).querySelector('[data-continue]').hidden=true;sync(next);});}
+Board.unlocked=id=>{const i=Board.idx(id);return Board.tiles.slice(1,i).filter(t=>t.slot).every(t=>Board.st?.done[t.id]&&valid(t.id)&&reviewed(t.id));};
+Board.lockedMsg=id=>'Complete the earlier stakeholder: correct the role, influence and interest choices, then confirm your review. Your writing is kept.';
+const originalPaint=Board.paint;
+Board.paint=function(){originalPaint.call(this);byId('next').disabled=this.cur===this.tiles.length-1||!this.unlocked(this.tiles[this.cur+1].id);};
+
+Board.start();const toolbar=document.createElement('section');toolbar.className='save-tools';toolbar.setAttribute('aria-label','Keep or restore your writing');toolbar.innerHTML='<button type="button" id="save-work">Save editable draft</button><button type="button" id="restore-work" class="quiet">Restore draft</button><input id="restore-file" type="file" accept=".json,application/json" hidden><p id="save-status" role="status"></p><div id="restore-warning" hidden><p>Replace all current writing with the selected draft? Self-review status will be cleared.</p><button type="button" id="restore-confirm">Replace my current writing</button><button type="button" id="restore-cancel" class="quiet">Cancel restore</button></div>';byId('interactive').before(toolbar);
+document.addEventListener('input',e=>{if(e.target.dataset.write)invalidate(e.target.dataset.write);});
+document.addEventListener('change',e=>{if(e.target.dataset.write)invalidate(e.target.dataset.write);if(e.target.dataset.review){const id=e.target.dataset.review;if(!reviewed(id)){reopenFrom(id,true);delete Board.st.done[id];byId('sequence-review').checked=false;byId('pane-'+id).querySelector('[data-continue]').hidden=true;clearStamp();Board.fill(id,'Self-review reopened.');Board.paint();}sync(id);updateRecord();}if(e.target.id==='sequence-review')updateRecord();});
+byId('restore-file').addEventListener('change',async e=>{const file=e.target.files[0];pending=null;byId('restore-warning').hidden=true;if(!file)return;try{if(file.size>1000000)throw Error();const v=JSON.parse(await file.text());if(v.format!==FORMAT||!Array.isArray(v.map)||v.map.length!==4)throw Error();const rows=v.map.map(row=>{if(!row||typeof row!=='object')throw Error();const clean={};for(const f of FIELDS){if(typeof row[f]!=='string'||row[f].length>4000)throw Error();if(opts(f)&&row[f]&&!opts(f).includes(row[f]))throw Error();clean[f]=row[f];}return clean;});pending=rows;byId('restore-warning').hidden=false;notify('Draft read. Confirm below before replacing your writing.');byId('restore-confirm').focus();}catch{notify('That is not a valid draft for this activity. Your current writing is kept.');}e.target.value='';});
+
+
+let restoredAssessmentVersion=2;
+ActivityProgress.mount({id:'c2-label-buyer-group',compatibility:'state-v1:9a85cf370bd151a9c604',title:document.title,media:Object.values(IMAGES),roots:['stage-body','slots','stamp'],
+ getState:()=>({board:Board.st,cur:Board.cur,checked,assessmentVersion:2}),
+ setState:value=>{Board.st=value.board;Board.cur=value.cur;checked=value.checked||{};restoredAssessmentVersion=value.assessmentVersion;},
+ afterRestore:()=>{
+  const rows=IDS.map(read),reviews=IDS.map(id=>DATA.review.map((_,j)=>byId(id+'-review-'+j).checked)),oldState=Board.st,oldChecked=checked,cur=Board.cur,sequenceReview=byId('sequence-review').checked;
+  Board.build();IDS.forEach((id,i)=>FIELDS.forEach(f=>byId(id+'-'+f).value=rows[i][f]));
+  Board.st=oldState;checked=restoredAssessmentVersion===2?oldChecked:{};if(restoredAssessmentVersion!==2)Board.st.done={};
+  IDS.forEach((id,i)=>{DATA.review.forEach((_,j)=>byId(id+'-review-'+j).checked=restoredAssessmentVersion===2&&reviews[i][j]);if(!valid(id)||!reviewed(id)){delete Board.st.done[id];}if(checked[id]===signature(id)){const p=PEOPLE[i],v=read(id),fb=byId('fb-'+id);fb.hidden=false;fb.innerHTML=feedback(p,v,Assessment.check(p,v),missing(id));}sync(id);byId('pane-'+id).querySelector('[data-continue]').hidden=!Board.st.done[id];});
+  let incomplete=false;IDS.forEach(id=>{if(incomplete){delete Board.st.done[id];sync(id);}if(!Board.st.done[id])incomplete=true;});
+  byId('sequence-review').checked=!incomplete&&sequenceReview;updateRecord();const wanted=Board.tiles[cur]?.id;if(wanted&&Board.unlocked(wanted))Board.open(cur,true);else Board.open(IDS.findIndex(id=>!Board.st.done[id])+1,true);
+  if(restoredAssessmentVersion!==2)Board.say('Your writing and past attempts are kept. Check all stakeholder answers using the new criteria before continuing.');Board.paint();
+ },reset:()=>Board.build(),currentRoot:()=>byId('pane-'+Board.tiles[Board.cur].id)});
+
+</script></body></html>
