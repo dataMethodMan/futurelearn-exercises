@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Match the service use case</title><style>*{box-sizing:border-box}[hidden]{display:none!important}
+:root{--navy:#14213d;--teal:#1fa3a3;--teal-d:#0b6b6b;--amber:#f4a261;--paper:#faf6ee;--coral:#e76f51;--ink:#172b36;--line:#c9d6da;--ok:#2f8f60}
+html{color-scheme:light}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 system-ui,sans-serif}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-9999px;top:0}.skip:focus{left:8px;z-index:100;background:white;padding:8px}
+a{color:#07516d}
+header.top{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--navy);color:white;height:64px}
+header.top h1{font-size:1.15rem;margin:0}
+header.top .tools{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+header.top button{background:transparent;color:white;border-color:white;margin:0}
+.app{display:grid;grid-template-columns:190px minmax(0,1fr) 190px;gap:14px;padding:14px 18px;height:calc(100vh - 64px);min-height:560px;position:relative}
+.rail,.card,.stage{background:white;border:1px solid var(--line);border-radius:14px;min-height:0}
+.rail{padding:10px;overflow:auto;display:flex;flex-direction:column;justify-content:center}.rail h2,.card h2{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:#35505e;margin:2px 4px 8px}
+ul.list{list-style:none;margin:0;padding:0}ul.list li{margin:0 0 8px}
+button{font:inherit;cursor:pointer;min-height:44px;padding:10px 14px;border-radius:8px;border:2px solid var(--teal-d);background:var(--teal-d);color:white}
+button.quiet{background:white;color:var(--teal-d)}button:disabled{opacity:.45;cursor:default}
+.tile{position:relative;display:grid;grid-template-columns:58px 1fr auto;align-items:center;gap:8px;width:100%;text-align:left;background:#eef1f2;color:#40545d;border:2px solid transparent;border-radius:12px;padding:6px;min-height:86px;transition:transform .2s,background .2s,box-shadow .2s}
+.rail-left .tile:hover{transform:translateX(3px)}.rail-right .tile:hover{transform:translateX(-3px)}
+.ico{display:block;width:58px;height:70px;border-radius:8px;overflow:hidden;background:#d7dfe2}.ico img{width:100%;height:100%;display:block;object-fit:cover}
+.tt{font-weight:700;line-height:1.15;font-size:.82rem}.state{font-size:1rem}
+.tile.current{background:white;color:var(--navy);border:2px solid var(--teal);box-shadow:0 0 0 4px #1fa3a329;animation:pulse 2.4s ease-in-out infinite}
+.tile.done{background:#e3f4ec;color:#154a33;border:2px solid var(--ok)}.tile.locked{opacity:.65}
+@keyframes pulse{50%{box-shadow:0 0 0 8px #1fa3a314}}
+.stage{display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 34px #14213d1f;position:relative}
+.shead{display:flex;gap:14px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,#e9f7f6,white)}
+#face img{display:block;width:72px;height:72px;object-fit:cover;border-radius:50%;border:4px solid var(--teal);transition:transform .25s}#face.p img{border-color:var(--amber)}#face.w img{border-color:var(--coral)}
+.shead .meta{flex:1}.shead .meta strong{display:block;font-size:1.05rem}.muted{color:#35505e}
+#stamp{border:3px solid var(--teal-d);color:var(--teal-d);font-weight:800;letter-spacing:.03em;font-size:1.05rem;padding:4px 10px;border-radius:6px;transform:rotate(-6deg);opacity:0;max-width:220px;text-align:center}
+#stamp.on{animation:stamp 1.1s ease-out forwards}
+@keyframes stamp{0%{opacity:0;transform:rotate(-6deg) scale(2.2)}25%{opacity:1;transform:rotate(-6deg) scale(1)}85%{opacity:1}100%{opacity:0}}
+#stage-scroll{flex:1;overflow-y:auto;padding:16px 22px;overscroll-behavior:contain}
+.pane h2{font-size:1.4rem;margin:.1em 0 .5em;outline-offset:6px}.kick{display:block;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-d)}
+fieldset{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0;min-width:0}fieldset.done{border:2px solid var(--ok)}legend{font-weight:700;padding:0 6px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px}.choices.one{grid-template-columns:1fr}
+.pick{display:flex;gap:10px;align-items:flex-start;min-height:44px;padding:8px;border:1px solid #dbe4e7;border-radius:8px;cursor:pointer}.pick input{width:22px;height:22px;flex:0 0 22px;margin-top:2px;accent-color:var(--teal-d)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.go{background:var(--amber);border-color:var(--amber);color:var(--navy);font-weight:700}
+.fb p{margin:.4em 0}.fb .ok{font-weight:700;color:#1d5a3c}.wob{animation:wob .35s}@keyframes wob{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.landing{display:grid;grid-template-columns:minmax(260px,1fr) minmax(300px,1fr);gap:22px;align-items:center}.landing>img{display:block;width:100%;max-height:330px;object-fit:cover;border-radius:14px}.landing h3{font-size:1.5rem;margin:.2em 0}
+.field{display:block;font-weight:600;margin-top:14px}input[type=text],textarea,select{font:inherit;display:block;width:100%;padding:10px;border:1px solid #627784;border-radius:6px;min-height:44px;background:white;color:inherit}textarea{min-height:120px}
+.panel{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:10px 0}
+.snav{display:flex;justify-content:space-between;gap:8px;padding:10px 20px;border-top:1px solid var(--line);background:#f6fafa}
+#lockmsg{padding:0 20px;margin:0;color:#8a3b1c}
+.card{position:absolute;right:222px;top:118px;z-index:20;width:min(390px,calc(100vw - 40px));max-height:calc(100% - 140px);padding:12px;overflow:auto;box-shadow:0 14px 42px #14213d44}
+.chead{display:flex;justify-content:space-between;align-items:center;gap:8px}.chead h2{margin:0 4px}
+.card .bar{height:10px;border-radius:6px;background:#e1e8ea;overflow:hidden;margin:10px 4px 12px}
+#bar{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--amber));transition:width .6s}
+#prog{margin:0 4px 8px;font-weight:600}
+.slot{display:block;width:100%;text-align:left;background:#f1f4f5;color:#5b6d76;border:2px dashed #b9c6cb;border-radius:12px;padding:10px 12px;min-height:60px}
+.slot strong{display:block;font-size:.9rem}.slot .body{display:block;font-size:.85rem;font-weight:400}.slot ul{margin:.3em 0 0;padding-left:1.1em}.slot li{margin:0 0 3px}
+.slot.filled{background:#e7f6f6;color:var(--ink);border:2px solid var(--teal)}.slot.pop{animation:pop .6s}
+@keyframes pop{40%{transform:scale(1.04);box-shadow:0 0 0 6px #1fa3a333}}
+.card.complete{box-shadow:0 0 0 3px var(--amber),0 8px 30px #f4a26166}
+.unlocked{display:flex;gap:12px;align-items:center;margin:4px 4px 10px;font-weight:700;color:#8a4a12}.unlocked img{width:56px;height:56px;border-radius:10px;object-fit:cover}
+.flyer{position:fixed;z-index:50;display:grid;place-items:center;border-radius:10px;background:var(--ok);color:white;font-weight:800;pointer-events:none}
+dialog{max-width:720px;border:1px solid var(--line);border-radius:14px;padding:20px}dialog::backdrop{background:#14213d88}
+:focus-visible{outline:3px solid #9c3d00;outline-offset:3px}
+#text-version{max-width:860px;margin:18px auto;padding:0 18px 24px}#text-version>summary{font:inherit;min-height:48px;padding:12px;cursor:pointer;font-weight:700}
+#text-version h1{font-size:clamp(1.5rem,4vw,2.3rem);line-height:1.2}#text-version h2{font-size:1.35rem}#text-version h3{font-size:1.1rem}
+.altlinks{text-align:center}
+.dossier{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:start}.dossier img{width:100%;border-radius:12px;display:block}.dossier .panel{margin:0}
+.scenario{font-size:1.05rem;margin:0}.quote{font-size:1.08rem;font-weight:600;border-left:5px solid var(--teal-d);padding-left:12px;margin:.4em 0}
+.pick:has(input:checked){border-color:var(--teal-d);background:#e7f6f6}
+@media(max-width:900px){.dossier{grid-template-columns:1fr}.dossier img{max-width:260px}.app{grid-template-columns:112px minmax(0,1fr) 112px;padding:8px;gap:8px}.rail{padding:5px}.rail h2{font-size:.68rem}.tile{grid-template-columns:1fr;min-height:92px;text-align:center}.ico{width:100%;height:54px}.tt{font-size:.72rem}.state{position:absolute;top:4px;right:6px}.card{right:128px}.shead{padding:8px 12px}#stage-scroll{padding:12px}.snav{padding:8px 12px}.choices{grid-template-columns:1fr}.landing{grid-template-columns:1fr}.landing>img{max-height:230px}}
+@media(max-width:620px){header.top{flex-wrap:wrap;height:auto;padding:10px 16px}.app{height:auto;min-height:0;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto}.rail{min-width:0;overflow-x:auto;justify-content:flex-start}.rail ul{display:flex;gap:8px}.rail li{flex:0 0 145px;margin:0}.tile{grid-template-columns:52px 1fr;text-align:left;min-height:72px}.ico{width:52px;height:58px}.rail-left{grid-row:1}.stage{grid-row:2;min-height:70vh}.rail-right{grid-row:3}.card{position:fixed;inset:80px 16px auto 16px;width:auto;max-height:70vh}.shead{flex-wrap:wrap}#face img{width:56px;height:56px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}#stamp.on{opacity:1}}
+@media print{.app,header.top .tools,.skip{display:none}#text-version{max-width:none}}
+summary,button{min-height:44px}summary{padding:10px;cursor:pointer}.reference{border:1px solid #b6c6c5;border-radius:8px;margin:12px 0}.reference p{padding:0 16px}fieldset{min-width:0}.shead .meta{min-width:0}#stamp{display:none;transform:none!important;animation:none!important;max-width:100%;font-size:.85rem}#stamp.on{display:block;opacity:1}.data-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}.data-controls label{min-width:0;font-weight:650}select{max-width:100%;height:auto;white-space:normal}select option{font:inherit}.dataset{border:1px solid var(--line);border-radius:10px;padding:12px}.table-scroll{overflow:auto;max-height:340px;border:1px solid var(--line);margin-top:12px;max-width:100%}table{border-collapse:collapse;min-width:740px;width:100%;font-size:.9rem}caption{text-align:left;padding:8px;font-weight:650}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}thead th{position:sticky;top:0;background:#e1efed;z-index:1}tbody tr:nth-child(even){background:#f7f9f8}.counts{padding:0;list-style:none}.counts li{display:grid;grid-template-columns:100px minmax(0,1fr) 24px;gap:8px;align-items:center;padding:3px 0}.countbar{height:14px;background:var(--teal-d);width:calc(var(--count)*18%);max-width:100%;border-radius:3px}.field{margin-top:16px}.fb{margin:16px 0;padding:12px;border:2px solid var(--teal-d);border-radius:8px}#review-record ul{padding-left:22px;overflow-wrap:anywhere}.table-scroll:focus-visible{outline:3px solid #9c3d00}.data-status{font-weight:650}
+@media(max-width:900px){.shead{display:grid;grid-template-columns:56px minmax(0,1fr)}.shead .meta{grid-column:2}#toggle-card{grid-column:1/-1;justify-self:start}#stamp{grid-column:1/-1;width:100%}.data-controls{grid-template-columns:1fr}}
+@media(max-width:620px){.rail h2{position:sticky;left:0;max-width:100%;white-space:normal;line-height:1.35}}
+.metric-chart{padding:0;list-style:none}.metric-chart li{padding:10px 0;border-bottom:1px solid var(--line)}.metric-series{margin-top:5px}.metric-series>span:first-child{display:block;font-size:.9rem}.metric-bar{display:block;height:13px;min-width:1px;border-radius:3px;background:#176d70}.reference-bar{background:#b66b2f}.record-table{margin-top:12px}.metric-chart li>strong{display:block}.data-controls .pick{align-self:end;font-weight:400}
+.save-tools{padding:10px 18px;border-bottom:1px solid var(--line)}.save-tools>button{margin:0 8px 4px 0}.save-tools p:empty{display:none}.save-tools p{margin:6px 0}.profile{padding:0 16px 12px}.profile li{margin:8px 0}.profile h3{font-size:1rem}.pane select{margin-bottom:10px}.pane button[data-check]{margin-top:16px}dt{font-weight:700}dd{margin:3px 0 14px;white-space:pre-wrap;overflow-wrap:anywhere}textarea{resize:vertical}.reference{overflow-wrap:anywhere}#restore-warning{padding:12px;border:2px solid var(--teal-d);border-radius:8px;max-width:720px}
+.map-controls{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.map-controls button{max-width:100%}.map-controls button[aria-pressed=true]{background:#e5f3f1;color:#123b3d;border-color:#123b3d}.concept-map{margin:12px 0;padding:10px;border:1px solid var(--line);border-radius:8px;max-width:100%}.map-regions{display:grid;grid-template-columns:1fr 1fr;gap:12px}.map-region{border:3px solid #9caeb3;padding:8px;border-radius:12px;min-width:0}.map-region h3{margin:0 0 8px;font-size:1rem}.map-zones{display:grid;grid-template-columns:1fr;gap:8px}.map-zone{border:2px solid #b5c6c5;border-radius:6px;padding:8px;margin:0!important;font-weight:700}.map-zone span,.edge-point span{display:block;font-weight:400;font-size:.85rem}.map-edge{display:flex;align-items:center;gap:12px;margin:12px 0}.edge-point{border:3px dashed #9caeb3;border-radius:12px;padding:10px;margin:0!important}.concept-map figcaption{font-size:.9rem;margin-top:12px}.view-region .map-region,.view-zone .map-zone,.view-edge .edge-point{border-color:#955318;background:#fff4e3}.map-inspector .panel{margin-bottom:16px}
+@media(max-width:620px){.map-regions{grid-template-columns:1fr}.map-edge{flex-wrap:wrap}}
+</style></head><body>
+<a class="skip" href="#stage-scroll">Skip to the current step</a><a class="skip" href="#text-version">Go to complete text version</a>
+<header class="top"><div><h1 id="h-top" tabindex="-1">Match the service use case</h1></div><div class="tools"><button type="button" id="restart" class="quiet">Start again</button></div></header>
+<noscript><p style="padding:12px 20px">Use the complete text version below, or <a href="fallback.html">open the text version</a> or <a href="fallback.pdf">the PDF</a>. Everything in the activity is included.</p></noscript>
+<div id="interactive" class="app" hidden>
+<nav class="rail rail-left" aria-label="Brief and first two cases steps"><h2>Brief and first two cases</h2><ul class="list" id="rail-left"></ul></nav>
+<main class="stage" aria-label="Current step" data-activity-id="w4-a3-s4" data-version="v2-20261118-correction-gates">
+<div class="shead"><div id="face"></div><div class="meta"><strong>Match the capability. Support the recommendation.</strong><span class="muted">Five customer cases. Use evidence, a business benefit and a validation question.</span></div><div id="stamp" aria-hidden="true"></div><button type="button" id="toggle-card" class="quiet" aria-expanded="false" aria-controls="card">Progress</button></div>
+<div id="stage-scroll" tabindex="-1"><div id="stage-body"></div></div>
+<p id="lockmsg" role="status"></p>
+<div class="snav"><button type="button" id="prev" class="quiet">←</button><button type="button" id="next" class="quiet">Next →</button></div>
+</main>
+<nav class="rail rail-right" aria-label="More cases and your record steps"><h2>More cases and your record</h2><ul class="list" id="rail-right"></ul></nav>
+<aside class="card" id="card" aria-label="Your service recommendations" hidden><div class="chead"><h2>Your service recommendations</h2><button type="button" id="closecard" class="quiet">Close</button></div><div class="bar" aria-hidden="true"><div id="bar"></div></div><p id="prog"></p><div class="unlocked" id="unlocked" hidden><img src="data:image/webp;base64,UklGRjQEAABXRUJQVlA4ICgEAABQHACdASqgAHgAPm0ulUakIqIhJnIM2IANiU3bq8JbFEC648g3qo22fmA/Wb9o/eV/xHqo3iDn1fZgyGXwB/S+rTXV/2bwVfwr/GbjFf3HHXdqrxi3iZ8Yj/NfLp/rv8B5x/nP2C/1N9Jn1d+gj+26EzqiBUf93dX55Te2V7X0/rdVz6E8CwjE1l/w14C77IaVgxih9XmgY+hh7cGa9bLFzF/nsZ1WrI+GnNTE9QRh7adf/IKj5w52k6H4PiYtIf0Eg6o3DIo0U4/V3XioIUY+GDQQFkz4TFqexTYt/cwTPsy0zE1eKxbGtVgAAP78Iw3FB2NTAALz/r0Wdsw0WGdS+eqLyPQKdZA4pw+F0f/wAX1xmwvSujny801LLeXduLf8A7PsEf53/wiM+rofqOJ//8m7JhZRP9M37YZI9n/RU/+VD9ssOUPN2KHsFiWnlUUz59nDY9SQWtaChWVukTneRuhFbMbdwB9KFPc+ViN6/H8aD3JSu6J5e49nUcPIAwPFUwffzrfcKKGWr1VyFQJbwzz3mosbb0QD5Sid9/+aJ99xLNdmmvihYy/gPYi8pgeY3yit5lqf6kizO2NrNdlMbaXDzmdGBMpu0t1/ZdGPKMbfQ1lZRQ9aPTL1qvFUq+b6RBb0jQCDhW1hqdt5b5ts2JGJaDXKpYdMoPvZNum3B6dFGKgABlOC1pmNgbRNXVxomEzVG3iElQEDajHSmo3JjFxz6QbNIy1tSGwoAS3GxTddE/Jc59LaEWS8Xjk3n/76sd+IyX8RbihnIjPM8tX/CJ4kAp+W1/6dJMAhPpOOCnuuuvXFKRTcuxKqXEWJzronGM1f9fVAOwTkXlMGlh9aEKYvsUEO1kUo6o8KV7iDl62aIQWbiZ+3ok7rb+vhxDiC7RHNTPnS84dH3u3x3XWLZoRiKD0Vo6m+pdViZ5rN22UAVQ2wzzXe+D6VUeXI/+lmfBP5699NfMReYdOqZgjItMAEjc9HSXBez/UVABeHnZJNz/aqdN2y7f3BGGYR8piFz3Fcqwca+rT86XokTDzfP8UC8r5zkHeylCqcVFGq6zoM4ME4Chj6rlwDH1QGq0fyfI7zhQZ/FxVglNtSRfcTGTj/GrG2vv84Ror9O7FOXH+AOxlPf27bb4j5JMYHVWsh0PiTIqwxJkDqio+jaYW+tdji8dGeS6yAiJskU4tfa7I/EsrVscHv9tC6D1sl3IhB7uFwSp+Wazp/viPnXbPsAINOGc6VLVzg+rr3O2sHoRmgtzxucT/I6H0E0bWn9g0KtUaciObHRNE4ftXjykME0zeb87M3+inEBC8z62XNJtexP5LVe6/3Auf8ZTsSrVyIsWywDsAOZEj6u74o7JOxTK4xZn/zQ1VskbpPa7iMigkhr/ctmNUL1qStt/kLf4tGIqcgAAAAAA==" alt="">Five recommendations reviewed. Check the whole record and keep it.</div><ul class="list" id="slots"></ul></aside>
+</div>
+<div id="live" class="sr" role="status" aria-live="polite"></div>
+
+<details id="text-version"><summary>Complete text version: everything in the activity, including all feedback</summary><h1>Match the service use case</h1>
+<p>Complete text version</p>
+<p>Prepare five customer recommendations. Choose a service capability, support it with two details from the case, and write the business benefit and a question to validate before proposing a real solution.</p>
+<p>This is ungraded practice. Correct the structured choices, complete your writing and review its meaning before confirming each case. Incorrect or blank choices block confirmation, Next, Continue, later cases and the final record. Written reasoning remains self-reviewed, not automatically graded. Work and checked attempts save in this browser and device when storage is available; Restart clears this activity&#x27;s saved work and attempts. Nothing is submitted.</p>
+<p>Choose the primary capability for the stated need among these five simplified options. A real solution may combine services and needs further discovery; this is not a complete architecture or a promise of price, security, compliance or performance.</p>
+<h2>Five service capability cards</h2>
+<h3>Virtual-machine compute with configured scaling</h3>
+<p>Run application software on virtual servers instead of owning physical hardware. Configure scaling policies to adjust capacity. The team still manages the operating system and application; scaling behavior and capacity limits need planning.</p>
+<h3>Object storage</h3>
+<p>Store and retrieve files as objects, such as videos and images. Choose storage class, access controls, retention and delivery arrangements for the workload. Storage alone is not a complete global content-delivery design or a guarantee of the lowest total cost.</p>
+<h3>Managed relational database</h3>
+<p>Use a compatible relational engine, such as MySQL, while the service handles selected routine administration. Confirm backup, maintenance and availability options; the team remains responsible for data, access, data structures and application design.</p>
+<h3>Event-driven functions</h3>
+<p>Run configured code when an event occurs, such as a file upload. This can suit short, intermittent processing without managing a continuously running application server for that task. Triggers, permissions, runtime limits, retries and error handling still need configuration.</p>
+<h3>Managed key-value database</h3>
+<p>Store and retrieve data through a key-based access model using a managed database. It can suit simple access patterns with variable demand. Validate how demand is distributed across keys, capacity settings and end-to-end performance against the actual workload.</p>
+<p>Work in order. Wrong or blank structured choices keep confirmation, Next, Continue, later tiles, summary slots and the final record locked. Correct and confirm each earlier case before continuing. Your writing is kept. Changing an earlier choice, writing or review reopens dependent confirmations without erasing work or past attempts. There is no attempt-count escape; worked examples do not confer completion. Prose remains self-reviewed.</p>
+<h2>Using the recommendation board or this text version</h2>
+<p>Use paper or a text editor to record the five recommendations from this complete text version. No external software is required in the interaction. For each case, choose one capability and exactly two case details for the stated evidence prompt, then write your recommendation/business benefit and a validation question. Every capability card remains available inside each case. Use the tiles or Next and previous buttons to move without losing writing.</p>
+<p>Check the match and completeness explains the chosen capability and every clue. If a match is not supported, revise the choice and try again. Your existing writing is kept. Both writing fields must contain a response before recording the case; this does not verify prose quality. Use the two self-review statements and I have reviewed this recommendation. Changes reopen that case and the final whole-record check. A possible recommendation is available for comparison after drafting; it does not fill your fields.</p>
+<p>Save editable draft downloads unfinished work as local JSON. Each writing field allows 4,000 characters. Restore draft asks before replacement; Cancel restore keeps current work. Malformed, wrong-format, invalid-choice, overlong-field or files over 1,000,000 bytes change nothing. The file limit supports the activity&#x27;s own maximum UTF-8 draft. Restore clears reviews so you can check again. Start again asks before clearing work. Work and checked attempts save automatically in this browser and device when storage is available. Restart clears this activityâ€™s saved work and attempts; Cancel keeps it. Compatible old writing/history is retained, but old completion requires fresh checks. Other activities and exported files are unaffected.</p>
+<p>Your recommendations shows unfinished cases too. After all five cases are reviewed, check the whole record, then Download my five recommendations as text. It contains chosen capabilities, selected case details and all ten authored writing fields. Keep the editable JSON if you want to restore writing later; open downloaded text in a text editor.</p>
+<h2>1. Startup web application</h2>
+<p>A startup company needs to host their web application that experiences unpredictable traffic patterns. They want to avoid managing physical servers and need the ability to scale computing resources up or down automatically based on demand.</p>
+<p>Additional assumption for this exercise: the team wants to keep a virtual-server deployment model for its application.</p>
+<h3>Your recommendation: choose and write first</h3>
+<p>Choose the primary service capability from the five cards above.</p>
+<p>Select the two details that state the chosen deployment model and the required capacity behavior.</p>
+<ul><li>A startup company needs to host their web application that experiences unpredictable traffic patterns.</li></ul>
+<ul><li>need the ability to scale computing resources up or down automatically based on demand</li></ul>
+<ul><li>Additional assumption for this exercise: the team wants to keep a virtual-server deployment model for its application. (Exercise assumption)</li></ul>
+<p>Your recommendation and expected business benefit: explain the fit in your own words. The choice is a starting point for discovery, not a guaranteed result.</p>
+<p>Your question to validate before a real proposal.</p>
+<h3>Feedback: compare after choosing</h3>
+<p>Primary capability: Virtual-machine compute with configured scaling. Virtual-machine compute fits the explicit deployment assumption, with configured scaling for changing demand. It removes ownership of physical hardware, not all operating-system or application work.</p>
+<p>If another capability is chosen, compare its primary job in the five reference cards with this case&#x27;s main need. Choose one capability and exactly two clues matching the evidence prompt. Your choices remain editable; existing writing is kept.</p>
+<p>Context to distinguish from the requested clues: A startup company needs to host their web application that experiences unpredictable traffic patterns. This is useful context, but it does not by itself distinguish virtual servers from other hosting approaches. The prompt asks for the chosen deployment model and the explicit capacity behavior.</p>
+<p>Requested clue: need the ability to scale computing resources up or down automatically based on demand This specifies the desired capacity behavior. Virtual-machine scaling must be configured; it is not automatic merely because a virtual server exists.</p>
+<p>Requested clue: Additional assumption for this exercise: the team wants to keep a virtual-server deployment model for its application. The visible exercise assumption makes virtual-machine compute the primary match. Other hosting approaches would need a different deployment decision.</p>
+<p>If either writing field is empty, it is listed as still to write: your recommendation and business benefit; your validation question. Once both contain a response, that does not verify the quality of the prose. Use these self-review statements before recording your recommendation:</p>
+<ul><li>My explanation links the chosen capability and case evidence to a business benefit.</li></ul>
+<ul><li>I have labelled assumptions and validation needs and have not promised unverified cost, security, availability or performance results.</li></ul>
+<h3>One possible recommendation</h3>
+<p>Recommend virtual-machine compute with configured scaling for the team&#x27;s stated deployment model. It can adjust application capacity as demand changes, while the team still plans scaling limits and manages its software.</p>
+<p>Question to validate: What scaling signals, capacity limits and operating-system/application responsibilities can the team support?</p>
+<h2>2. Media video collection</h2>
+<p>A media company needs to store millions of video files and make them accessible to users worldwide. The files need to be durable and highly available, and the company wants to pay only for the storage it actually uses.</p>
+<h3>Your recommendation: choose and write first</h3>
+<p>Choose the primary service capability from the five cards above.</p>
+<p>Select the two details that identify the files being stored and the required durability/availability.</p>
+<ul><li>A media company needs to store millions of video files and make them accessible to users worldwide.</li></ul>
+<ul><li>The files need to be durable and highly available</li></ul>
+<ul><li>the company wants to pay only for the storage it actually uses</li></ul>
+<p>Your recommendation and expected business benefit: explain the fit in your own words. The choice is a starting point for discovery, not a guaranteed result.</p>
+<p>Your question to validate before a real proposal.</p>
+<h3>Feedback: compare after choosing</h3>
+<p>Primary capability: Object storage. Object storage fits the large unstructured video collection. Confirm access, storage class, availability and delivery requirements; do not claim storage by itself guarantees worldwide performance, compliance or lowest cost.</p>
+<p>If another capability is chosen, compare its primary job in the five reference cards with this case&#x27;s main need. Choose one capability and exactly two clues matching the evidence prompt. Your choices remain editable; existing writing is kept.</p>
+<p>Requested clue: A media company needs to store millions of video files and make them accessible to users worldwide. The primary resource is a large file collection. Object storage is the storage match; global delivery may need additional design.</p>
+<p>Requested clue: The files need to be durable and highly available This states the storage requirement. Confirm the selected storage class and configuration rather than assuming every option has identical availability behavior.</p>
+<p>Context to distinguish from the requested clues: the company wants to pay only for the storage it actually uses Cost is a real customer priority, but this evidence prompt asks about the files and durability/availability. A real cost check also needs requests, retrieval, delivery and data-transfer patterns.</p>
+<p>If either writing field is empty, it is listed as still to write: your recommendation and business benefit; your validation question. Once both contain a response, that does not verify the quality of the prose. Use these self-review statements before recording your recommendation:</p>
+<ul><li>My explanation links the chosen capability and case evidence to a business benefit.</li></ul>
+<ul><li>I have labelled assumptions and validation needs and have not promised unverified cost, security, availability or performance results.</li></ul>
+<h3>One possible recommendation</h3>
+<p>Recommend object storage as the primary home for the video files, choosing a storage class and access setup that match durability and availability needs. Treat worldwide delivery and the full usage cost as further design questions.</p>
+<p>Question to validate: How often are the videos accessed, where are viewers, and what delivery, retention and access-control requirements apply?</p>
+<h2>3. E-commerce MySQL maintenance</h2>
+<p>An e-commerce company runs a MySQL database for their product catalog and customer orders. They want to reduce the operational overhead of database maintenance tasks like backups, patching, and replication.</p>
+<h3>Your recommendation: choose and write first</h3>
+<p>Choose the primary service capability from the five cards above.</p>
+<p>Select the two details that identify the database engine and the administration work the team wants to reduce.</p>
+<ul><li>runs a MySQL database</li></ul>
+<ul><li>reduce the operational overhead of database maintenance tasks like backups, patching, and replication</li></ul>
+<ul><li>their product catalog and customer orders</li></ul>
+<p>Your recommendation and expected business benefit: explain the fit in your own words. The choice is a starting point for discovery, not a guaranteed result.</p>
+<p>Your question to validate before a real proposal.</p>
+<h3>Feedback: compare after choosing</h3>
+<p>Primary capability: Managed relational database. Managed relational database is the primary match: it supports the existing engine and can reduce routine administration. Virtual servers alone leave the database administration with the team. Service options and customer responsibilities still need confirmation.</p>
+<p>If another capability is chosen, compare its primary job in the five reference cards with this case&#x27;s main need. Choose one capability and exactly two clues matching the evidence prompt. Your choices remain editable; existing writing is kept.</p>
+<p>Requested clue: runs a MySQL database MySQL identifies a relational engine. This supports a compatible managed relational database rather than a key-value database that changes the data model.</p>
+<p>Requested clue: reduce the operational overhead of database maintenance tasks like backups, patching, and replication The need is to reduce database administration. Virtual servers alone do not remove that work. Confirm the managed service&#x27;s specific backup, maintenance and replication options.</p>
+<p>Context to distinguish from the requested clues: their product catalog and customer orders This describes the business data, but the distinguishing clues here are the existing engine and the wish to reduce database administration.</p>
+<p>If either writing field is empty, it is listed as still to write: your recommendation and business benefit; your validation question. Once both contain a response, that does not verify the quality of the prose. Use these self-review statements before recording your recommendation:</p>
+<ul><li>My explanation links the chosen capability and case evidence to a business benefit.</li></ul>
+<ul><li>I have labelled assumptions and validation needs and have not promised unverified cost, security, availability or performance results.</li></ul>
+<h3>One possible recommendation</h3>
+<p>Recommend a managed relational database compatible with MySQL to reduce routine maintenance while keeping the relational application model. Check the backup, patching and availability configuration rather than assuming every administration task disappears.</p>
+<p>Question to validate: Which MySQL compatibility, maintenance windows, backup/recovery and availability requirements must the chosen configuration meet?</p>
+<h2>4. Mobile image uploads</h2>
+<p>A mobile app needs to process image uploads from users. When a user uploads a photo, it should automatically be resized and a thumbnail created. The processing only takes a few seconds and happens sporadically throughout the day.</p>
+<h3>Your recommendation: choose and write first</h3>
+<p>Choose the primary service capability from the five cards above.</p>
+<p>Select the two details that identify the processing trigger and the short, intermittent execution pattern.</p>
+<ul><li>A mobile app needs to process image uploads from users.</li></ul>
+<ul><li>When a user uploads a photo, it should automatically be resized and a thumbnail created.</li></ul>
+<ul><li>The processing only takes a few seconds and happens sporadically throughout the day.</li></ul>
+<p>Your recommendation and expected business benefit: explain the fit in your own words. The choice is a starting point for discovery, not a guaranteed result.</p>
+<p>Your question to validate before a real proposal.</p>
+<h3>Feedback: compare after choosing</h3>
+<p>Primary capability: Event-driven functions. Event-driven functions fit processing triggered by uploads for short, intermittent work. The function code and trigger must be configured; choose storage separately and check processing limits and failure behavior.</p>
+<p>If another capability is chosen, compare its primary job in the five reference cards with this case&#x27;s main need. Choose one capability and exactly two clues matching the evidence prompt. Your choices remain editable; existing writing is kept.</p>
+<p>Context to distinguish from the requested clues: A mobile app needs to process image uploads from users. This supplies context, but the more precise trigger and execution-pattern details explain why event-driven processing fits.</p>
+<p>Requested clue: When a user uploads a photo, it should automatically be resized and a thumbnail created. An upload event should trigger configured processing code. A storage service holds the file; it does not by itself perform the resizing.</p>
+<p>Requested clue: The processing only takes a few seconds and happens sporadically throughout the day. Short, intermittent work is a useful fit for event-driven functions. Confirm runtime/file limits, retries and error handling for the actual implementation.</p>
+<p>If either writing field is empty, it is listed as still to write: your recommendation and business benefit; your validation question. Once both contain a response, that does not verify the quality of the prose. Use these self-review statements before recording your recommendation:</p>
+<ul><li>My explanation links the chosen capability and case evidence to a business benefit.</li></ul>
+<ul><li>I have labelled assumptions and validation needs and have not promised unverified cost, security, availability or performance results.</li></ul>
+<h3>One possible recommendation</h3>
+<p>Recommend an event-driven function triggered by the photo upload, with code to resize the image and create the thumbnail. This matches the short, sporadic processing pattern without requiring a dedicated continuously running application server for that task.</p>
+<p>Question to validate: What image sizes, processing limits, retry behavior and failure-handling requirements must the function support?</p>
+<h2>5. Gaming key-value traffic</h2>
+<p>A gaming company needs a database that can handle millions of requests per second with single-digit millisecond latency. The data structure is simple key-value pairs, and they need automatic scaling to handle traffic spikes during new game releases.</p>
+<h3>Your recommendation: choose and write first</h3>
+<p>Choose the primary service capability from the five cards above.</p>
+<p>Select the two details that identify the data model and the traffic-scaling need.</p>
+<ul><li>The data structure is simple key-value pairs</li></ul>
+<ul><li>they need automatic scaling to handle traffic spikes during new game releases</li></ul>
+<ul><li>millions of requests per second with single-digit millisecond latency</li></ul>
+<p>Your recommendation and expected business benefit: explain the fit in your own words. The choice is a starting point for discovery, not a guaranteed result.</p>
+<p>Your question to validate before a real proposal.</p>
+<h3>Feedback: compare after choosing</h3>
+<p>Primary capability: Managed key-value database. Managed key-value database aligns with the simple key-based access model and variable demand. The stated throughput and latency are targets to validate with data/key design, capacity and realistic testing, not blanket guarantees.</p>
+<p>If another capability is chosen, compare its primary job in the five reference cards with this case&#x27;s main need. Choose one capability and exactly two clues matching the evidence prompt. Your choices remain editable; existing writing is kept.</p>
+<p>Requested clue: The data structure is simple key-value pairs This identifies the access/data model to match. A managed key-value database is a direct capability to examine.</p>
+<p>Requested clue: they need automatic scaling to handle traffic spikes during new game releases This states the variable-capacity need. Confirm capacity mode, key distribution and limits against the workload rather than assuming spikes are handled without planning.</p>
+<p>Context to distinguish from the requested clues: millions of requests per second with single-digit millisecond latency This is an important customer target for validation, not a guaranteed result or a data-model definition. This evidence prompt asks for the key-value model and the traffic-scaling need.</p>
+<p>If either writing field is empty, it is listed as still to write: your recommendation and business benefit; your validation question. Once both contain a response, that does not verify the quality of the prose. Use these self-review statements before recording your recommendation:</p>
+<ul><li>My explanation links the chosen capability and case evidence to a business benefit.</li></ul>
+<ul><li>I have labelled assumptions and validation needs and have not promised unverified cost, security, availability or performance results.</li></ul>
+<h3>One possible recommendation</h3>
+<p>Recommend examining a managed key-value database for the simple access pattern and launch-related demand changes. Validate capacity, key distribution and measured request performance against the customer&#x27;s targets before promising a result.</p>
+<p>Question to validate: What are the key/access patterns and peak read/write mix, and how will the target latency and throughput be tested?</p>
+<h2>Review and keep your five recommendations</h2>
+<p>I have checked that each recommendation addresses its case and that further validation is clear. Review the five recommendations together. The selected capability and clues are checked; your explanations and discovery questions are self-reviewed. Keep the record, then return to the course page to mark the step complete. This workbench does not update course completion.</p>
+<h2>Primary technical examples used for the guidance</h2>
+<p>Checked 2026-11-02. Check actual provider/service options and configuration for a real customer.</p>
+<h3>Amazon EC2: virtual server concepts</h3>
+<p>https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html</p>
+<h3>Amazon EC2 Auto Scaling: configured groups and policies</h3>
+<p>https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html</p>
+<h3>Amazon S3: storage-class choices</h3>
+<p>https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html</p>
+<h3>Amazon RDS: managed relational databases and responsibilities</h3>
+<p>https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html</p>
+<h3>AWS Lambda: image-upload thumbnail processing example</h3>
+<p>https://docs.aws.amazon.com/lambda/latest/dg/with-s3-tutorial.html</p>
+<h3>Amazon DynamoDB: managed key-value/document database</h3>
+<p>https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html</p></details>
+<p class="altlinks"><a href="fallback.html">Open the text version</a> · <a href="fallback.pdf">Download the text version as a PDF</a></p>
+<script>/* Shared local-only progress and attempt history. No network, analytics or account storage. */
+(function (global) {
+  'use strict';
+  const SCHEMA = 1, LIMIT = 1800000;
+  const clone = value => JSON.parse(JSON.stringify(value));
+  function validateData(value, depth = 0) {
+    if (depth > 60) throw Error('Saved data is too deeply nested');
+    if (value === null || typeof value === 'boolean') return;
+    if (typeof value === 'string') { if (value.length > 100000) throw Error('Saved text is too long'); return; }
+    if (typeof value === 'number') { if (!Number.isFinite(value)) throw Error('Invalid number'); return; }
+    if (typeof value !== 'object') throw Error('Invalid saved value');
+    for (const [key, item] of Object.entries(value)) {
+      if (['__proto__', 'constructor', 'prototype'].includes(key)) throw Error('Unsafe saved key');
+      validateData(item, depth + 1);
+    }
+  }
+  function parse(raw, id, compatibility) {
+    if (raw === null) return null;
+    if (raw.length > LIMIT) throw Error('Saved copy is too large');
+    const value = JSON.parse(raw); validateData(value);
+    if (!value || value.schema !== SCHEMA || value.id !== id || typeof value.epoch !== 'string' || !Number.isInteger(value.revision) || value.revision < 0) throw Error('Invalid saved copy');
+    if (value.cleared === true) return value;
+    if (value.compatibility !== compatibility) throw Error('Saved copy belongs to a different activity edition');
+    if (!value.snapshot || !Array.isArray(value.history)) throw Error('Incomplete saved copy');
+    for (const attempt of value.history) {
+      if (!attempt || typeof attempt.title !== 'string' || typeof attempt.when !== 'string' || !Array.isArray(attempt.answers) || !Array.isArray(attempt.feedback)) throw Error('Invalid attempt');
+      if (attempt.answers.some(x => !x || typeof x.label !== 'string' || typeof x.value !== 'string') || attempt.feedback.some(x => typeof x !== 'string')) throw Error('Invalid attempt detail');
+    }
+    return value;
+  }
+  function createStore(getStorage, id, compatibility, random = () => String(Date.now()) + '-' + Math.random().toString(36).slice(2)) {
+    const key = 'futurelearn:progress:v1:' + id;
+    let baseline = null, epoch = random(), revision = 0, ready = false, paused = false;
+    function load() {
+      let raw;
+      try { raw = getStorage().getItem(key); } catch { ready = false; return {status: 'unavailable'}; }
+      try {
+        const value = parse(raw, id, compatibility);
+        baseline = raw; ready = true; paused = false;
+        if (value) { epoch = value.epoch; revision = value.revision; }
+        return {status: 'ok', value};
+      } catch (error) { baseline = raw; ready = true; paused = true; return {status: 'invalid', message: error.message}; }
+    }
+    function save(snapshot, history) {
+      if (!ready) {
+        const result = load();
+        if (result.status !== 'ok') return result;
+        if (result.value) { paused = true; return {status: 'conflict', value: result.value}; }
+      }
+      if (paused) return {status: 'paused'};
+      try {
+        const storage = getStorage(), current = storage.getItem(key);
+        if (current !== baseline) {
+          paused = true;
+          let value = null;
+          try { value = parse(current, id, compatibility); } catch {}
+          return {status: 'conflict', value, generationChanged: !!value && value.epoch !== epoch};
+        }
+        const value = {schema: SCHEMA, id, compatibility, epoch, revision: revision + 1, snapshot, history};
+        validateData(value);
+        const raw = JSON.stringify(value);
+        if (raw.length > LIMIT) throw Error('Saved work is too large');
+        storage.setItem(key, raw);
+        if (storage.getItem(key) !== raw) { paused = true; return {status: 'conflict'}; }
+        baseline = raw; revision++; return {status: 'ok'};
+      } catch { return {status: 'unavailable'}; }
+    }
+    function erase(legacyKeys = []) {
+      try {
+        const storage = getStorage();
+        // A tombstone contains no learner work and fences delayed saves in older tabs.
+        const value = {schema: SCHEMA, id, epoch: random(), revision: 0, cleared: true};
+        const raw = JSON.stringify(value);
+        storage.setItem(key, raw);
+        if (storage.getItem(key) !== raw) throw Error('Erase did not persist');
+        for (const legacy of legacyKeys) { if (legacy !== key) storage.removeItem(legacy); }
+        if (legacyKeys.some(legacy => legacy !== key && storage.getItem(legacy) !== null)) throw Error('Legacy erase failed');
+        baseline = raw; epoch = value.epoch; revision = 0; ready = true; paused = false;
+        return {status: 'ok', value};
+      } catch { paused = true; return {status: 'unavailable'}; }
+    }
+    return {key, load, save, erase, pause: () => { paused = true; }, get epoch() { return epoch; }};
+  }
+
+  // Presentation is encoded as inert, allowlisted DOM data, never stored/replayed HTML.
+  // Keeping existing keyed nodes retains their directly attached input/click listeners.
+  const TAGS = new Set('main figure figcaption aside header footer nav time output sup sub u s kbd samp mark abbr cite q wbr div section article p span strong b em i small ul ol li dl dt dd h1 h2 h3 h4 h5 h6 label fieldset legend input textarea select option optgroup button a img details summary table caption thead tbody tfoot tr th td blockquote pre code br hr progress meter svg g path circle rect line polyline polygon text title desc'.split(' '));
+  const ATTR = /^(id|class|hidden|disabled|open|checked|selected|type|name|value|for|role|tabindex|maxlength|min|max|step|rows|cols|multiple|placeholder|autocomplete|inputmode|width|height|alt|title|target|rel|colspan|rowspan|scope|viewBox|d|cx|cy|r|x|y|x1|x2|y1|y2|points|fill|stroke|stroke-width|preserveAspectRatio|aria-[a-z-]+|data-[a-z0-9-]+)$/;
+  function createCodec(document, rootIds, media = []) {
+    const urls = [...new Set([...document.querySelectorAll('img[src],a[href]')].map(e => e.getAttribute(e.tagName === 'IMG' ? 'src' : 'href')).concat(media).filter(x => typeof x === 'string'))].sort();
+    const transient = new Set(['pop', 'wob', 'newly-solved']);
+    function attributes(node) {
+      const result = {};
+      for (const a of node.attributes) {
+        if (ATTR.test(a.name)) result[a.name] = a.name === 'class' ? a.value.split(/\s+/).filter(x => !transient.has(x)).join(' ') : a.value;
+        else if ((a.name === 'src' || a.name === 'href') && urls.includes(a.value)) result[a.name] = urls.indexOf(a.value);
+      }
+      const style = {};
+      for (const name of node.style) {
+        const value = node.style.getPropertyValue(name);
+        if (/^(width|height|opacity|transform|background-color|color|border-color|--[a-z-]+)$/.test(name) && /^[a-z0-9\s#%.,()+-]+$/i.test(value) && !/url|expression/i.test(value)) style[name] = value;
+      }
+      if (Object.keys(style).length) result.style = style;
+      return result;
+    }
+    function encode(node) {
+      if (node.nodeType === 3) return ['#', node.data];
+      if (node.nodeType !== 1 || !TAGS.has(node.localName)) return null;
+      const props = {};
+      if (node.matches('input:not([type=file]),textarea,select')) { props.value = node.value; if (node.matches('input[type=checkbox],input[type=radio]')) props.checked = node.checked; }
+      return [node.localName, attributes(node), props, [...node.childNodes].map(encode).filter(Boolean)];
+    }
+    function validate(tree, budget = {n: 0}, depth = 0) {
+      if (++budget.n > 25000 || depth > 50 || !Array.isArray(tree)) throw Error('Invalid saved view');
+      if (tree[0] === '#') { if (tree.length !== 2 || typeof tree[1] !== 'string') throw Error('Invalid text'); return; }
+      if (tree.length !== 4 || !TAGS.has(tree[0]) || !tree[1] || !tree[2] || !Array.isArray(tree[3])) throw Error('Invalid saved element');
+      for (const [name, value] of Object.entries(tree[1])) {
+        if (name === 'href' || name === 'src') { if (!Number.isInteger(value) || !urls[value]) throw Error('Invalid resource'); }
+        else if (name === 'style') {
+          if (!value || typeof value !== 'object' || Array.isArray(value)) throw Error('Invalid style');
+          for (const [k, v] of Object.entries(value)) if (!/^(width|height|opacity|transform|background-color|color|border-color|--[a-z-]+)$/.test(k) || typeof v !== 'string' || !/^[a-z0-9\s#%.,()+-]+$/i.test(v) || /url|expression/i.test(v)) throw Error('Invalid style value');
+        } else if (!ATTR.test(name) || typeof value !== 'string') throw Error('Invalid attribute');
+      }
+      if (Object.keys(tree[2]).some(x => !['value', 'checked'].includes(x)) || (tree[2].value !== undefined && typeof tree[2].value !== 'string') || (tree[2].checked !== undefined && typeof tree[2].checked !== 'boolean')) throw Error('Invalid control');
+      for (const child of tree[3]) validate(child, budget, depth + 1);
+    }
+    const treeKey = tree => tree[0] === '#' ? null : tree[1].id ? 'id:' + tree[1].id : tree[0] === 'input' && tree[1].name ? 'input:' + tree[1].name + ':' + tree[1].value : tree[0] === 'option' ? 'option:' + tree[1].value : tree[0] === 'label' && tree[3].some(x => x[0] === 'input') ? 'label:' + treeKey(tree[3].find(x => x[0] === 'input')) : null;
+    function nodeKey(node) { return node.nodeType === 1 ? treeKey(encode(node)) : null; }
+    function patch(node, tree, svg = false) {
+      if (tree[0] === '#') { if (node?.nodeType === 3) { node.data = tree[1]; return node; } return document.createTextNode(tree[1]); }
+      const inSvg = svg || tree[0] === 'svg';
+      if (!node || node.nodeType !== 1 || node.localName !== tree[0]) node = inSvg ? document.createElementNS('http://www.w3.org/2000/svg', tree[0]) : document.createElement(tree[0]);
+      const attrs = tree[1];
+      for (const a of [...node.attributes]) if ((ATTR.test(a.name) || ['src', 'href', 'style'].includes(a.name)) && !(a.name in attrs)) node.removeAttribute(a.name);
+      for (const [name, value] of Object.entries(attrs)) {
+        if (name === 'style') { node.removeAttribute('style'); for (const [k, v] of Object.entries(value)) node.style.setProperty(k, v); }
+        else node.setAttribute(name, name === 'src' || name === 'href' ? urls[value] : value);
+      }
+      const old = [...node.childNodes], used = new Set(), next = [];
+      for (let i = 0; i < tree[3].length; i++) {
+        const child = tree[3][i], key = treeKey(child);
+        let match = key ? old.find(x => !used.has(x) && nodeKey(x) === key) : null;
+        if (!match && old[i] && !used.has(old[i]) && !nodeKey(old[i]) && ((child[0] === '#' && old[i].nodeType === 3) || old[i].localName === child[0])) match = old[i];
+        if (match) used.add(match);
+        next.push(patch(match, child, inSvg));
+      }
+      node.replaceChildren(...next);
+      for (const [key, value] of Object.entries(tree[2])) if (node.matches('input:not([type=file]),textarea,select')) node[key] = value;
+      return node;
+    }
+    function capture() { return Object.fromEntries(rootIds.map(id => { const tree = encode(document.getElementById(id)); if (!tree) throw Error('Missing supported activity root: ' + id); return [id, tree]; })); }
+    function restore(value) {
+      if (!value || Object.keys(value).sort().join('|') !== [...rootIds].sort().join('|')) throw Error('Saved view does not match');
+      for (const id of rootIds) { validate(value[id]); if (value[id][1]?.id !== id) throw Error('Invalid view root'); }
+      for (const id of rootIds) patch(document.getElementById(id), value[id]);
+    }
+    return {capture, restore, validate};
+  }
+
+  function mount(options) {
+    const document = global.document;
+    const codec = createCodec(document, options.roots || [], options.media || []);
+    const store = createStore(() => global.localStorage, options.id, options.compatibility);
+    let history = [], suspended = true, scheduled = false, lastSnapshot = '', health = 'ready';
+    const dialog = document.createElement('dialog'); dialog.className = 'ap-dialog'; dialog.setAttribute('aria-labelledby', 'ap-title');
+    dialog.innerHTML = '<h2 id="ap-title">Your saved work</h2><p>Work and checked attempts are saved automatically in this browser and device. Returning here restores your progress. This is not an account backup or cross-device sync. On a shared device, use Restart when finished.</p><p id="ap-status" role="status"></p><div class="ap-actions"><button type="button" id="ap-close">Close</button><button type="button" id="ap-load">Load latest saved work</button><button type="button" id="ap-export">Download a backup</button><button type="button" id="ap-import">Restore a backup</button><input type="file" id="ap-import-file" accept=".json,application/json" hidden><button type="button" id="ap-retry">Retry saving</button><button type="button" id="ap-restart">Restart activity</button></div><h3>Past attempts</h3><div id="ap-history"></div>';
+    document.body.append(dialog);
+    const status = dialog.querySelector('#ap-status'), list = dialog.querySelector('#ap-history');
+    const button = document.createElement('button'); button.type = 'button'; button.id = 'saved-work-toggle'; button.className = 'quiet ap-toggle';
+    const holder = document.querySelector('header .tools,.top .tools,#project-tools .tool-buttons,.toolbar') || document.querySelector('header,.intro');
+    (holder || document.body).append(button);
+    const live = document.createElement('span'); live.className = 'ap-sr'; live.setAttribute('role', 'status'); document.body.append(live);
+    const style = document.createElement('style');
+    style.textContent = '.ap-dialog{box-sizing:border-box;width:min(680px,calc(100% - 24px));max-height:85vh;overflow:auto;border:2px solid #0a6b66;border-radius:12px;padding:20px;color:#172d35;background:white;font:16px/1.5 system-ui}.ap-dialog::backdrop{background:#172d3570}.ap-dialog h2{margin-top:0}.ap-actions{display:flex;flex-wrap:wrap;gap:8px}.ap-dialog button{font:inherit;min-height:44px;padding:8px 12px;border:2px solid #0a6b66;border-radius:6px;background:white;color:#075d56;cursor:pointer}.ap-dialog button:focus-visible,.ap-dialog summary:focus-visible{outline:3px solid #172d35;outline-offset:3px}.ap-dialog details{border-top:1px solid #bdcdd1;padding:10px 0}.ap-dialog summary{cursor:pointer;font-weight:650}.ap-dialog dd{white-space:pre-wrap;overflow-wrap:anywhere;margin:0 0 10px}.ap-dialog dt{font-weight:650}.ap-dialog p{overflow-wrap:anywhere}.ap-toggle{font-size:14px!important;min-height:44px!important}.ap-toggle.ap-warning{background:#fff0ce!important;color:#62430b!important}.ap-sr{position:fixed;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}@media print{.ap-dialog,.ap-toggle,.ap-sr{display:none!important}}';
+    document.head.append(style);
+    function message(code) {
+      const messages = {ready: 'Automatic saving is ready.', ok: 'Saved in this browser. Return here to resume.', restored: 'Your saved work and past attempts have been restored.', cleared: 'All saved work and attempts for this activity have been cleared. Downloaded files are unchanged.', unavailable: 'Saving is unavailable or storage is full. Your work is still on this page. Download a backup before leaving, then retry saving.', invalid: 'The saved copy is unreadable or belongs to a different edition. It has been kept unchanged. Download a backup before choosing Restart.', conflict: 'Another tab changed the saved work. Saving is paused to protect both copies. Download your current backup or load the latest saved work.', paused: 'Saving is paused. Download a backup or load the latest saved work.'};
+      health = code; const text = messages[code] || messages.paused;
+      status.textContent = text;
+      button.textContent = ['ok', 'restored'].includes(code) ? 'Saved work · ' + history.length : ['ready', 'cleared'].includes(code) ? 'Saved work' : 'Check saved work';
+      button.classList.toggle('ap-warning', ['unavailable', 'invalid', 'conflict', 'paused'].includes(code));
+      button.setAttribute('aria-label', 'Saved work and ' + history.length + ' past attempts. ' + text);
+      if (!['ready', 'ok', 'restored'].includes(code)) live.textContent = text;
+    }
+    function snapshot() { return {state: clone(options.getState()), view: codec.capture()}; }
+    function apply(value) {
+      suspended = true;
+      try {
+        if (!value || value.cleared) { history = []; options.reset(); }
+        else {
+          codec.restore(value.snapshot.view); options.setState(clone(value.snapshot.state));
+          history = clone(value.history); options.afterRestore?.();
+        }
+        lastSnapshot = JSON.stringify(snapshot());
+      } finally { suspended = false; }
+    }
+    function load() {
+      const loaded = store.load();
+      if (loaded.status !== 'ok') { message(loaded.status); return false; }
+      try { if (loaded.value) apply(loaded.value); message(loaded.value?.cleared ? 'cleared' : loaded.value ? 'restored' : 'ready'); return true; }
+      catch { store.pause(); suspended = false; message('invalid'); return false; }
+    }
+    function capture(force = false) {
+      if (suspended) return;
+      const current = snapshot(), text = JSON.stringify(current);
+      if (!force && text === lastSnapshot) return;
+      const saved = store.save(current, history);
+      if (saved.status === 'conflict' && (saved.value?.cleared || saved.generationChanged)) { const latest = store.load(); if (latest.status === 'ok') { apply(latest.value); message(latest.value?.cleared ? 'cleared' : 'restored'); return; } }
+      if (saved.status === 'ok') lastSnapshot = text;
+      message(saved.status);
+    }
+    function schedule() { if (!suspended && !scheduled) { scheduled = true; queueMicrotask(() => { scheduled = false; capture(); }); } }
+    function renderHistory() {
+      list.replaceChildren();
+      if (!history.length) { const p = document.createElement('p'); p.textContent = 'No checked attempts saved yet. Your unfinished work is saved as you go.'; list.append(p); }
+      history.forEach((attempt, index) => {
+        const details = document.createElement('details'), summary = document.createElement('summary'), when = document.createElement('p'), dl = document.createElement('dl');
+        summary.textContent = (index + 1) + '. ' + attempt.title; when.textContent = new Date(attempt.when).toLocaleString();
+        for (const answer of attempt.answers) { const dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = answer.label; dd.textContent = answer.value; dl.append(dt, dd); }
+        details.append(summary, when, dl);
+        for (const text of attempt.feedback) { const p = document.createElement('p'); p.textContent = text; details.append(p); }
+        list.append(details);
+      });
+    }
+    function recordAttempt(action) {
+      const root = options.currentRoot?.() || document.querySelector('#interactive,main') || document.body;
+      const answers = [...root.querySelectorAll('input:not([type=file]):not([type=hidden]),textarea,select')].filter(e => !e.closest('[hidden]')).map(e => {
+        const label = (e.id && document.querySelector('label[for="' + global.CSS.escape(e.id) + '"]')?.textContent) || e.closest('label')?.textContent || e.closest('fieldset')?.querySelector('legend')?.textContent || e.name || e.id || 'Response';
+        return {label: label.trim(), value: e.matches('input[type=checkbox],input[type=radio]') ? (e.checked ? 'Selected: ' : 'Not selected: ') + e.value : e.tagName === 'SELECT' ? e.selectedOptions[0]?.textContent || e.value : e.value};
+      });
+      const feedback = [...root.querySelectorAll('.fb,.feedback,.field-feedback,[id$="-feedback"],[id^="feedback-"],#completion-status')].filter(e => !e.closest('[hidden]')).map(e => e.textContent.trim()).filter(Boolean);
+      history.push({when: new Date().toISOString(), title: (root.querySelector('h2,h3')?.textContent.trim() || options.title || document.title) + ' · ' + action, answers, feedback});
+      capture(true);
+    }
+    function restart(confirm = true) {
+      if (confirm && !global.confirm('Restart this activity? This permanently clears all saved answers, writing, progress and past attempts for this activity in this browser. Downloaded files are unchanged.')) return false;
+      const result = store.erase(options.legacyKeys || []);
+      if (result.status !== 'ok') { message(result.status); return false; }
+      apply(result.value); message('cleared'); renderHistory();
+      if (dialog.open) dialog.close();
+      (document.querySelector('#h-top,h1') || button).focus?.();
+      return true;
+    }
+    function backup() {
+      const data = JSON.stringify({schema: SCHEMA, id: options.id, compatibility: options.compatibility, epoch: 'backup', revision: 0, snapshot: snapshot(), history}, null, 2);
+      const a = document.createElement('a'), url = global.URL.createObjectURL(new Blob([data], {type: 'application/json'}));
+      a.href = url; a.download = options.id + '-saved-work.json'; a.click(); setTimeout(() => global.URL.revokeObjectURL(url), 1000);
+    }
+    button.addEventListener('click', () => { renderHistory(); dialog.showModal(); });
+    dialog.querySelector('#ap-close').addEventListener('click', () => { dialog.close(); button.focus(); });
+    dialog.querySelector('#ap-load').addEventListener('click', () => { load(); renderHistory(); });
+    dialog.querySelector('#ap-export').addEventListener('click', backup);
+    dialog.querySelector('#ap-import').addEventListener('click', () => dialog.querySelector('#ap-import-file').click());
+    dialog.querySelector('#ap-import-file').addEventListener('change', async event => {
+      const file = event.target.files[0]; event.target.value = ''; if (!file) return;
+      try {
+        if (file.size > LIMIT) throw Error('Backup is too large');
+        const value = parse(await file.text(), options.id, options.compatibility);
+        if (!value || value.cleared) throw Error('Backup has no work');
+        for (const tree of Object.values(value.snapshot.view)) codec.validate(tree);
+        if (!global.confirm('Replace your current work and attempt history with this backup? Download your current backup first if you want to keep both.')) return;
+        const loaded = store.load(); if (loaded.status !== 'ok') { message(loaded.status); return; }
+        apply(value); capture(true); renderHistory();
+      } catch { status.textContent = 'That backup could not be restored. Current work and the saved copy are kept.'; }
+    });
+    dialog.querySelector('#ap-retry').addEventListener('click', () => capture(true));
+    dialog.querySelector('#ap-restart').addEventListener('click', () => restart());
+    document.addEventListener('click', event => {
+      const target = event.target.closest('button');
+      if (!target || target.closest('.ap-dialog') || target === button) return;
+      if (target.type === 'submit' && target.form) return;
+      if ((options.restartIds || ['restart']).includes(target.id)) { event.preventDefault(); event.stopImmediatePropagation(); restart(!(options.confirmedRestartIds || ['erase-confirm']).includes(target.id)); }
+    }, true);
+    document.addEventListener('click', event => {
+      const target = event.target.closest('button');
+      if (!target || target.closest('.ap-dialog') || target === button) return;
+      if (target.type === 'submit' && target.form) return;
+      if (/^(check|complete)-|-(check)$/.test(target.id) || Object.keys(target.dataset).some(k => /^(check|show|reveal|complete)/i.test(k)) || /^(check|compare my|i have reviewed|complete this)/i.test(target.textContent.trim())) recordAttempt(target.textContent.trim());
+      else schedule();
+    });
+    document.addEventListener('submit', event => { if (!event.target.closest('.ap-dialog')) recordAttempt('Check answer'); });
+    document.addEventListener('input', schedule); document.addEventListener('change', schedule);
+    document.addEventListener('toggle', schedule, true);
+    const observer = new global.MutationObserver(schedule);
+    for (const id of options.roots || []) observer.observe(document.getElementById(id), {subtree: true, childList: true, characterData: true, attributes: true});
+    global.addEventListener('storage', event => {
+      if (event.key !== store.key && event.key !== null) return;
+      let value = null; try { value = parse(global.localStorage.getItem(store.key), options.id, options.compatibility); } catch {}
+      if (value && (value.cleared || value.epoch !== store.epoch)) { const latest = store.load(); if (latest.status === 'ok') { apply(latest.value); message(latest.value?.cleared ? 'cleared' : 'restored'); } }
+      else message('conflict');
+    });
+    suspended = false;
+    load();
+    // A migrated legacy capstone has already restored itself; save it in the shared format.
+    if (options.legacyKeys?.length && health === 'ready') { history = clone(options.initialHistory?.() || []); capture(true); }
+    const controller = {capture, restart, load, backup, recordAttempt, get history() { return clone(history); }, get health() { return health; }, get key() { return store.key; }};
+    global.ActivityProgressController = controller;
+    return controller;
+  }
+  const api = {createStore, parse, validateData, createCodec, mount};
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  global.ActivityProgress = api;
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>const DATA={"title": "Match the service use case", "intro": "Prepare five customer recommendations. Choose a service capability, support it with two details from the case, and write the business benefit and a question to validate before proposing a real solution.", "boundary": "This is ungraded practice. Correct the structured choices, complete your writing and review its meaning before confirming each case. Incorrect or blank choices block confirmation, Next, Continue, later cases and the final record. Written reasoning remains self-reviewed, not automatically graded. Work and checked attempts save in this browser and device when storage is available; Restart clears this activity's saved work and attempts. Nothing is submitted.", "scope": "Choose the primary capability for the stated need among these five simplified options. A real solution may combine services and needs further discovery; this is not a complete architecture or a promise of price, security, compliance or performance.", "services": [{"id": "compute", "name": "Virtual-machine compute with configured scaling", "meaning": "Run application software on virtual servers instead of owning physical hardware. Configure scaling policies to adjust capacity. The team still manages the operating system and application; scaling behavior and capacity limits need planning."}, {"id": "objects", "name": "Object storage", "meaning": "Store and retrieve files as objects, such as videos and images. Choose storage class, access controls, retention and delivery arrangements for the workload. Storage alone is not a complete global content-delivery design or a guarantee of the lowest total cost."}, {"id": "relational", "name": "Managed relational database", "meaning": "Use a compatible relational engine, such as MySQL, while the service handles selected routine administration. Confirm backup, maintenance and availability options; the team remains responsible for data, access, data structures and application design."}, {"id": "functions", "name": "Event-driven functions", "meaning": "Run configured code when an event occurs, such as a file upload. This can suit short, intermittent processing without managing a continuously running application server for that task. Triggers, permissions, runtime limits, retries and error handling still need configuration."}, {"id": "keyvalue", "name": "Managed key-value database", "meaning": "Store and retrieve data through a key-based access model using a managed database. It can suit simple access patterns with variable demand. Validate how demand is distributed across keys, capacity settings and end-to-end performance against the actual workload."}], "cases": [{"id": "web", "title": "Startup web application", "short": "Web application", "sourceScenario": "A startup company needs to host their web application that experiences unpredictable traffic patterns. They want to avoid managing physical servers and need the ability to scale computing resources up or down automatically based on demand.", "assumption": "Additional assumption for this exercise: the team wants to keep a virtual-server deployment model for its application.", "service": "compute", "evidencePrompt": "Select the two details that state the chosen deployment model and the required capacity behavior.", "clues": [{"id": "context", "text": "A startup company needs to host their web application that experiences unpredictable traffic patterns.", "source": true, "correct": false, "feedback": "This is useful context, but it does not by itself distinguish virtual servers from other hosting approaches. The prompt asks for the chosen deployment model and the explicit capacity behavior."}, {"id": "scale", "text": "need the ability to scale computing resources up or down automatically based on demand", "source": true, "correct": true, "feedback": "This specifies the desired capacity behavior. Virtual-machine scaling must be configured; it is not automatic merely because a virtual server exists."}, {"id": "model", "text": "Additional assumption for this exercise: the team wants to keep a virtual-server deployment model for its application.", "source": false, "correct": true, "feedback": "The visible exercise assumption makes virtual-machine compute the primary match. Other hosting approaches would need a different deployment decision."}], "fit": "Virtual-machine compute fits the explicit deployment assumption, with configured scaling for changing demand. It removes ownership of physical hardware, not all operating-system or application work.", "sampleReason": "Recommend virtual-machine compute with configured scaling for the team's stated deployment model. It can adjust application capacity as demand changes, while the team still plans scaling limits and manages its software.", "sampleQuestion": "What scaling signals, capacity limits and operating-system/application responsibilities can the team support?"}, {"id": "media", "title": "Media video collection", "short": "Video storage", "sourceScenario": "A media company needs to store millions of video files and make them accessible to users worldwide. The files need to be durable and highly available, and the company wants to pay only for the storage it actually uses.", "assumption": "", "service": "objects", "evidencePrompt": "Select the two details that identify the files being stored and the required durability/availability.", "clues": [{"id": "files", "text": "A media company needs to store millions of video files and make them accessible to users worldwide.", "source": true, "correct": true, "feedback": "The primary resource is a large file collection. Object storage is the storage match; global delivery may need additional design."}, {"id": "availability", "text": "The files need to be durable and highly available", "source": true, "correct": true, "feedback": "This states the storage requirement. Confirm the selected storage class and configuration rather than assuming every option has identical availability behavior."}, {"id": "cost", "text": "the company wants to pay only for the storage it actually uses", "source": true, "correct": false, "feedback": "Cost is a real customer priority, but this evidence prompt asks about the files and durability/availability. A real cost check also needs requests, retrieval, delivery and data-transfer patterns."}], "fit": "Object storage fits the large unstructured video collection. Confirm access, storage class, availability and delivery requirements; do not claim storage by itself guarantees worldwide performance, compliance or lowest cost.", "sampleReason": "Recommend object storage as the primary home for the video files, choosing a storage class and access setup that match durability and availability needs. Treat worldwide delivery and the full usage cost as further design questions.", "sampleQuestion": "How often are the videos accessed, where are viewers, and what delivery, retention and access-control requirements apply?"}, {"id": "shop", "title": "E-commerce MySQL maintenance", "short": "Managed database", "sourceScenario": "An e-commerce company runs a MySQL database for their product catalog and customer orders. They want to reduce the operational overhead of database maintenance tasks like backups, patching, and replication.", "assumption": "", "service": "relational", "evidencePrompt": "Select the two details that identify the database engine and the administration work the team wants to reduce.", "clues": [{"id": "engine", "text": "runs a MySQL database", "source": true, "correct": true, "feedback": "MySQL identifies a relational engine. This supports a compatible managed relational database rather than a key-value database that changes the data model."}, {"id": "maintenance", "text": "reduce the operational overhead of database maintenance tasks like backups, patching, and replication", "source": true, "correct": true, "feedback": "The need is to reduce database administration. Virtual servers alone do not remove that work. Confirm the managed service's specific backup, maintenance and replication options."}, {"id": "context", "text": "their product catalog and customer orders", "source": true, "correct": false, "feedback": "This describes the business data, but the distinguishing clues here are the existing engine and the wish to reduce database administration."}], "fit": "Managed relational database is the primary match: it supports the existing engine and can reduce routine administration. Virtual servers alone leave the database administration with the team. Service options and customer responsibilities still need confirmation.", "sampleReason": "Recommend a managed relational database compatible with MySQL to reduce routine maintenance while keeping the relational application model. Check the backup, patching and availability configuration rather than assuming every administration task disappears.", "sampleQuestion": "Which MySQL compatibility, maintenance windows, backup/recovery and availability requirements must the chosen configuration meet?"}, {"id": "images", "title": "Mobile image uploads", "short": "Upload processing", "sourceScenario": "A mobile app needs to process image uploads from users. When a user uploads a photo, it should automatically be resized and a thumbnail created. The processing only takes a few seconds and happens sporadically throughout the day.", "assumption": "", "service": "functions", "evidencePrompt": "Select the two details that identify the processing trigger and the short, intermittent execution pattern.", "clues": [{"id": "context", "text": "A mobile app needs to process image uploads from users.", "source": true, "correct": false, "feedback": "This supplies context, but the more precise trigger and execution-pattern details explain why event-driven processing fits."}, {"id": "trigger", "text": "When a user uploads a photo, it should automatically be resized and a thumbnail created.", "source": true, "correct": true, "feedback": "An upload event should trigger configured processing code. A storage service holds the file; it does not by itself perform the resizing."}, {"id": "pattern", "text": "The processing only takes a few seconds and happens sporadically throughout the day.", "source": true, "correct": true, "feedback": "Short, intermittent work is a useful fit for event-driven functions. Confirm runtime/file limits, retries and error handling for the actual implementation."}], "fit": "Event-driven functions fit processing triggered by uploads for short, intermittent work. The function code and trigger must be configured; choose storage separately and check processing limits and failure behavior.", "sampleReason": "Recommend an event-driven function triggered by the photo upload, with code to resize the image and create the thumbnail. This matches the short, sporadic processing pattern without requiring a dedicated continuously running application server for that task.", "sampleQuestion": "What image sizes, processing limits, retry behavior and failure-handling requirements must the function support?"}, {"id": "game", "title": "Gaming key-value traffic", "short": "Game data access", "sourceScenario": "A gaming company needs a database that can handle millions of requests per second with single-digit millisecond latency. The data structure is simple key-value pairs, and they need automatic scaling to handle traffic spikes during new game releases.", "assumption": "", "service": "keyvalue", "evidencePrompt": "Select the two details that identify the data model and the traffic-scaling need.", "clues": [{"id": "model", "text": "The data structure is simple key-value pairs", "source": true, "correct": true, "feedback": "This identifies the access/data model to match. A managed key-value database is a direct capability to examine."}, {"id": "scale", "text": "they need automatic scaling to handle traffic spikes during new game releases", "source": true, "correct": true, "feedback": "This states the variable-capacity need. Confirm capacity mode, key distribution and limits against the workload rather than assuming spikes are handled without planning."}, {"id": "target", "text": "millions of requests per second with single-digit millisecond latency", "source": true, "correct": false, "feedback": "This is an important customer target for validation, not a guaranteed result or a data-model definition. This evidence prompt asks for the key-value model and the traffic-scaling need."}], "fit": "Managed key-value database aligns with the simple key-based access model and variable demand. The stated throughput and latency are targets to validate with data/key design, capacity and realistic testing, not blanket guarantees.", "sampleReason": "Recommend examining a managed key-value database for the simple access pattern and launch-related demand changes. Validate capacity, key distribution and measured request performance against the customer's targets before promising a result.", "sampleQuestion": "What are the key/access patterns and peak read/write mix, and how will the target latency and throughput be tested?"}], "review": ["My explanation links the chosen capability and case evidence to a business benefit.", "I have labelled assumptions and validation needs and have not promised unverified cost, security, availability or performance results."], "closing": "Review the five recommendations together. The selected capability and clues are checked; your explanations and discovery questions are self-reviewed. Keep the record, then return to the course page to mark the step complete. This workbench does not update course completion."};
+const IMAGES={"start": "data:image/webp;base64,UklGRjQEAABXRUJQVlA4ICgEAABQHACdASqgAHgAPm0ulUakIqIhJnIM2IANiU3bq8JbFEC648g3qo22fmA/Wb9o/eV/xHqo3iDn1fZgyGXwB/S+rTXV/2bwVfwr/GbjFf3HHXdqrxi3iZ8Yj/NfLp/rv8B5x/nP2C/1N9Jn1d+gj+26EzqiBUf93dX55Te2V7X0/rdVz6E8CwjE1l/w14C77IaVgxih9XmgY+hh7cGa9bLFzF/nsZ1WrI+GnNTE9QRh7adf/IKj5w52k6H4PiYtIf0Eg6o3DIo0U4/V3XioIUY+GDQQFkz4TFqexTYt/cwTPsy0zE1eKxbGtVgAAP78Iw3FB2NTAALz/r0Wdsw0WGdS+eqLyPQKdZA4pw+F0f/wAX1xmwvSujny801LLeXduLf8A7PsEf53/wiM+rofqOJ//8m7JhZRP9M37YZI9n/RU/+VD9ssOUPN2KHsFiWnlUUz59nDY9SQWtaChWVukTneRuhFbMbdwB9KFPc+ViN6/H8aD3JSu6J5e49nUcPIAwPFUwffzrfcKKGWr1VyFQJbwzz3mosbb0QD5Sid9/+aJ99xLNdmmvihYy/gPYi8pgeY3yit5lqf6kizO2NrNdlMbaXDzmdGBMpu0t1/ZdGPKMbfQ1lZRQ9aPTL1qvFUq+b6RBb0jQCDhW1hqdt5b5ts2JGJaDXKpYdMoPvZNum3B6dFGKgABlOC1pmNgbRNXVxomEzVG3iElQEDajHSmo3JjFxz6QbNIy1tSGwoAS3GxTddE/Jc59LaEWS8Xjk3n/76sd+IyX8RbihnIjPM8tX/CJ4kAp+W1/6dJMAhPpOOCnuuuvXFKRTcuxKqXEWJzronGM1f9fVAOwTkXlMGlh9aEKYvsUEO1kUo6o8KV7iDl62aIQWbiZ+3ok7rb+vhxDiC7RHNTPnS84dH3u3x3XWLZoRiKD0Vo6m+pdViZ5rN22UAVQ2wzzXe+D6VUeXI/+lmfBP5699NfMReYdOqZgjItMAEjc9HSXBez/UVABeHnZJNz/aqdN2y7f3BGGYR8piFz3Fcqwca+rT86XokTDzfP8UC8r5zkHeylCqcVFGq6zoM4ME4Chj6rlwDH1QGq0fyfI7zhQZ/FxVglNtSRfcTGTj/GrG2vv84Ror9O7FOXH+AOxlPf27bb4j5JMYHVWsh0PiTIqwxJkDqio+jaYW+tdji8dGeS6yAiJskU4tfa7I/EsrVscHv9tC6D1sl3IhB7uFwSp+Wazp/viPnXbPsAINOGc6VLVzg+rr3O2sHoRmgtzxucT/I6H0E0bWn9g0KtUaciObHRNE4ftXjykME0zeb87M3+inEBC8z62XNJtexP5LVe6/3Auf8ZTsSrVyIsWywDsAOZEj6u74o7JOxTK4xZn/zQ1VskbpPa7iMigkhr/ctmNUL1qStt/kLf4tGIqcgAAAAAA==", "web": "data:image/webp;base64,UklGRjQEAABXRUJQVlA4ICgEAABQHACdASqgAHgAPm0ulUakIqIhJnIM2IANiU3bq8JbFEC648g3qo22fmA/Wb9o/eV/xHqo3iDn1fZgyGXwB/S+rTXV/2bwVfwr/GbjFf3HHXdqrxi3iZ8Yj/NfLp/rv8B5x/nP2C/1N9Jn1d+gj+26EzqiBUf93dX55Te2V7X0/rdVz6E8CwjE1l/w14C77IaVgxih9XmgY+hh7cGa9bLFzF/nsZ1WrI+GnNTE9QRh7adf/IKj5w52k6H4PiYtIf0Eg6o3DIo0U4/V3XioIUY+GDQQFkz4TFqexTYt/cwTPsy0zE1eKxbGtVgAAP78Iw3FB2NTAALz/r0Wdsw0WGdS+eqLyPQKdZA4pw+F0f/wAX1xmwvSujny801LLeXduLf8A7PsEf53/wiM+rofqOJ//8m7JhZRP9M37YZI9n/RU/+VD9ssOUPN2KHsFiWnlUUz59nDY9SQWtaChWVukTneRuhFbMbdwB9KFPc+ViN6/H8aD3JSu6J5e49nUcPIAwPFUwffzrfcKKGWr1VyFQJbwzz3mosbb0QD5Sid9/+aJ99xLNdmmvihYy/gPYi8pgeY3yit5lqf6kizO2NrNdlMbaXDzmdGBMpu0t1/ZdGPKMbfQ1lZRQ9aPTL1qvFUq+b6RBb0jQCDhW1hqdt5b5ts2JGJaDXKpYdMoPvZNum3B6dFGKgABlOC1pmNgbRNXVxomEzVG3iElQEDajHSmo3JjFxz6QbNIy1tSGwoAS3GxTddE/Jc59LaEWS8Xjk3n/76sd+IyX8RbihnIjPM8tX/CJ4kAp+W1/6dJMAhPpOOCnuuuvXFKRTcuxKqXEWJzronGM1f9fVAOwTkXlMGlh9aEKYvsUEO1kUo6o8KV7iDl62aIQWbiZ+3ok7rb+vhxDiC7RHNTPnS84dH3u3x3XWLZoRiKD0Vo6m+pdViZ5rN22UAVQ2wzzXe+D6VUeXI/+lmfBP5699NfMReYdOqZgjItMAEjc9HSXBez/UVABeHnZJNz/aqdN2y7f3BGGYR8piFz3Fcqwca+rT86XokTDzfP8UC8r5zkHeylCqcVFGq6zoM4ME4Chj6rlwDH1QGq0fyfI7zhQZ/FxVglNtSRfcTGTj/GrG2vv84Ror9O7FOXH+AOxlPf27bb4j5JMYHVWsh0PiTIqwxJkDqio+jaYW+tdji8dGeS6yAiJskU4tfa7I/EsrVscHv9tC6D1sl3IhB7uFwSp+Wazp/viPnXbPsAINOGc6VLVzg+rr3O2sHoRmgtzxucT/I6H0E0bWn9g0KtUaciObHRNE4ftXjykME0zeb87M3+inEBC8z62XNJtexP5LVe6/3Auf8ZTsSrVyIsWywDsAOZEj6u74o7JOxTK4xZn/zQ1VskbpPa7iMigkhr/ctmNUL1qStt/kLf4tGIqcgAAAAAA==", "media": "data:image/webp;base64,UklGRjQEAABXRUJQVlA4ICgEAABQHACdASqgAHgAPm0ulUakIqIhJnIM2IANiU3bq8JbFEC648g3qo22fmA/Wb9o/eV/xHqo3iDn1fZgyGXwB/S+rTXV/2bwVfwr/GbjFf3HHXdqrxi3iZ8Yj/NfLp/rv8B5x/nP2C/1N9Jn1d+gj+26EzqiBUf93dX55Te2V7X0/rdVz6E8CwjE1l/w14C77IaVgxih9XmgY+hh7cGa9bLFzF/nsZ1WrI+GnNTE9QRh7adf/IKj5w52k6H4PiYtIf0Eg6o3DIo0U4/V3XioIUY+GDQQFkz4TFqexTYt/cwTPsy0zE1eKxbGtVgAAP78Iw3FB2NTAALz/r0Wdsw0WGdS+eqLyPQKdZA4pw+F0f/wAX1xmwvSujny801LLeXduLf8A7PsEf53/wiM+rofqOJ//8m7JhZRP9M37YZI9n/RU/+VD9ssOUPN2KHsFiWnlUUz59nDY9SQWtaChWVukTneRuhFbMbdwB9KFPc+ViN6/H8aD3JSu6J5e49nUcPIAwPFUwffzrfcKKGWr1VyFQJbwzz3mosbb0QD5Sid9/+aJ99xLNdmmvihYy/gPYi8pgeY3yit5lqf6kizO2NrNdlMbaXDzmdGBMpu0t1/ZdGPKMbfQ1lZRQ9aPTL1qvFUq+b6RBb0jQCDhW1hqdt5b5ts2JGJaDXKpYdMoPvZNum3B6dFGKgABlOC1pmNgbRNXVxomEzVG3iElQEDajHSmo3JjFxz6QbNIy1tSGwoAS3GxTddE/Jc59LaEWS8Xjk3n/76sd+IyX8RbihnIjPM8tX/CJ4kAp+W1/6dJMAhPpOOCnuuuvXFKRTcuxKqXEWJzronGM1f9fVAOwTkXlMGlh9aEKYvsUEO1kUo6o8KV7iDl62aIQWbiZ+3ok7rb+vhxDiC7RHNTPnS84dH3u3x3XWLZoRiKD0Vo6m+pdViZ5rN22UAVQ2wzzXe+D6VUeXI/+lmfBP5699NfMReYdOqZgjItMAEjc9HSXBez/UVABeHnZJNz/aqdN2y7f3BGGYR8piFz3Fcqwca+rT86XokTDzfP8UC8r5zkHeylCqcVFGq6zoM4ME4Chj6rlwDH1QGq0fyfI7zhQZ/FxVglNtSRfcTGTj/GrG2vv84Ror9O7FOXH+AOxlPf27bb4j5JMYHVWsh0PiTIqwxJkDqio+jaYW+tdji8dGeS6yAiJskU4tfa7I/EsrVscHv9tC6D1sl3IhB7uFwSp+Wazp/viPnXbPsAINOGc6VLVzg+rr3O2sHoRmgtzxucT/I6H0E0bWn9g0KtUaciObHRNE4ftXjykME0zeb87M3+inEBC8z62XNJtexP5LVe6/3Auf8ZTsSrVyIsWywDsAOZEj6u74o7JOxTK4xZn/zQ1VskbpPa7iMigkhr/ctmNUL1qStt/kLf4tGIqcgAAAAAA==", "shop": "data:image/webp;base64,UklGRjQEAABXRUJQVlA4ICgEAABQHACdASqgAHgAPm0ulUakIqIhJnIM2IANiU3bq8JbFEC648g3qo22fmA/Wb9o/eV/xHqo3iDn1fZgyGXwB/S+rTXV/2bwVfwr/GbjFf3HHXdqrxi3iZ8Yj/NfLp/rv8B5x/nP2C/1N9Jn1d+gj+26EzqiBUf93dX55Te2V7X0/rdVz6E8CwjE1l/w14C77IaVgxih9XmgY+hh7cGa9bLFzF/nsZ1WrI+GnNTE9QRh7adf/IKj5w52k6H4PiYtIf0Eg6o3DIo0U4/V3XioIUY+GDQQFkz4TFqexTYt/cwTPsy0zE1eKxbGtVgAAP78Iw3FB2NTAALz/r0Wdsw0WGdS+eqLyPQKdZA4pw+F0f/wAX1xmwvSujny801LLeXduLf8A7PsEf53/wiM+rofqOJ//8m7JhZRP9M37YZI9n/RU/+VD9ssOUPN2KHsFiWnlUUz59nDY9SQWtaChWVukTneRuhFbMbdwB9KFPc+ViN6/H8aD3JSu6J5e49nUcPIAwPFUwffzrfcKKGWr1VyFQJbwzz3mosbb0QD5Sid9/+aJ99xLNdmmvihYy/gPYi8pgeY3yit5lqf6kizO2NrNdlMbaXDzmdGBMpu0t1/ZdGPKMbfQ1lZRQ9aPTL1qvFUq+b6RBb0jQCDhW1hqdt5b5ts2JGJaDXKpYdMoPvZNum3B6dFGKgABlOC1pmNgbRNXVxomEzVG3iElQEDajHSmo3JjFxz6QbNIy1tSGwoAS3GxTddE/Jc59LaEWS8Xjk3n/76sd+IyX8RbihnIjPM8tX/CJ4kAp+W1/6dJMAhPpOOCnuuuvXFKRTcuxKqXEWJzronGM1f9fVAOwTkXlMGlh9aEKYvsUEO1kUo6o8KV7iDl62aIQWbiZ+3ok7rb+vhxDiC7RHNTPnS84dH3u3x3XWLZoRiKD0Vo6m+pdViZ5rN22UAVQ2wzzXe+D6VUeXI/+lmfBP5699NfMReYdOqZgjItMAEjc9HSXBez/UVABeHnZJNz/aqdN2y7f3BGGYR8piFz3Fcqwca+rT86XokTDzfP8UC8r5zkHeylCqcVFGq6zoM4ME4Chj6rlwDH1QGq0fyfI7zhQZ/FxVglNtSRfcTGTj/GrG2vv84Ror9O7FOXH+AOxlPf27bb4j5JMYHVWsh0PiTIqwxJkDqio+jaYW+tdji8dGeS6yAiJskU4tfa7I/EsrVscHv9tC6D1sl3IhB7uFwSp+Wazp/viPnXbPsAINOGc6VLVzg+rr3O2sHoRmgtzxucT/I6H0E0bWn9g0KtUaciObHRNE4ftXjykME0zeb87M3+inEBC8z62XNJtexP5LVe6/3Auf8ZTsSrVyIsWywDsAOZEj6u74o7JOxTK4xZn/zQ1VskbpPa7iMigkhr/ctmNUL1qStt/kLf4tGIqcgAAAAAA==", "images": "data:image/webp;base64,UklGRjQEAABXRUJQVlA4ICgEAABQHACdASqgAHgAPm0ulUakIqIhJnIM2IANiU3bq8JbFEC648g3qo22fmA/Wb9o/eV/xHqo3iDn1fZgyGXwB/S+rTXV/2bwVfwr/GbjFf3HHXdqrxi3iZ8Yj/NfLp/rv8B5x/nP2C/1N9Jn1d+gj+26EzqiBUf93dX55Te2V7X0/rdVz6E8CwjE1l/w14C77IaVgxih9XmgY+hh7cGa9bLFzF/nsZ1WrI+GnNTE9QRh7adf/IKj5w52k6H4PiYtIf0Eg6o3DIo0U4/V3XioIUY+GDQQFkz4TFqexTYt/cwTPsy0zE1eKxbGtVgAAP78Iw3FB2NTAALz/r0Wdsw0WGdS+eqLyPQKdZA4pw+F0f/wAX1xmwvSujny801LLeXduLf8A7PsEf53/wiM+rofqOJ//8m7JhZRP9M37YZI9n/RU/+VD9ssOUPN2KHsFiWnlUUz59nDY9SQWtaChWVukTneRuhFbMbdwB9KFPc+ViN6/H8aD3JSu6J5e49nUcPIAwPFUwffzrfcKKGWr1VyFQJbwzz3mosbb0QD5Sid9/+aJ99xLNdmmvihYy/gPYi8pgeY3yit5lqf6kizO2NrNdlMbaXDzmdGBMpu0t1/ZdGPKMbfQ1lZRQ9aPTL1qvFUq+b6RBb0jQCDhW1hqdt5b5ts2JGJaDXKpYdMoPvZNum3B6dFGKgABlOC1pmNgbRNXVxomEzVG3iElQEDajHSmo3JjFxz6QbNIy1tSGwoAS3GxTddE/Jc59LaEWS8Xjk3n/76sd+IyX8RbihnIjPM8tX/CJ4kAp+W1/6dJMAhPpOOCnuuuvXFKRTcuxKqXEWJzronGM1f9fVAOwTkXlMGlh9aEKYvsUEO1kUo6o8KV7iDl62aIQWbiZ+3ok7rb+vhxDiC7RHNTPnS84dH3u3x3XWLZoRiKD0Vo6m+pdViZ5rN22UAVQ2wzzXe+D6VUeXI/+lmfBP5699NfMReYdOqZgjItMAEjc9HSXBez/UVABeHnZJNz/aqdN2y7f3BGGYR8piFz3Fcqwca+rT86XokTDzfP8UC8r5zkHeylCqcVFGq6zoM4ME4Chj6rlwDH1QGq0fyfI7zhQZ/FxVglNtSRfcTGTj/GrG2vv84Ror9O7FOXH+AOxlPf27bb4j5JMYHVWsh0PiTIqwxJkDqio+jaYW+tdji8dGeS6yAiJskU4tfa7I/EsrVscHv9tC6D1sl3IhB7uFwSp+Wazp/viPnXbPsAINOGc6VLVzg+rr3O2sHoRmgtzxucT/I6H0E0bWn9g0KtUaciObHRNE4ftXjykME0zeb87M3+inEBC8z62XNJtexP5LVe6/3Auf8ZTsSrVyIsWywDsAOZEj6u74o7JOxTK4xZn/zQ1VskbpPa7iMigkhr/ctmNUL1qStt/kLf4tGIqcgAAAAAA==", "game": "data:image/webp;base64,UklGRjQEAABXRUJQVlA4ICgEAABQHACdASqgAHgAPm0ulUakIqIhJnIM2IANiU3bq8JbFEC648g3qo22fmA/Wb9o/eV/xHqo3iDn1fZgyGXwB/S+rTXV/2bwVfwr/GbjFf3HHXdqrxi3iZ8Yj/NfLp/rv8B5x/nP2C/1N9Jn1d+gj+26EzqiBUf93dX55Te2V7X0/rdVz6E8CwjE1l/w14C77IaVgxih9XmgY+hh7cGa9bLFzF/nsZ1WrI+GnNTE9QRh7adf/IKj5w52k6H4PiYtIf0Eg6o3DIo0U4/V3XioIUY+GDQQFkz4TFqexTYt/cwTPsy0zE1eKxbGtVgAAP78Iw3FB2NTAALz/r0Wdsw0WGdS+eqLyPQKdZA4pw+F0f/wAX1xmwvSujny801LLeXduLf8A7PsEf53/wiM+rofqOJ//8m7JhZRP9M37YZI9n/RU/+VD9ssOUPN2KHsFiWnlUUz59nDY9SQWtaChWVukTneRuhFbMbdwB9KFPc+ViN6/H8aD3JSu6J5e49nUcPIAwPFUwffzrfcKKGWr1VyFQJbwzz3mosbb0QD5Sid9/+aJ99xLNdmmvihYy/gPYi8pgeY3yit5lqf6kizO2NrNdlMbaXDzmdGBMpu0t1/ZdGPKMbfQ1lZRQ9aPTL1qvFUq+b6RBb0jQCDhW1hqdt5b5ts2JGJaDXKpYdMoPvZNum3B6dFGKgABlOC1pmNgbRNXVxomEzVG3iElQEDajHSmo3JjFxz6QbNIy1tSGwoAS3GxTddE/Jc59LaEWS8Xjk3n/76sd+IyX8RbihnIjPM8tX/CJ4kAp+W1/6dJMAhPpOOCnuuuvXFKRTcuxKqXEWJzronGM1f9fVAOwTkXlMGlh9aEKYvsUEO1kUo6o8KV7iDl62aIQWbiZ+3ok7rb+vhxDiC7RHNTPnS84dH3u3x3XWLZoRiKD0Vo6m+pdViZ5rN22UAVQ2wzzXe+D6VUeXI/+lmfBP5699NfMReYdOqZgjItMAEjc9HSXBez/UVABeHnZJNz/aqdN2y7f3BGGYR8piFz3Fcqwca+rT86XokTDzfP8UC8r5zkHeylCqcVFGq6zoM4ME4Chj6rlwDH1QGq0fyfI7zhQZ/FxVglNtSRfcTGTj/GrG2vv84Ror9O7FOXH+AOxlPf27bb4j5JMYHVWsh0PiTIqwxJkDqio+jaYW+tdji8dGeS6yAiJskU4tfa7I/EsrVscHv9tC6D1sl3IhB7uFwSp+Wazp/viPnXbPsAINOGc6VLVzg+rr3O2sHoRmgtzxucT/I6H0E0bWn9g0KtUaciObHRNE4ftXjykME0zeb87M3+inEBC8z62XNJtexP5LVe6/3Auf8ZTsSrVyIsWywDsAOZEj6u74o7JOxTK4xZn/zQ1VskbpPa7iMigkhr/ctmNUL1qStt/kLf4tGIqcgAAAAAA==", "record": "data:image/webp;base64,UklGRjQEAABXRUJQVlA4ICgEAABQHACdASqgAHgAPm0ulUakIqIhJnIM2IANiU3bq8JbFEC648g3qo22fmA/Wb9o/eV/xHqo3iDn1fZgyGXwB/S+rTXV/2bwVfwr/GbjFf3HHXdqrxi3iZ8Yj/NfLp/rv8B5x/nP2C/1N9Jn1d+gj+26EzqiBUf93dX55Te2V7X0/rdVz6E8CwjE1l/w14C77IaVgxih9XmgY+hh7cGa9bLFzF/nsZ1WrI+GnNTE9QRh7adf/IKj5w52k6H4PiYtIf0Eg6o3DIo0U4/V3XioIUY+GDQQFkz4TFqexTYt/cwTPsy0zE1eKxbGtVgAAP78Iw3FB2NTAALz/r0Wdsw0WGdS+eqLyPQKdZA4pw+F0f/wAX1xmwvSujny801LLeXduLf8A7PsEf53/wiM+rofqOJ//8m7JhZRP9M37YZI9n/RU/+VD9ssOUPN2KHsFiWnlUUz59nDY9SQWtaChWVukTneRuhFbMbdwB9KFPc+ViN6/H8aD3JSu6J5e49nUcPIAwPFUwffzrfcKKGWr1VyFQJbwzz3mosbb0QD5Sid9/+aJ99xLNdmmvihYy/gPYi8pgeY3yit5lqf6kizO2NrNdlMbaXDzmdGBMpu0t1/ZdGPKMbfQ1lZRQ9aPTL1qvFUq+b6RBb0jQCDhW1hqdt5b5ts2JGJaDXKpYdMoPvZNum3B6dFGKgABlOC1pmNgbRNXVxomEzVG3iElQEDajHSmo3JjFxz6QbNIy1tSGwoAS3GxTddE/Jc59LaEWS8Xjk3n/76sd+IyX8RbihnIjPM8tX/CJ4kAp+W1/6dJMAhPpOOCnuuuvXFKRTcuxKqXEWJzronGM1f9fVAOwTkXlMGlh9aEKYvsUEO1kUo6o8KV7iDl62aIQWbiZ+3ok7rb+vhxDiC7RHNTPnS84dH3u3x3XWLZoRiKD0Vo6m+pdViZ5rN22UAVQ2wzzXe+D6VUeXI/+lmfBP5699NfMReYdOqZgjItMAEjc9HSXBez/UVABeHnZJNz/aqdN2y7f3BGGYR8piFz3Fcqwca+rT86XokTDzfP8UC8r5zkHeylCqcVFGq6zoM4ME4Chj6rlwDH1QGq0fyfI7zhQZ/FxVglNtSRfcTGTj/GrG2vv84Ror9O7FOXH+AOxlPf27bb4j5JMYHVWsh0PiTIqwxJkDqio+jaYW+tdji8dGeS6yAiJskU4tfa7I/EsrVscHv9tC6D1sl3IhB7uFwSp+Wazp/viPnXbPsAINOGc6VLVzg+rr3O2sHoRmgtzxucT/I6H0E0bWn9g0KtUaciObHRNE4ftXjykME0zeb87M3+inEBC8z62XNJtexP5LVe6/3Auf8ZTsSrVyIsWywDsAOZEj6u74o7JOxTK4xZn/zQ1VskbpPa7iMigkhr/ctmNUL1qStt/kLf4tGIqcgAAAAAA=="};
+const SOURCES={"checked": "2026-11-02", "scope": "Primary technical examples for capability definitions and bounded feedback. No prices, live capacity promises or provider-wide compliance guarantees are taught.", "sources": [{"title": "Amazon EC2: virtual server concepts", "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html", "supports": "Virtual servers supply scalable compute capacity; application deployment and management remain design decisions."}, {"title": "Amazon EC2 Auto Scaling: configured groups and policies", "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html", "supports": "Automatic capacity adjustment uses configured groups, bounds and scaling policies; it is not a property of every unconfigured virtual server."}, {"title": "Amazon S3: storage-class choices", "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html", "supports": "Storage class selection affects access, cost and availability behavior; not every option has the same location/availability arrangement."}, {"title": "Amazon RDS: managed relational databases and responsibilities", "url": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html", "supports": "Compatible relational engines include MySQL, with managed administration and configurable backup/availability behavior; virtual servers alone do not provide the same management model."}, {"title": "AWS Lambda: image-upload thumbnail processing example", "url": "https://docs.aws.amazon.com/lambda/latest/dg/with-s3-tutorial.html", "supports": "An upload can invoke configured function code to generate a thumbnail; triggers, execution permissions and processing code are explicit implementation steps."}, {"title": "Amazon DynamoDB: managed key-value/document database", "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html", "supports": "A managed key-value/document database is a capability to examine for key-based workloads. The activity treats the customer's numeric targets as validation requirements rather than repeating a universal measured result."}]};
+// Shared board engine for the C1 activities: one fixed screen, illustrated tiles left and right open their step in the
+// centre stage. The activity's app.js fills in Board.tiles and the hooks below, then calls Board.start().
+// Tile: { id, title, short, image, side: 'left'|'right', render: () => html, slot: bool }
+const byId = id => document.getElementById(id);
+const safe = v => String(v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const Board = {
+  tiles: [],
+  faces: null,                              // { n, p, w } images for a reacting character; null = the current tile's picture
+  mood: { n: 'Focused.', p: 'Done.', w: 'Not yet.' },
+  cardLabel: (n, total) => `Progress ${n}/${total}`,
+  unlocked: () => true,
+  lockedMsg: () => '',
+  onOpen: () => {},
+  onClick: () => false,                     // return true when the activity handled the click
+  onReset: () => {},
+  st: null,
+  cur: 0,
+
+  idx(id) { return this.tiles.findIndex(t => t.id === id); },
+  slots() { return this.tiles.filter(t => t.slot).map(t => t.id); },
+  say(msg) { byId('live').textContent = ''; setTimeout(() => { byId('live').textContent = msg; }, 30); },
+  face(m) {
+    const f = byId('face'); f.className = m;
+    const src = this.faces ? this.faces[m] : this.tiles[this.cur].image;
+    f.innerHTML = `<img src="${src}" width="72" height="72" alt=""><span class="sr">${safe(this.mood[m])}</span>`;
+  },
+
+  start() {
+    byId('interactive').hidden = false;
+    this.build();
+    this.wire();
+  },
+  build() {
+    this.st = { done: {}, tries: {} };
+    this.onReset();
+    byId('stage-body').innerHTML = this.tiles.map((t, i) => `<section class="pane" id="pane-${t.id}" hidden aria-labelledby="ph-${t.id}">
+      <h2 id="ph-${t.id}" tabindex="-1"><span class="kick">Step ${i + 1} of ${this.tiles.length}</span> ${safe(t.title)}</h2>${t.render()}</section>`).join('');
+    const tile = t => `<li><button type="button" class="tile" data-tile="${t.id}" id="tile-${t.id}">
+      <span class="ico" aria-hidden="true"><img src="${t.image}" alt=""></span><span class="tt">${safe(t.short)}</span><span class="state" aria-hidden="true"></span><span class="sr st-text"></span></button></li>`;
+    byId('rail-left').innerHTML = this.tiles.filter(t => t.side === 'left').map(tile).join('');
+    byId('rail-right').innerHTML = this.tiles.filter(t => t.side === 'right').map(tile).join('');
+    byId('slots').innerHTML = this.slots().map(id => `<li><button type="button" class="slot" data-tile="${id}" id="slot-${id}"><strong>${safe(this.tiles[this.idx(id)].title)}</strong><span class="body muted">Not yet done.</span></button></li>`).join('');
+    this.open(0, true);
+  },
+
+  open(i, silent) {
+    const t = this.tiles[i];
+    if (!this.unlocked(t.id)) { const m = this.lockedMsg(t.id); this.say(m); byId('lockmsg').textContent = m; return; }
+    byId('lockmsg').textContent = '';
+    this.cur = i;
+    this.tiles.forEach(x => { byId('pane-' + x.id).hidden = x.id !== t.id; });
+    this.onOpen(t.id);
+    this.face(this.st.done[t.id] ? 'p' : 'n');
+    this.paint();
+    byId('stage-scroll').scrollTop = 0;
+    if (!silent) byId('ph-' + t.id).focus();
+  },
+  paint() {
+    this.tiles.forEach((t, i) => {
+      const b = byId('tile-' + t.id), done = !!this.st.done[t.id], lock = !this.unlocked(t.id);
+      b.className = 'tile' + (done ? ' done' : '') + (i === this.cur ? ' current' : '') + (lock ? ' locked' : '');
+      b.setAttribute('aria-current', i === this.cur ? 'step' : 'false');
+      b.querySelector('.state').textContent = done ? '✓' : lock ? '🔒' : '';
+      b.querySelector('.st-text').textContent = done ? ' (done)' : lock ? ' (locked)' : i === this.cur ? ' (current)' : ' (not started)';
+    });
+    const s = this.slots(), n = s.filter(id => this.st.done[id]).length;
+    byId('prog').textContent = `${n} of ${s.length} done`;
+    byId('bar').style.width = (s.length ? n / s.length * 100 : 0) + '%';
+    byId('card').classList.toggle('complete', n === s.length);
+    byId('unlocked').hidden = n !== s.length;
+    byId('toggle-card').textContent = this.cardLabel(n, s.length);
+    const last = this.tiles.length - 1, nx = byId('next'), pv = byId('prev');
+    pv.disabled = this.cur === 0; nx.disabled = this.cur === last;
+    nx.textContent = this.cur < last ? 'Next: ' + this.tiles[this.cur + 1].short + ' →' : 'Last step';
+    pv.textContent = this.cur ? '← ' + this.tiles[this.cur - 1].short : '←';
+  },
+  nextOpen() {
+    for (let k = 1; k <= this.tiles.length; k++) {
+      const j = (this.cur + k) % this.tiles.length, t = this.tiles[j];
+      if (!this.st.done[t.id] && this.unlocked(t.id)) return j;
+    }
+    return -1;
+  },
+
+  // Reactions
+  stamp(text) { const s = byId('stamp'); s.textContent = text; s.classList.remove('on'); void s.offsetWidth; s.classList.add('on'); },
+  wrong(fb) { this.face('w'); fb.classList.remove('wob'); void fb.offsetWidth; fb.classList.add('wob'); this.say(this.mood.w); },
+  fill(id, html) { const s = byId('slot-' + id); if (!s) return; const b = s.querySelector('.body'); b.className = 'body'; b.innerHTML = html; },
+  fly(id) {
+    const slot = byId('slot-' + id);
+    const pop = () => { if (slot) { slot.classList.add('filled', 'pop'); setTimeout(() => slot.classList.remove('pop'), 700); } };
+    if (!slot || reduced()) { pop(); return; }
+    const from = byId('tile-' + id).querySelector('.ico').getBoundingClientRect();
+    const to = (byId('card').hidden ? byId('toggle-card') : slot).getBoundingClientRect();
+    const c = document.createElement('div'); c.className = 'flyer'; c.textContent = '✓';
+    Object.assign(c.style, { left: from.left + 'px', top: from.top + 'px', width: from.width + 'px', height: from.height + 'px' });
+    document.body.appendChild(c);
+    const a = c.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${to.left + 12 - from.left}px,${to.top + 12 - from.top}px) scale(1.4)`, opacity: .2 }], { duration: 650, easing: 'cubic-bezier(.3,.7,.2,1)' });
+    a.onfinish = () => { c.remove(); pop(); };
+  },
+  // A step is finished: tick its tile, fill its slot, react, and offer the next open step inside `holder`.
+  complete(id, holder, stampText, slotHtml) {
+    this.st.done[id] = true;
+    if (slotHtml !== undefined) { this.fill(id, slotHtml); this.fly(id); }
+    this.face('p');
+    if (stampText) this.stamp(stampText);
+    const j = this.nextOpen();
+    if (holder && !holder.querySelector('[data-advance]')) {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'go'; b.dataset.advance = '1';
+      b.textContent = j >= 0 ? 'Continue to ' + this.tiles[j].short : 'All done';
+      holder.appendChild(b);
+    }
+    this.paint();
+    this.say(this.mood.p);
+  },
+  // Count a failed check; true once the "Show me the answer" escape should appear (after two).
+  failed(id) { this.st.tries[id] = (this.st.tries[id] || 0) + 1; return this.st.tries[id] >= 2; },
+
+  showCard(on) {
+    byId('card').hidden = !on;
+    byId('toggle-card').setAttribute('aria-expanded', String(on));
+    if (on) byId('closecard').focus();
+  },
+  wire() {
+    document.addEventListener('click', e => {
+      const t = e.target.closest('button');
+      if (!t || this.onClick(t)) return;
+      if (t.dataset.tile) this.open(this.idx(t.dataset.tile));
+      else if (t.dataset.advance) { const j = this.nextOpen(); if (j >= 0) this.open(j); else this.say('Every step is done.'); }
+      else if (t.id === 'prev') this.open(this.cur - 1);
+      else if (t.id === 'next') this.open(this.cur + 1);
+      else if (t.id === 'restart') { this.build(); byId('h-top').focus(); }
+      else if (t.id === 'toggle-card') this.showCard(byId('card').hidden);
+      else if (t.id === 'closecard') { this.showCard(false); byId('toggle-card').focus(); }
+      else if (t.id === 'casefile' && byId('casedlg')) byId('casedlg').showModal();
+      else if (t.id === 'closecase') byId('casedlg').close();
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !byId('card').hidden) { this.showCard(false); byId('toggle-card').focus(); } });
+  }
+};
+
+const CASES=DATA.cases,IDS=CASES.map(c=>c.id),FORMAT='c2-service-recommendations-v1';let checked={},pending=null;
+const service=id=>DATA.services.find(s=>s.id===id);
+function reference(){return `<details class="reference"><summary>Review the five capability cards</summary><div class="profile">${DATA.services.map(s=>`<h3>${safe(s.name)}</h3><p>${safe(s.meaning)}</p>`).join('')}</div></details>`;}
+function sample(c){return `<details class="reference"><summary>Compare with one possible recommendation after drafting</summary><div class="profile"><p>This is a possible explanation, not a script to copy or an agreed customer solution. It does not fill your writing.</p><p><strong>Primary capability:</strong> ${safe(service(c.service).name)}</p><p><strong>Why it fits:</strong> ${safe(c.sampleReason)}</p><p><strong>Question to validate:</strong> ${safe(c.sampleQuestion)}</p></div></details>`;}
+function task(c){return `<section class="panel"><h3>Customer discovery note</h3><p>${safe(c.sourceScenario)}</p>${c.assumption?`<p class="assumption">${safe(c.assumption)}</p>`:''}</section>${reference()}<label class="field" for="${c.id}-service">Choose the primary service capability</label><select id="${c.id}-service" data-change="${c.id}"><option value="">Choose one</option>${DATA.services.map(s=>`<option value="${s.id}">${safe(s.name)}</option>`).join('')}</select><fieldset><legend>${safe(c.evidencePrompt)}</legend>${c.clues.map(l=>`<label class="pick"><input type="checkbox" id="${c.id}-clue-${l.id}" data-change="${c.id}"><span>${safe(l.text)}${l.source?'':' <strong>(Exercise assumption)</strong>'}</span></label>`).join('')}</fieldset><label class="field" for="${c.id}-reason">Your recommendation and expected business benefit</label><p class="muted">Explain the fit in your own words. The choice is a starting point for discovery, not a guaranteed result.</p><textarea id="${c.id}-reason" data-write="${c.id}" maxlength="4000" rows="4"></textarea><label class="field" for="${c.id}-confirm">Your question to validate before a real proposal</label><textarea id="${c.id}-confirm" data-write="${c.id}" maxlength="4000" rows="3"></textarea><button type="button" data-check="${c.id}">Check the match and completeness</button><section class="fb" id="fb-${c.id}" tabindex="-1" role="status" hidden></section><fieldset><legend>Self-review your writing</legend>${DATA.review.map((s,j)=>`<label class="pick"><input type="checkbox" id="${c.id}-review-${j}" data-review="${c.id}"><span>${safe(s)}</span></label>`).join('')}</fieldset><p>Capability and clue choices are checked. The meaning and quality of your explanation and question are self-reviewed.</p><div class="actions"><button type="button" data-complete="${c.id}" disabled>I have reviewed this recommendation</button><button type="button" data-continue="${c.id}" hidden>Continue</button></div>${sample(c)}`;}
+function read(id){const c=CASES.find(c=>c.id===id);return {service:byId(id+'-service').value,evidence:c.clues.filter(l=>byId(id+'-clue-'+l.id).checked).map(l=>l.id),reason:byId(id+'-reason').value,confirm:byId(id+'-confirm').value};}
+function assess(c,v){return v.service===c.service&&JSON.stringify([...v.evidence].sort())===JSON.stringify(c.clues.filter(l=>l.correct).map(l=>l.id).sort());}
+function signature(id){return JSON.stringify(read(id));}
+function reviewed(id){return DATA.review.every((_,j)=>byId(id+'-review-'+j).checked);}
+function valid(id){const c=CASES.find(c=>c.id===id),v=read(id);return checked[id]===signature(id)&&assess(c,v)&&!!v.reason.trim()&&!!v.confirm.trim();}
+function sync(id){byId('pane-'+id).querySelector('[data-complete]').disabled=!(valid(id)&&reviewed(id))||!!Board.st.done[id];}
+function clearStamp(){byId('stamp').textContent='';byId('stamp').classList.remove('on');}
+function invalidate(id){reopenFrom(id);delete checked[id];delete Board.st.done[id];DATA.review.forEach((_,j)=>byId(id+'-review-'+j).checked=false);byId('whole-review').checked=false;byId('fb-'+id).hidden=true;byId('pane-'+id).querySelector('[data-continue]').hidden=true;clearStamp();sync(id);Board.fill(id,'Changed: check the match and review your writing again.');Board.paint();updateRecord();}
+function focusFeedback(box){const scroller=byId('stage-scroll');if(scroller.scrollHeight>scroller.clientHeight+2)scroller.scrollTop+=box.getBoundingClientRect().top-scroller.getBoundingClientRect().top-12;else window.scrollTo({top:Math.max(0,window.scrollY+box.getBoundingClientRect().top-12),behavior:'auto'});box.focus({preventScroll:true});}
+function check(c){const v=read(c.id),ok=assess(c,v),box=byId('fb-'+c.id);box.hidden=false;const missing=[];if(!v.reason.trim())missing.push('your recommendation and business benefit');if(!v.confirm.trim())missing.push('your validation question');checked[c.id]=ok&&!missing.length?signature(c.id):null;box.innerHTML=`<p><strong>${ok?'The capability and two clues fit this case':'Revisit the capability and requested clues before continuing'}</strong></p>${!v.service||v.evidence.length!==2?'<p>Choose one capability and exactly two clues matching the evidence prompt. Your existing writing is kept.</p>':''}<p><strong>Your capability:</strong> ${v.service?safe(service(v.service).name):'Not chosen.'}</p>${v.service&&v.service!==c.service?`<p>${safe(service(v.service).meaning)}</p>`:''}<p>${safe(c.fit)}</p>${c.clues.map(l=>`<p><strong>${v.evidence.includes(l.id)?'Selected':'Not selected'}:</strong> ${safe(l.text)} ${safe(l.feedback)}</p>`).join('')}${missing.length?`<p>Still to write: ${safe(missing.join('; '))}. Existing responses are kept.</p>`:'<p>Both writing fields contain a response. That does not verify the quality of the prose. Use the two self-review statements before recording your recommendation.</p>'}`;sync(c.id);focusFeedback(box);}
+function updateRecord(){if(!byId('written-record'))return;byId('written-record').innerHTML=CASES.map(c=>{const v=read(c.id);return `<section class="panel"><h3>${safe(c.title)}</h3><p>${Board.st.done[c.id]?'Capability/clues checked; writing self-reviewed.':'Draft: review not complete.'}</p><p><strong>Primary capability:</strong> ${safe(service(v.service)?.name||'Not chosen.')}</p><p><strong>Selected case details:</strong></p><ul>${v.evidence.length?c.clues.filter(l=>v.evidence.includes(l.id)).map(l=>`<li>${safe(l.text)}${l.source?'':' (Exercise assumption)'}</li>`).join(''):'<li>Not chosen.</li>'}</ul><dl><dt>Your recommendation and business benefit</dt><dd>${safe(v.reason||'Not entered yet.')}</dd><dt>Your validation question</dt><dd>${safe(v.confirm||'Not entered yet.')}</dd></dl></section>`;}).join('');byId('download').disabled=!(allConfirmed()&&byId('whole-review').checked);}
+function download(text,name,type){const u=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
+function notify(msg){byId('save-status').textContent=msg;Board.say(msg);}
+Board.tiles=[{id:'start',title:'Review the capability cards',short:'Capability cards',image:IMAGES.start,side:'left',render:()=>`<p>${safe(DATA.intro)}</p><p>${safe(DATA.boundary)}</p><p>${safe(DATA.scope)}</p>${reference()}<p>For each case, choose a capability and two clues for the stated evidence prompt. Write the benefit and a validation question, check the match and completeness, then review the meaning yourself. A possible recommendation is available after drafting.</p><p>Use the complete text version or PDF below to work offline. Save editable draft keeps unfinished work; each writing field allows 4,000 characters. Restore asks before replacing work and reopens reviews.</p><button type="button" id="begin">Start the first customer case</button>`},...CASES.map((c,i)=>({id:c.id,title:c.title,short:c.short,image:IMAGES[c.id],side:i<2?'left':'right',slot:true,render:()=>task(c)})),{id:'record',title:'Review and keep your five recommendations',short:'Your record',image:IMAGES.record,side:'right',render:()=>`<p>Your current recommendations appear below, including unfinished drafts. Reopen any case to edit.</p><div id="written-record"></div><label class="pick"><input type="checkbox" id="whole-review"><span>I have checked that each recommendation addresses its case and that further validation is clear.</span></label><button type="button" id="download" disabled>Download my five recommendations as text</button><p id="download-status" role="status"></p><p>${safe(DATA.closing)}</p><details class="reference"><summary>Primary technical examples used for the guidance</summary><ul>${SOURCES.sources.map(s=>`<li><a href="${safe(s.url)}" target="_blank" rel="noopener">${safe(s.title)}</a></li>`).join('')}</ul><p>Checked ${safe(SOURCES.checked)}. Check actual service options and configuration for a real customer.</p></details>`}];
+Board.cardLabel=(n,t)=>`Recommendations ${n}/${t}`;Board.mood={n:'Reviewing the case.',p:'Recommendation reviewed.',w:'Review your match.'};
+Board.onReset=()=>{checked={};pending=null;clearStamp();byId('card').hidden=true;byId('toggle-card').setAttribute('aria-expanded','false');if(byId('restore-warning'))byId('restore-warning').hidden=true;};Board.onOpen=id=>{if(id==='record')updateRecord();};
+Board.onClick=b=>{
+ if(b.id==='restart'){if(IDS.some(id=>{const v=read(id);return v.service||v.evidence.length||v.reason||v.confirm;})&&!confirm('Start again and clear your recommendations? Save an editable draft first if you want to keep them.'))return true;return false;}
+ if(b.id==='begin'){Board.open(1);return true;}
+ const id=b.dataset.check||b.dataset.complete||b.dataset.continue,c=CASES.find(c=>c.id===id);
+ if(b.dataset.check){check(c);return true;}
+ if(b.dataset.complete){if(!Board.unlocked(id)||!valid(id)||!reviewed(id))return true;Board.complete(id,null,'Self-reviewed','Match checked; writing reviewed');sync(id);const n=byId('pane-'+id).querySelector('[data-continue]');n.hidden=false;n.focus();updateRecord();return true;}
+ if(b.dataset.continue){Board.open(Board.idx(id)+1);return true;}
+ if(b.id==='save-work'){download(JSON.stringify({format:FORMAT,cases:Object.fromEntries(IDS.map(id=>[id,read(id)]))},null,2),'my-service-recommendations-draft.json','application/json');notify('Editable draft downloaded. Keep it to restore unfinished work later.');return true;}
+ if(b.id==='restore-work'){byId('restore-file').click();return true;}
+ if(b.id==='restore-cancel'){pending=null;byId('restore-warning').hidden=true;notify('Restore cancelled. Current writing kept.');return true;}
+ if(b.id==='restore-confirm'){if(!pending)return true;CASES.forEach(c=>{const v=pending[c.id];byId(c.id+'-service').value=v.service;c.clues.forEach(l=>byId(c.id+'-clue-'+l.id).checked=v.evidence.includes(l.id));byId(c.id+'-reason').value=v.reason;byId(c.id+'-confirm').value=v.confirm;invalidate(c.id);});pending=null;byId('restore-warning').hidden=true;updateRecord();notify('Draft restored. Check the choices and review your writing again.');Board.open(1);return true;}
+ if(b.id==='download'){if(b.disabled||!allConfirmed()||!byId('whole-review').checked)return true;const lines=[DATA.title,'Capabilities and case clues checked; authored prose self-reviewed, not automatically graded.',''];CASES.forEach(c=>{const v=read(c.id);lines.push(c.title,'Capability: '+service(v.service).name,...c.clues.filter(l=>v.evidence.includes(l.id)).map(l=>'Case detail: '+l.text+(l.source?'':' (Exercise assumption)')),'Your recommendation and business benefit: '+v.reason,'Your validation question: '+v.confirm,'');});download(lines.join('\n'),'my-five-service-recommendations.txt','text/plain;charset=utf-8');byId('download-status').textContent='Your five recommendations have been downloaded.';return true;}return false;
+};
+
+function allConfirmed(){return IDS.every(id=>Board.st.done[id]&&valid(id)&&reviewed(id));}
+function reopenFrom(id,preserveCurrent=false){IDS.slice(IDS.indexOf(id)).forEach(next=>{delete Board.st.done[next];if(!(preserveCurrent&&next===id)){delete checked[next];DATA.review.forEach((_,j)=>byId(next+'-review-'+j).checked=false);byId('fb-'+next).hidden=true;}byId('pane-'+next).querySelector('[data-continue]').hidden=true;Board.fill(next,'Recheck this case. Your writing is kept.');sync(next);});}
+Board.unlocked=id=>Board.tiles.slice(1,Board.idx(id)).filter(t=>t.slot).every(t=>Board.st?.done[t.id]&&valid(t.id)&&reviewed(t.id));
+Board.lockedMsg=()=> 'Correct and confirm each earlier case before continuing. Your writing is kept.';
+const originalPaint=Board.paint;Board.paint=function(){originalPaint.call(this);byId('next').disabled=this.cur===this.tiles.length-1||!this.unlocked(this.tiles[this.cur+1].id);this.tiles.forEach(t=>byId('tile-'+t.id).setAttribute('aria-disabled',String(!this.unlocked(t.id))));};
+
+Board.start();const toolbar=document.createElement('section');toolbar.className='save-tools';toolbar.setAttribute('aria-label','Keep or restore your writing');toolbar.innerHTML='<button type="button" id="save-work">Save editable draft</button><button type="button" id="restore-work" class="quiet">Restore draft</button><input id="restore-file" type="file" accept=".json,application/json" hidden><p id="save-status" role="status"></p><div id="restore-warning" hidden><p>Replace all current work with the selected draft? Review status will be cleared.</p><button type="button" id="restore-confirm">Replace my current work</button><button type="button" id="restore-cancel" class="quiet">Cancel restore</button></div>';byId('interactive').before(toolbar);
+document.addEventListener('input',e=>{if(e.target.dataset.write)invalidate(e.target.dataset.write);});document.addEventListener('change',e=>{if(e.target.dataset.change)invalidate(e.target.dataset.change);if(e.target.dataset.review){const id=e.target.dataset.review;if(!reviewed(id)){reopenFrom(id,true);delete Board.st.done[id];byId('whole-review').checked=false;byId('pane-'+id).querySelector('[data-continue]').hidden=true;clearStamp();Board.fill(id,'Self-review reopened.');Board.paint();}sync(id);updateRecord();}if(e.target.id==='whole-review')updateRecord();});
+byId('restore-file').addEventListener('change',async e=>{const file=e.target.files[0];pending=null;byId('restore-warning').hidden=true;if(!file)return;try{if(file.size>1000000)throw Error();const v=JSON.parse(await file.text());if(v.format!==FORMAT||!v.cases||typeof v.cases!=='object'||Array.isArray(v.cases))throw Error();const rows={};for(const c of CASES){const r=v.cases[c.id];if(!r||typeof r!=='object'||Array.isArray(r))throw Error();if(typeof r.service!=='string'||r.service&&!service(r.service))throw Error();if(!Array.isArray(r.evidence)||r.evidence.length>3||new Set(r.evidence).size!==r.evidence.length||r.evidence.some(id=>!c.clues.some(l=>l.id===id)))throw Error();for(const f of ['reason','confirm'])if(typeof r[f]!=='string'||r[f].length>4000)throw Error();rows[c.id]={service:r.service,evidence:[...r.evidence],reason:r.reason,confirm:r.confirm};}pending=rows;byId('restore-warning').hidden=false;notify('Draft read. Confirm below before replacing current work.');byId('restore-confirm').focus();}catch{notify('That is not a valid draft for this activity. Your current writing is kept.');}e.target.value='';});
+
+
+
+let restoredEdition=2;
+ActivityProgress.mount({id:"c2-match-service-use-case",compatibility:"state-v1:f7fa5a14408401bf1f91",title:document.title,media:Object.values(IMAGES),roots:['stage-body','slots','stamp'],getState:()=>({board:Board.st,cur:Board.cur,checked,assessmentVersion:2}),setState:v=>{Board.st=v.board;Board.cur=v.cur;checked=v.checked||{};restoredEdition=v.assessmentVersion;},afterRestore:()=>{
+ const rows=CASES.map(c=>read(c.id)),feedbackShown=CASES.map(c=>!byId('fb-'+c.id).hidden),reviews=CASES.map(c=>DATA.review.map((_,j)=>byId(c.id+'-review-'+j).checked)),oldBoard=Board.st,oldChecked=checked,cur=Board.cur,whole=byId('whole-review').checked;
+ Board.build();CASES.forEach((c,i)=>{const v=rows[i];byId(c.id+'-service').value=v.service;c.clues.forEach(l=>byId(c.id+'-clue-'+l.id).checked=v.evidence.includes(l.id));for(const f of ['reason','confirm'])byId(c.id+'-'+f).value=v[f];});Board.st=oldBoard;checked=restoredEdition===2?oldChecked:{};if(restoredEdition!==2)Board.st.done={};let incomplete=false;
+ CASES.forEach((c,i)=>{DATA.review.forEach((_,j)=>byId(c.id+'-review-'+j).checked=restoredEdition===2&&reviews[i][j]);if(incomplete||!valid(c.id)||!reviewed(c.id))delete Board.st.done[c.id];if(!Board.st.done[c.id])incomplete=true;if(restoredEdition===2&&feedbackShown[i])check(c);Board.fill(c.id,Board.st.done[c.id]?'Choices checked; writing reviewed.':'Recheck this case. Your writing is kept.');sync(c.id);byId('pane-'+c.id).querySelector('[data-continue]').hidden=!Board.st.done[c.id];});byId('whole-review').checked=!incomplete&&whole;updateRecord();if(Board.tiles[cur]&&Board.unlocked(Board.tiles[cur].id))Board.open(cur,true);else Board.open(IDS.findIndex(id=>!Board.st.done[id])+1,true);Board.paint();
+ },reset:()=>Board.build(),currentRoot:()=>byId('pane-'+Board.tiles[Board.cur].id)});
+</script></body></html>
