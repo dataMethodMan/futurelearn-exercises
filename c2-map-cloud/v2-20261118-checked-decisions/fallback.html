@@ -1,0 +1,115 @@
+<!doctype html><html lang="en-GB"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Map the cloud - complete text version</title><style>body{font:17px/1.65 system-ui;max-width:850px;margin:auto;padding:24px;color:#172b36}h1,h2,h3{line-height:1.3}</style><main><a href="index.html">Open interactive activity</a><h1>Map the cloud</h1>
+<p>Complete text version</p>
+<p>Use a conceptual map to distinguish regions, availability zones and edge locations. Then write three business-focused answers to Jin Cloud Solutions about availability, global performance and data recovery.</p>
+<p>This is ungraded practice. Check all three map labels, then correct one case decision for each buyer concern before continuing. Complete the writing and review its meaning yourself: prose is not automatically graded. Incorrect or blank choices keep confirmation and later steps locked. Your work and past checked attempts save in this browser and device when storage is available. Restart clears this activity&#x27;s saved work and attempts. Nothing is submitted.</p>
+<h2>Your meeting</h2>
+<p>You are a cloud sales representative meeting a buyer from Jin Cloud Solutions, a mid-sized fictional company that provides scalable cloud storage and security services. The company is considering new international markets. The buyer asks about downtime, latency and data protection. Explain the concepts in plain business language and identify what you would need to confirm about the customer&#x27;s workload and selected service.</p>
+<h2>The conceptual map, in full</h2>
+<p>Abstract teaching diagram, not a real provider map or the customer&#x27;s architecture. Area A contains three separated facility groups: B, B2 and B3. Area D contains D1, D2 and D3. Point C is a separate content-delivery location near a group of users. Counts and placement are illustrative.</p>
+<p>Area A contains facility groups B, B2 and B3. Area D contains D1, D2 and D3. Point C is separate and represents suitable content delivery near users. These are illustrative relationships, not the customer&#x27;s deployment.</p>
+<p>The Region, Availability zone and Edge location buttons highlight the outer containers, separated groups and Point C respectively. Their full explanations follow.</p>
+<h3>Region</h3>
+<p>A region is a geographic area that contains separate availability zones in this model. Location choice can affect user proximity and data-location needs; confirm the relevant service options and requirements. Area A and Area D are different regions here.</p>
+<h3>Availability zone</h3>
+<p>An availability zone is a separated group of one or more data centres within a region. Multiple zones offer different physical fault boundaries. Applications and data need an appropriate design and service configuration to use that separation; they do not move automatically just because zones exist.</p>
+<h3>Edge location</h3>
+<p>An edge location can bring suitable content delivery closer to users. Cached content may be served there, while a cache miss or a dynamic request may still need the origin. It is not another full region or a universal copy of the customer&#x27;s database.</p>
+<h2>1. Label the location types</h2>
+<p>Choose a type for each label. Options for each: Region, Availability zone, Edge location.</p>
+<p>Area A: what location type is the outer geographic area?</p>
+<p>Group B: what location type is one separated facility group within Area A?</p>
+<p>Point C: what location type brings suitable content delivery nearer users?</p>
+<h3>Map feedback: compare after choosing</h3>
+<p>Revisit the diagram relationships before continuing. Not chosen means a label is blank. Correct all three labels, then check again. When correct: The three location labels fit the diagram.</p>
+<p>A: Region. Area A contains the separate facility groups B, B2 and B3. In this diagram, the geographic container is a region; it is not one zone or an edge point.</p>
+<p>B: Availability zone. Group B is inside Area A and represents a separated facility group. That is an availability zone here. A zone can contain one or more data centres, not necessarily exactly one building.</p>
+<p>C: Edge location. Point C is a content-delivery location near users. It is an edge location, distinct from the regions and their availability zones; it does not replace all origin processing or data storage.</p>
+<ul><li>I can distinguish the geographic region, the separated zone within it and the edge content-delivery point.</li></ul>
+<ul><li>I know this is an abstract teaching diagram, not the customer’s actual deployment or a guarantee.</li></ul>
+<h2>How to use the activity or this text version</h2>
+<p>Work in order: map, availability, performance, recovery, then final record. Each buyer concern includes one checked case decision and two writing fields. Choose, write, and select Check my decision and writing. Incorrect or blank choices prevent Confirm this section, Continue, Next, later tiles, record and final download. There is no attempt-count escape. Correct and confirm each earlier section before continuing. Your writing is kept.</p>
+<p>Correct decisions do not grade free writing. Fill each writing field and review both statements before confirming. Use the map guidance and compare possible explanations after drafting. Changing a decision, writing or a review reopens that section and dependent confirmations while keeping all writing and attempts. Working offline: use paper or a text editor, compare your decisions with all feedback below, correct them, then review your own prose.</p>
+<p>Work and checked attempts save automatically in this browser and device when storage is available. Use Saved work and past attempts to revisit earlier checks. A previous-edition draft retains compatible writing and attempts but requires new checks; old completion is not carried forward. A saving-error notice explains unavailable, full, corrupt or incompatible storage; keep your work usable and export it where possible.</p>
+<p>Save editable draft downloads all current labels and writing before completion. Restore draft validates the selected JSON and asks before replacing work; Cancel keeps current work. Invalid or oversized files change nothing. Each writing field allows 4,000 characters; the file limit is 1,000,000 bytes. Restoring writing requires fresh checks. Restart asks before clearing this activity&#x27;s current work and attempt history; Cancel keeps it. Another tab cannot restore erased work. Other activities and downloaded files are unaffected.</p>
+<h2>2. Explain availability</h2>
+<p>The buyer asks: How can we keep applications available if something goes wrong in one location?</p>
+<p>Connect separated zones to reduced single-location risk, then explain that the application and data must be designed and configured for recovery.</p>
+<h3>Case decision</h3>
+<p>Which response addresses the risk of one zone failing?</p>
+<p>A. The region contains several zones, so every application switches automatically with no interruption.</p>
+<p>B. Assess a suitable multi-zone design, including data replication, healthy capacity and tested recovery for this workload.</p>
+<p>C. Move all data to an edge location because an edge point is another complete region.</p>
+<p>D. Treat zones B and B2 as different geographic regions, so any regional incident is covered.</p>
+<h3>Write your customer explanation and question</h3>
+<p>Your business-focused explanation: Explain the potential continuity benefit and its conditions without promising zero downtime.</p>
+<p>What would you confirm with the customer or technical team?: Ask about the workload, current deployment and required recovery behavior before making a promise.</p>
+<h3>Check and revisit assumptions</h3>
+<p>A: Try again. Separate zones are fault boundaries, not proof that this workload has replication, failover or spare capacity. Check and test its configuration before promising continuity.</p>
+<p>B: Correct. This connects separated zones to a possible continuity benefit and checks what the application actually needs. Multiple zones alone do not cover a wider regional disruption.</p>
+<p>C: Try again. The map identifies Point C as content delivery near users. It is not another full region or a replacement for the application deployment.</p>
+<p>D: Try again. B and B2 are separated groups inside Area A, the same region. A wider regional incident needs a recovery arrangement assessed for that failure scope.</p>
+<p>If blank or unknown: Choose the decision best supported by the supplied research before checking. If incorrect: Revisit your assumptions before continuing. Re-read the concept map and infrastructure guidance, revise your decision and check again. Your writing and earlier attempts are kept.</p>
+<p>If correct: Your case decision is correct. All writing fields contain a response. Review their meaning and evidence; the activity does not grade prose. Still to fill lists any empty writing fields. Your writing is kept.</p>
+<ul><li>I have connected zone separation to business continuity without treating zones as automatically configured backup sites.</li></ul>
+<ul><li>I have made the recovery conditions clear and have not promised uninterrupted service.</li></ul>
+<h3>One possible explanation: compare after drafting</h3>
+<p>Running an appropriately designed application and its data across separated zones can reduce the risk that one local incident stops the whole service. The benefit depends on the chosen service, replication, available capacity and how traffic and recovery are configured; we should test that arrangement rather than promise no downtime.</p>
+<p>Follow-up: How is this workload deployed today, and what interruption could the business tolerate while recovery takes place?</p>
+<h2>3. Explain global performance</h2>
+<p>The buyer asks: How can users around the world get fast, reliable access to our services?</p>
+<p>Connect location and suitable edge delivery to responsiveness, while distinguishing content delivery from the complete application and its origin.</p>
+<h3>Case decision</h3>
+<p>Which explanation of faster global access is supported by this map?</p>
+<p>A. Every request is processed completely at the nearest edge location, so origin placement no longer matters.</p>
+<p>B. Adding a region guarantees faster service for all users and all application components.</p>
+<p>C. An availability zone is the content-delivery point beside the users in the diagram.</p>
+<p>D. Use suitable edge caching where it helps, and assess user locations, regional placement and requests that still need the origin.</p>
+<h3>Write your customer explanation and question</h3>
+<p>Your business-focused explanation: Explain how suitable placement and content delivery can help, without claiming every request is local or fast everywhere.</p>
+<p>What would you confirm with the customer or technical team?: Ask where users are and which content or application interactions need better response times.</p>
+<h3>Check and revisit assumptions</h3>
+<p>A: Try again. Only suitable content can be served from a cache. A cache miss or a request that needs the application may still reach the origin; placement and dependencies still matter.</p>
+<p>B: Try again. Geographic placement can help some user journeys, but communication between components can add delay. Measure the actual workload rather than guarantee universal performance.</p>
+<p>C: Try again. Point C is the edge location. Group B is a separated facility group within a region; the map gives them different functions.</p>
+<p>D: Correct. This distinguishes nearby content delivery from the complete application. Check the important user journeys and origin dependencies before choosing a design.</p>
+<p>If blank or unknown: Choose the decision best supported by the supplied research before checking. If incorrect: Revisit your assumptions before continuing. Re-read the concept map and infrastructure guidance, revise your decision and check again. Your writing and earlier attempts are kept.</p>
+<p>If correct: Your case decision is correct. All writing fields contain a response. Review their meaning and evidence; the activity does not grade prose. Still to fill lists any empty writing fields. Your writing is kept.</p>
+<ul><li>I have distinguished region placement from edge content delivery.</li></ul>
+<ul><li>I have acknowledged origin/application dependencies and have not guaranteed universal performance.</li></ul>
+<h3>One possible explanation: compare after drafting</h3>
+<p>Serving suitable content through an edge location can reduce the distance a user&#x27;s request needs to travel for a cached response. The application&#x27;s regional location and its origin still matter, especially for requests that cannot be served from the cache. We should measure the important user journeys before choosing an approach.</p>
+<p>Follow-up: Where are the users we need to serve, and which requests are slow or need to reach the application origin?</p>
+<h2>4. Explain data recovery</h2>
+<p>The buyer asks: What happens to our data if one facility fails?</p>
+<p>Explain that protection depends on the selected storage service and configuration, including replication and tested recovery; do not treat a copy as a complete backup plan.</p>
+<h3>Case decision</h3>
+<p>Which next step supports a responsible answer about data recovery?</p>
+<p>A. Confirm the service, configured copies and backups, then test usable restoration against acceptable recovery time and possible data loss.</p>
+<p>B. Promise no data loss because every cloud service copies all data into every region.</p>
+<p>C. Treat a live replicated copy as proof that earlier data can always be restored after an accidental deletion.</p>
+<p>D. Use the number of zones as proof of security, compliance and complete recovery.</p>
+<h3>Write your customer explanation and question</h3>
+<p>Your business-focused explanation: Describe how suitable replication and backups can support recovery without claiming all cloud data is copied everywhere or loss is impossible.</p>
+<p>What would you confirm with the customer or technical team?: Ask about where data is stored, configured copies/backups and acceptable recovery time and possible data loss.</p>
+<h3>Check and revisit assumptions</h3>
+<p>A: Correct. Recovery depends on the selected service and configuration. Replication maintains copies; backups support restoring earlier data. Test that usable data can be recovered within the customer&#x27;s needs.</p>
+<p>B: Try again. The map does not establish the selected service or copy locations. Replication and recovery behaviour vary; there is no evidence for a universal zero-loss promise.</p>
+<p>C: Try again. A maintained replica and a timestamped backup serve different purposes. Confirm the protection and restore options, then test the required recovery.</p>
+<p>D: Try again. Location separation alone does not establish protection, legal compliance or a usable recovery plan. Confirm the relevant arrangements and involve appropriate specialists.</p>
+<p>If blank or unknown: Choose the decision best supported by the supplied research before checking. If incorrect: Revisit your assumptions before continuing. Re-read the concept map and infrastructure guidance, revise your decision and check again. Your writing and earlier attempts are kept.</p>
+<p>If correct: Your case decision is correct. All writing fields contain a response. Review their meaning and evidence; the activity does not grade prose. Still to fill lists any empty writing fields. Your writing is kept.</p>
+<ul><li>I have made service/configuration dependence clear and kept replication and backup purposes distinct.</li></ul>
+<ul><li>I have proposed checking usable recovery and have not promised zero data loss, universal security or compliance.</li></ul>
+<h3>One possible explanation: compare after drafting</h3>
+<p>The answer depends on the storage service and the options in use. Suitable replication can keep another copy available when one location fails; backups support restoring earlier data when needed. We should confirm where the copies and backups are held and test that usable data can be recovered within the business&#x27;s needs. Cloud placement alone is not a complete security or recovery plan.</p>
+<p>Follow-up: Which data and services are involved, what recovery time and possible data loss are acceptable, and when was restoration last tested?</p>
+<h2>Review and keep your explanation record</h2>
+<p>When all four sections are confirmed, check the whole record for unverified guarantees. Download my explanation record as text includes all three labels and six writing fields. Review whether your three answers connect the map concepts to the buyer&#x27;s needs without turning a possible design benefit into a guarantee. Keep your explanation record, then return to the course page to mark the step complete; this workbench does not update course completion.</p>
+<h2>Technical references used for the guidance</h2>
+<p>Original reference review: 2026-11-02. Relevant availability, content-delivery and backup boundaries rechecked 18 November 2026. Provider and service behaviour must be confirmed for a real customer.</p>
+<p>Locations: https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
+Isolation: https://docs.aws.amazon.com/whitepapers/latest/aws-fault-isolation-boundaries/availability-zones.html
+Reliability: https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_fault_isolation_multiaz_region_system.html
+Edge: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/HowCloudFrontWorks.html
+Recovery: https://docs.aws.amazon.com/wellarchitected/latest/framework/rel_backing_up_data_periodic_recovery_testing_data.html
+Backup: https://learn.microsoft.com/en-us/azure/reliability/concept-redundancy-replication-backup</p></main></html>
