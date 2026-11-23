@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Select the right framing</title><style>*{box-sizing:border-box}[hidden]{display:none!important}
+:root{--navy:#14213d;--teal:#1fa3a3;--teal-d:#0b6b6b;--amber:#f4a261;--paper:#faf6ee;--coral:#e76f51;--ink:#172b36;--line:#c9d6da;--ok:#2f8f60}
+html{color-scheme:light}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 system-ui,sans-serif}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-9999px;top:0}.skip:focus{left:8px;z-index:100;background:white;padding:8px}
+a{color:#07516d}
+header.top{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--navy);color:white;height:64px}
+header.top h1{font-size:1.15rem;margin:0}
+header.top .tools{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+header.top button{background:transparent;color:white;border-color:white;margin:0}
+.app{display:grid;grid-template-columns:190px minmax(0,1fr) 190px;gap:14px;padding:14px 18px;height:calc(100vh - 64px);min-height:560px;position:relative}
+.rail,.card,.stage{background:white;border:1px solid var(--line);border-radius:14px;min-height:0}
+.rail{padding:10px;overflow:auto;display:flex;flex-direction:column;justify-content:center}.rail h2,.card h2{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:#35505e;margin:2px 4px 8px}
+ul.list{list-style:none;margin:0;padding:0}ul.list li{margin:0 0 8px}
+button{font:inherit;cursor:pointer;min-height:44px;padding:10px 14px;border-radius:8px;border:2px solid var(--teal-d);background:var(--teal-d);color:white}
+button.quiet{background:white;color:var(--teal-d)}button:disabled{opacity:.45;cursor:default}
+.tile{position:relative;display:grid;grid-template-columns:58px 1fr auto;align-items:center;gap:8px;width:100%;text-align:left;background:#eef1f2;color:#40545d;border:2px solid transparent;border-radius:12px;padding:6px;min-height:86px;transition:transform .2s,background .2s,box-shadow .2s}
+.rail-left .tile:hover{transform:translateX(3px)}.rail-right .tile:hover{transform:translateX(-3px)}
+.ico{display:block;width:58px;height:70px;border-radius:8px;overflow:hidden;background:#d7dfe2}.ico img{width:100%;height:100%;display:block;object-fit:cover}
+.tt{font-weight:700;line-height:1.15;font-size:.82rem}.state{font-size:1rem}
+.tile.current{background:white;color:var(--navy);border:2px solid var(--teal);box-shadow:0 0 0 4px #1fa3a329;animation:pulse 2.4s ease-in-out infinite}
+.tile.done{background:#e3f4ec;color:#154a33;border:2px solid var(--ok)}.tile.locked{opacity:.65}
+@keyframes pulse{50%{box-shadow:0 0 0 8px #1fa3a314}}
+.stage{display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 34px #14213d1f;position:relative}
+.shead{display:flex;gap:14px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,#e9f7f6,white)}
+#face img{display:block;width:72px;height:72px;object-fit:cover;border-radius:50%;border:4px solid var(--teal);transition:transform .25s}#face.p img{border-color:var(--amber)}#face.w img{border-color:var(--coral)}
+.shead .meta{flex:1}.shead .meta strong{display:block;font-size:1.05rem}.muted{color:#35505e}
+#stamp{border:3px solid var(--teal-d);color:var(--teal-d);font-weight:800;letter-spacing:.03em;font-size:1.05rem;padding:4px 10px;border-radius:6px;transform:rotate(-6deg);opacity:0;max-width:220px;text-align:center}
+#stamp.on{animation:stamp 1.1s ease-out forwards}
+@keyframes stamp{0%{opacity:0;transform:rotate(-6deg) scale(2.2)}25%{opacity:1;transform:rotate(-6deg) scale(1)}85%{opacity:1}100%{opacity:0}}
+#stage-scroll{flex:1;overflow-y:auto;padding:16px 22px;overscroll-behavior:contain}
+.pane h2{font-size:1.4rem;margin:.1em 0 .5em;outline-offset:6px}.kick{display:block;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-d)}
+fieldset{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0;min-width:0}fieldset.done{border:2px solid var(--ok)}legend{font-weight:700;padding:0 6px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px}.choices.one{grid-template-columns:1fr}
+.pick{display:flex;gap:10px;align-items:flex-start;min-height:44px;padding:8px;border:1px solid #dbe4e7;border-radius:8px;cursor:pointer}.pick input{width:22px;height:22px;flex:0 0 22px;margin-top:2px;accent-color:var(--teal-d)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.go{background:var(--amber);border-color:var(--amber);color:var(--navy);font-weight:700}
+.fb p{margin:.4em 0}.fb .ok{font-weight:700;color:#1d5a3c}.wob{animation:wob .35s}@keyframes wob{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.landing{display:grid;grid-template-columns:minmax(260px,1fr) minmax(300px,1fr);gap:22px;align-items:center}.landing>img{display:block;width:100%;max-height:330px;object-fit:cover;border-radius:14px}.landing h3{font-size:1.5rem;margin:.2em 0}
+.field{display:block;font-weight:600;margin-top:14px}input[type=text],textarea,select{font:inherit;display:block;width:100%;padding:10px;border:1px solid #627784;border-radius:6px;min-height:44px;background:white;color:inherit}textarea{min-height:120px}
+.panel{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:10px 0}
+.snav{display:flex;justify-content:space-between;gap:8px;padding:10px 20px;border-top:1px solid var(--line);background:#f6fafa}
+#lockmsg{padding:0 20px;margin:0;color:#8a3b1c}
+.card{position:absolute;right:222px;top:118px;z-index:20;width:min(390px,calc(100vw - 40px));max-height:calc(100% - 140px);padding:12px;overflow:auto;box-shadow:0 14px 42px #14213d44}
+.chead{display:flex;justify-content:space-between;align-items:center;gap:8px}.chead h2{margin:0 4px}
+.card .bar{height:10px;border-radius:6px;background:#e1e8ea;overflow:hidden;margin:10px 4px 12px}
+#bar{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--amber));transition:width .6s}
+#prog{margin:0 4px 8px;font-weight:600}
+.slot{display:block;width:100%;text-align:left;background:#f1f4f5;color:#5b6d76;border:2px dashed #b9c6cb;border-radius:12px;padding:10px 12px;min-height:60px}
+.slot strong{display:block;font-size:.9rem}.slot .body{display:block;font-size:.85rem;font-weight:400}.slot ul{margin:.3em 0 0;padding-left:1.1em}.slot li{margin:0 0 3px}
+.slot.filled{background:#e7f6f6;color:var(--ink);border:2px solid var(--teal)}.slot.pop{animation:pop .6s}
+@keyframes pop{40%{transform:scale(1.04);box-shadow:0 0 0 6px #1fa3a333}}
+.card.complete{box-shadow:0 0 0 3px var(--amber),0 8px 30px #f4a26166}
+.unlocked{display:flex;gap:12px;align-items:center;margin:4px 4px 10px;font-weight:700;color:#8a4a12}.unlocked img{width:56px;height:56px;border-radius:10px;object-fit:cover}
+.flyer{position:fixed;z-index:50;display:grid;place-items:center;border-radius:10px;background:var(--ok);color:white;font-weight:800;pointer-events:none}
+dialog{max-width:720px;border:1px solid var(--line);border-radius:14px;padding:20px}dialog::backdrop{background:#14213d88}
+:focus-visible{outline:3px solid #9c3d00;outline-offset:3px}
+#text-version{max-width:860px;margin:18px auto;padding:0 18px 24px}#text-version>summary{font:inherit;min-height:48px;padding:12px;cursor:pointer;font-weight:700}
+#text-version h1{font-size:clamp(1.5rem,4vw,2.3rem);line-height:1.2}#text-version h2{font-size:1.35rem}#text-version h3{font-size:1.1rem}
+.altlinks{text-align:center}
+.dossier{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:start}.dossier img{width:100%;border-radius:12px;display:block}.dossier .panel{margin:0}
+.scenario{font-size:1.05rem;margin:0}.quote{font-size:1.08rem;font-weight:600;border-left:5px solid var(--teal-d);padding-left:12px;margin:.4em 0}
+.pick:has(input:checked){border-color:var(--teal-d);background:#e7f6f6}
+@media(max-width:900px){.dossier{grid-template-columns:1fr}.dossier img{max-width:260px}.app{grid-template-columns:112px minmax(0,1fr) 112px;padding:8px;gap:8px}.rail{padding:5px}.rail h2{font-size:.68rem}.tile{grid-template-columns:1fr;min-height:92px;text-align:center}.ico{width:100%;height:54px}.tt{font-size:.72rem}.state{position:absolute;top:4px;right:6px}.card{right:128px}.shead{padding:8px 12px}#stage-scroll{padding:12px}.snav{padding:8px 12px}.choices{grid-template-columns:1fr}.landing{grid-template-columns:1fr}.landing>img{max-height:230px}}
+@media(max-width:620px){header.top{flex-wrap:wrap;height:auto;padding:10px 16px}.app{height:auto;min-height:0;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto}.rail{min-width:0;overflow-x:auto;justify-content:flex-start}.rail ul{display:flex;gap:8px}.rail li{flex:0 0 145px;margin:0}.tile{grid-template-columns:52px 1fr;text-align:left;min-height:72px}.ico{width:52px;height:58px}.rail-left{grid-row:1}.stage{grid-row:2;min-height:70vh}.rail-right{grid-row:3}.card{position:fixed;inset:80px 16px auto 16px;width:auto;max-height:70vh}.shead{flex-wrap:wrap}#face img{width:56px;height:56px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}#stamp.on{opacity:1}}
+@media print{.app,header.top .tools,.skip{display:none}#text-version{max-width:none}}
+summary,button{min-height:44px}summary{padding:10px;cursor:pointer}.reference{border:1px solid #b6c6c5;border-radius:8px;margin:12px 0}.reference p{padding:0 16px}fieldset{min-width:0}.shead .meta{min-width:0}#stamp{display:none;transform:none!important;animation:none!important;max-width:100%;font-size:.85rem}#stamp.on{display:block;opacity:1}.data-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}.data-controls label{min-width:0;font-weight:650}select{max-width:100%;height:auto;white-space:normal}select option{font:inherit}.dataset{border:1px solid var(--line);border-radius:10px;padding:12px}.table-scroll{overflow:auto;max-height:340px;border:1px solid var(--line);margin-top:12px;max-width:100%}table{border-collapse:collapse;min-width:740px;width:100%;font-size:.9rem}caption{text-align:left;padding:8px;font-weight:650}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}thead th{position:sticky;top:0;background:#e1efed;z-index:1}tbody tr:nth-child(even){background:#f7f9f8}.counts{padding:0;list-style:none}.counts li{display:grid;grid-template-columns:100px minmax(0,1fr) 24px;gap:8px;align-items:center;padding:3px 0}.countbar{height:14px;background:var(--teal-d);width:calc(var(--count)*18%);max-width:100%;border-radius:3px}.field{margin-top:16px}.fb{margin:16px 0;padding:12px;border:2px solid var(--teal-d);border-radius:8px}#review-record ul{padding-left:22px;overflow-wrap:anywhere}.table-scroll:focus-visible{outline:3px solid #9c3d00}.data-status{font-weight:650}
+@media(max-width:900px){.shead{display:grid;grid-template-columns:56px minmax(0,1fr)}.shead .meta{grid-column:2}#toggle-card{grid-column:1/-1;justify-self:start}#stamp{grid-column:1/-1;width:100%}.data-controls{grid-template-columns:1fr}}
+@media(max-width:620px){.rail h2{position:sticky;left:0;max-width:100%;white-space:normal;line-height:1.35}}
+.metric-chart{padding:0;list-style:none}.metric-chart li{padding:10px 0;border-bottom:1px solid var(--line)}.metric-series{margin-top:5px}.metric-series>span:first-child{display:block;font-size:.9rem}.metric-bar{display:block;height:13px;min-width:1px;border-radius:3px;background:#176d70}.reference-bar{background:#b66b2f}.record-table{margin-top:12px}.metric-chart li>strong{display:block}.data-controls .pick{align-self:end;font-weight:400}
+.save-tools{padding:10px 18px;border-bottom:1px solid var(--line)}.save-tools>button{margin:0 8px 4px 0}.save-tools p:empty{display:none}.save-tools p{margin:6px 0}.profile{padding:0 16px 12px}.profile li{margin:8px 0}.profile h3{font-size:1rem}.pane select{margin-bottom:10px}.pane button[data-check]{margin-top:16px}dt{font-weight:700}dd{margin:3px 0 14px;white-space:pre-wrap;overflow-wrap:anywhere}textarea{resize:vertical}.reference{overflow-wrap:anywhere}#restore-warning{padding:12px;border:2px solid var(--teal-d);border-radius:8px;max-width:720px}
+</style></head><body>
+<a class="skip" href="#stage-scroll">Skip to the current step</a><a class="skip" href="#text-version">Go to complete text version</a>
+<header class="top"><div><h1 id="h-top" tabindex="-1">Select the right framing</h1></div><div class="tools"><button type="button" id="restart" class="quiet">Start again</button></div></header>
+<noscript><p style="padding:12px 20px">Use the complete text version below, or <a href="fallback.html">open the text version</a> or <a href="fallback.pdf">the PDF</a>. Everything in the activity is included.</p></noscript>
+<div id="interactive" class="app" hidden>
+<nav class="rail rail-left" aria-label="Brief and first stakeholder steps"><h2>Brief and first stakeholder</h2><ul class="list" id="rail-left"></ul></nav>
+<main class="stage" aria-label="Current step" data-activity-id="w5-a2-s5" data-version="v3-20261123-excel">
+<div class="shead"><div id="face"></div><div class="meta"><strong>Same facts. Relevant emphasis.</strong><span class="muted">Three stakeholders. Use their priorities to write clear, supported value messages.</span></div><div id="stamp" aria-hidden="true"></div><button type="button" id="toggle-card" class="quiet" aria-expanded="false" aria-controls="card">Progress</button></div>
+<div id="stage-scroll" tabindex="-1"><div id="stage-body"></div></div>
+<p id="lockmsg" role="status"></p>
+<div class="snav"><button type="button" id="prev" class="quiet">←</button><button type="button" id="next" class="quiet">Next →</button></div>
+</main>
+<nav class="rail rail-right" aria-label="More stakeholders and your record steps"><h2>More stakeholders and your record</h2><ul class="list" id="rail-right"></ul></nav>
+<aside class="card" id="card" aria-label="Your value messages" hidden><div class="chead"><h2>Your value messages</h2><button type="button" id="closecard" class="quiet">Close</button></div><div class="bar" aria-hidden="true"><div id="bar"></div></div><p id="prog"></p><div class="unlocked" id="unlocked" hidden><img src="data:image/webp;base64,UklGRjQEAABXRUJQVlA4ICgEAABQHACdASqgAHgAPm0ulUakIqIhJnIM2IANiU3bq8JbFEC648g3qo22fmA/Wb9o/eV/xHqo3iDn1fZgyGXwB/S+rTXV/2bwVfwr/GbjFf3HHXdqrxi3iZ8Yj/NfLp/rv8B5x/nP2C/1N9Jn1d+gj+26EzqiBUf93dX55Te2V7X0/rdVz6E8CwjE1l/w14C77IaVgxih9XmgY+hh7cGa9bLFzF/nsZ1WrI+GnNTE9QRh7adf/IKj5w52k6H4PiYtIf0Eg6o3DIo0U4/V3XioIUY+GDQQFkz4TFqexTYt/cwTPsy0zE1eKxbGtVgAAP78Iw3FB2NTAALz/r0Wdsw0WGdS+eqLyPQKdZA4pw+F0f/wAX1xmwvSujny801LLeXduLf8A7PsEf53/wiM+rofqOJ//8m7JhZRP9M37YZI9n/RU/+VD9ssOUPN2KHsFiWnlUUz59nDY9SQWtaChWVukTneRuhFbMbdwB9KFPc+ViN6/H8aD3JSu6J5e49nUcPIAwPFUwffzrfcKKGWr1VyFQJbwzz3mosbb0QD5Sid9/+aJ99xLNdmmvihYy/gPYi8pgeY3yit5lqf6kizO2NrNdlMbaXDzmdGBMpu0t1/ZdGPKMbfQ1lZRQ9aPTL1qvFUq+b6RBb0jQCDhW1hqdt5b5ts2JGJaDXKpYdMoPvZNum3B6dFGKgABlOC1pmNgbRNXVxomEzVG3iElQEDajHSmo3JjFxz6QbNIy1tSGwoAS3GxTddE/Jc59LaEWS8Xjk3n/76sd+IyX8RbihnIjPM8tX/CJ4kAp+W1/6dJMAhPpOOCnuuuvXFKRTcuxKqXEWJzronGM1f9fVAOwTkXlMGlh9aEKYvsUEO1kUo6o8KV7iDl62aIQWbiZ+3ok7rb+vhxDiC7RHNTPnS84dH3u3x3XWLZoRiKD0Vo6m+pdViZ5rN22UAVQ2wzzXe+D6VUeXI/+lmfBP5699NfMReYdOqZgjItMAEjc9HSXBez/UVABeHnZJNz/aqdN2y7f3BGGYR8piFz3Fcqwca+rT86XokTDzfP8UC8r5zkHeylCqcVFGq6zoM4ME4Chj6rlwDH1QGq0fyfI7zhQZ/FxVglNtSRfcTGTj/GrG2vv84Ror9O7FOXH+AOxlPf27bb4j5JMYHVWsh0PiTIqwxJkDqio+jaYW+tdji8dGeS6yAiJskU4tfa7I/EsrVscHv9tC6D1sl3IhB7uFwSp+Wazp/viPnXbPsAINOGc6VLVzg+rr3O2sHoRmgtzxucT/I6H0E0bWn9g0KtUaciObHRNE4ftXjykME0zeb87M3+inEBC8z62XNJtexP5LVe6/3Auf8ZTsSrVyIsWywDsAOZEj6u74o7JOxTK4xZn/zQ1VskbpPa7iMigkhr/ctmNUL1qStt/kLf4tGIqcgAAAAAA==" alt="">Three messages reviewed. Check the whole record and keep it.</div><ul class="list" id="slots"></ul></aside>
+</div>
+<div id="live" class="sr" role="status" aria-live="polite"></div>
+
+<details id="text-version"><summary>Complete text version: everything in the activity, including all feedback</summary><h1>Select the right framing</h1>
+<p>Complete text version</p>
+<p>Three stakeholders describe what matters to them. Identify the priority in each statement, then write a value message and explain why that framing fits this listener.</p>
+<p>A role suggests useful questions; it does not determine every person’s priorities. Use the actual customer statement as evidence. Change the emphasis of your message without changing known facts or promising unverified results. Correct the structured choices and confirm each section before continuing. Wrong or blank choices lock confirmation, Next, Continue, later sections and the final record. Upstream edits re-lock dependent progress while keeping writing and attempts. Work saves automatically in this browser/device when storage is available; Restart clears this activity&#x27;s work and past attempts. Free writing remains self-reviewed.</p>
+<p>This ungraded practice preserves three fictional source customers. No provider account or external submission is needed. Choices and filled fields are checked; the quality of your writing is self-reviewed.</p>
+<h2>Role and evidence reminder</h2>
+<h3>Operations Manager</h3>
+<p>Oversees day-to-day operations. In the Silverpath case, the stated priority is responsive service during peaks without excess capacity spending; the title alone does not establish that priority.</p>
+<h3>Chief Technology Officer (CTO)</h3>
+<p>Leads technology decisions. In the Makeda case, the stated priority is protecting patient data and meeting requirements; do not assume every CTO has this same immediate concern.</p>
+<h3>Chief Financial Officer (CFO)</h3>
+<p>Leads financial management. In the Olamina case, the CFO explicitly asks for faster digital innovation with reliable, secure data. Do not replace that statement with a generic cost-saving message.</p>
+<p>Work in order. Wrong or blank structured choices keep confirmation, Next, Continue, later tiles, summary slots and the final record locked. Correct and confirm each earlier section before continuing. Your writing is kept. Earlier edits reopen dependent confirmations without erasing writing or past attempts. There is no attempt-count escape; worked examples do not confer completion. Prose remains self-reviewed.</p>
+<h2>Using the message board or this text version</h2>
+<p>Use paper or a text editor to write three value messages from this complete text version. For each stakeholder, read the context and actual statement, select the strongest stated priority, write a value message, explain why the framing fits and add a question to confirm the priority or validate the possible value. The role reminder remains available inside every case.</p>
+<p>Check the priority and completeness gives feedback on the selected priority and identifies missing writing. Wrong choices remain editable; existing writing is kept. The three writing fields must contain a response before recording a message, but that does not verify prose quality. Use the two self-review statements and I have reviewed this message. Changes reopen that case and the whole-record check. One possible message is available after drafting; it does not fill your writing.</p>
+<p>Save editable draft downloads unfinished local JSON. Each writing field allows 4,000 characters. Restore draft asks before replacement; Cancel restore keeps current work. Malformed, wrong-format, invalid-choice, overlong-field or files over 1,000,000 bytes change nothing. The limit supports the activity&#x27;s own maximum UTF-8 draft. Restore clears reviews. Start again asks before clearing writing. Work and past attempts save automatically in this browser/device when storage is available. Restart clears this activity’s saved work and attempts; Cancel keeps it. Saved completion is revalidated. Compatible correct, checked and self-reviewed work can resume; invalid or stale completion reopens the relevant checks while retaining writing and history. Other activities and exports are unaffected.</p>
+<p>After checking and reviewing all three messages and the whole record, Download my three value messages (Excel) creates a formatted personal workbook. It contains the customer contexts and statements, your selected priorities and priority feedback, all nine of your writing fields and the self-review status. Long answers continue on additional rows. Excel edits do not update the activity. Keep Save editable draft JSON to restore work in the activity later. If the Excel download fails, your messages remain in the activity and you can try again.</p>
+<h2>1. Silverpath: Operations Manager</h2>
+<p>You’re meeting with Silverpath Outfitters, a mid-sized company in the retail and consumer sector that specializes in casual apparel and everyday accessories.</p>
+<p>Operations Manager says: Our online orders have tripled, and our systems can’t keep up during peak seasons. We need to serve customers quickly without overspending on capacity.</p>
+<h3>Identify the priority in this statement</h3>
+<ul><li>Launching new digital features faster than competitors.</li></ul>
+<ul><li>Managing costs while keeping systems responsive during peak seasons.</li></ul>
+<ul><li>Improving data security for sensitive customer records.</li></ul>
+<ul><li>Reducing manual work in physical stores through automation.</li></ul>
+<p>Link the message to the two outcomes in the statement, then ask what a successful peak period would look like.</p>
+<h3>Write your message before comparing</h3>
+<p>Your value message for this stakeholder: connect a possible benefit to the stated priority in plain customer language. Keep unverified outcomes conditional.</p>
+<p>Why does this framing fit this listener? Refer to the customer&#x27;s words rather than a job-title stereotype.</p>
+<p>Your question to confirm the priority or validate the value.</p>
+<h3>Feedback: compare after choosing</h3>
+<p>Launching new digital features faster than competitors. The statement is about handling existing online demand, not a request to launch new features faster.</p>
+<p>Managing costs while keeping systems responsive during peak seasons. (strongest match here). This combines the two explicit priorities: quick service during peaks and avoiding excess capacity spending.</p>
+<p>Improving data security for sensitive customer records. Security remains important, but the supplied statement does not identify it as the primary concern.</p>
+<p>Reducing manual work in physical stores through automation. The stated challenge concerns online orders and peak capacity, not physical-store processes.</p>
+<p>Frame the possible value around responsive customer service during peaks and capacity aligned with demand. Configured scaling and monitoring may help, but performance and total cost depend on the workload, design and settings; the call proves no saving or service target.</p>
+<p>If any writing field is empty, it is listed as still to write: your value message; why the framing fits this listener; your confirmation or validation question. All three filled fields do not verify prose quality. Use the self-review statements:</p>
+<ul><li>My value message responds to this stakeholder’s actual statement in clear customer language, and my explanation identifies the evidence for that emphasis.</li></ul>
+<ul><li>I have separated a possible benefit from a proven result and asked a question to confirm the priority or validate the proposed value.</li></ul>
+<h3>One possible value message</h3>
+<p>We could assess how configured capacity changes and monitoring would support responsive ordering during busy periods while avoiding unnecessary standing capacity. We would test the customer-service target and total cost before promising an improvement.</p>
+<p>Why this framing: The Operations Manager explicitly mentions quick service and avoiding excess capacity spending. This message connects a possible approach to both outcomes without treating scaling as a guarantee.</p>
+<p>Question to confirm: What response-time target and spending limits matter during peak orders, and how would we measure a useful improvement?</p>
+<h2>2. Makeda: Chief Technology Officer</h2>
+<p>You’re meeting with Makeda MedTech, a small company in the healthcare sector that specializes in wearable medical devices serving patients with chronic conditions and their providers.</p>
+<p>Chief Technology Officer (CTO) says: Our devices collect patient data around the clock. We must keep that information secure and meet every compliance requirement.</p>
+<h3>Identify the priority in this statement</h3>
+<ul><li>Increasing the speed of experimentation for new product ideas.</li></ul>
+<ul><li>Keeping patient data secure and meeting strict healthcare compliance requirements.</li></ul>
+<ul><li>Automating system scaling as more devices come online.</li></ul>
+<ul><li>Reducing operational costs across IT systems.</li></ul>
+<p>Keep the language focused on the stated outcome, and ask which requirements and evidence the customer needs rather than claiming they are already met.</p>
+<h3>Write your message before comparing</h3>
+<p>Your value message for this stakeholder: connect a possible benefit to the stated priority in plain customer language. Keep unverified outcomes conditional.</p>
+<p>Why does this framing fit this listener? Refer to the customer&#x27;s words rather than a job-title stereotype.</p>
+<p>Your question to confirm the priority or validate the value.</p>
+<h3>Feedback: compare after choosing</h3>
+<p>Increasing the speed of experimentation for new product ideas. The CTO does not ask for faster experimentation here. The immediate statement is about protecting data and meeting requirements.</p>
+<p>Keeping patient data secure and meeting strict healthcare compliance requirements. (strongest match here). This reflects the two explicit priorities in the statement. Selecting the need does not prove that any proposed solution meets the requirements.</p>
+<p>Automating system scaling as more devices come online. Device growth could raise capacity questions, but the statement does not identify scaling as the primary concern.</p>
+<p>Reducing operational costs across IT systems. Cost can matter, but it is not the immediate priority expressed by this CTO.</p>
+<p>Frame the value around a plan to protect sensitive data and support the customer’s required controls and evidence. Configuration, application access, operating responsibilities and applicable requirements need review. No platform or service alone guarantees security or proves compliance.</p>
+<p>If any writing field is empty, it is listed as still to write: your value message; why the framing fits this listener; your confirmation or validation question. All three filled fields do not verify prose quality. Use the self-review statements:</p>
+<ul><li>My value message responds to this stakeholder’s actual statement in clear customer language, and my explanation identifies the evidence for that emphasis.</li></ul>
+<ul><li>I have separated a possible benefit from a proven result and asked a question to confirm the priority or validate the proposed value.</li></ul>
+<h3>One possible value message</h3>
+<p>We can explore how suitable data-protection controls and evidence processes could support your patient-data responsibilities. We would review the requirements, application access and operating responsibilities with your specialists before claiming that the solution meets them.</p>
+<p>Why this framing: The CTO explicitly asks for protected patient information and compliance. The message addresses that concern in business language while leaving the controls and evidence to be confirmed.</p>
+<p>Question to confirm: Which data flows, access controls and compliance requirements must be covered, and what evidence would your responsible specialists need to assess them?</p>
+<h2>3. Olamina: Chief Financial Officer</h2>
+<p>You’re meeting with Olamina Advisory, a small company in the finance sector that specializes in ethical investment strategies.</p>
+<p>Chief Financial Officer (CFO) says: Our clients expect real-time insight into sustainable portfolios. We need to launch new digital tools quickly while keeping data reliable and secure.</p>
+<h3>Identify the priority in this statement</h3>
+<ul><li>Reducing long-term data storage costs for archived records.</li></ul>
+<ul><li>Delivering new digital tools quickly while keeping client data reliable and secure.</li></ul>
+<ul><li>Simplifying auditing and regulatory reporting for financial regulators.</li></ul>
+<ul><li>Replacing the existing tools before confirming client needs.</li></ul>
+<p>Include the pace of delivery and the data qualities the CFO names. Confirm what those outcomes mean for this customer.</p>
+<h3>Write your message before comparing</h3>
+<p>Your value message for this stakeholder: connect a possible benefit to the stated priority in plain customer language. Keep unverified outcomes conditional.</p>
+<p>Why does this framing fit this listener? Refer to the customer&#x27;s words rather than a job-title stereotype.</p>
+<p>Your question to confirm the priority or validate the value.</p>
+<h3>Feedback: compare after choosing</h3>
+<p>Reducing long-term data storage costs for archived records. The CFO asks for new client tools with trustworthy data, not reduced archive-storage costs.</p>
+<p>Delivering new digital tools quickly while keeping client data reliable and secure. (strongest match here). This directly reflects the CFO’s statement. Use that evidence rather than assuming that a finance title means the main message must be about price.</p>
+<p>Simplifying auditing and regulatory reporting for financial regulators. Auditing can matter in finance, but it is not the immediate need expressed in this statement.</p>
+<p>Replacing the existing tools before confirming client needs. This would jump to an action the CFO has not requested. First confirm the desired digital experience and data requirements.</p>
+<p>Connect faster delivery of useful client tools with reliable, protected information. Suitable cloud capabilities may support development and data controls, but release speed, data freshness and security require design, ownership and validation. Do not promise instant real-time insight or zero risk.</p>
+<p>If any writing field is empty, it is listed as still to write: your value message; why the framing fits this listener; your confirmation or validation question. All three filled fields do not verify prose quality. Use the self-review statements:</p>
+<ul><li>My value message responds to this stakeholder’s actual statement in clear customer language, and my explanation identifies the evidence for that emphasis.</li></ul>
+<ul><li>I have separated a possible benefit from a proven result and asked a question to confirm the priority or validate the proposed value.</li></ul>
+<h3>One possible value message</h3>
+<p>We could assess how suitable development and data-control capabilities would help your team deliver useful client tools sooner while protecting trustworthy information. We would agree what timely insight means and validate release, reliability and security requirements before promising the outcome.</p>
+<p>Why this framing: Although this listener is a CFO, the stated priorities are digital innovation and reliable, secure client data. The message follows those priorities rather than substituting a generic budget claim.</p>
+<p>Question to confirm: What should clients be able to do sooner, what does real-time insight mean here, and which data-quality and security conditions must a release meet?</p>
+<h2>Review and keep your three value messages</h2>
+<p>I have checked that each message follows the stated priority and that its possible value and validation needs are clear. Compare all three messages. Different emphasis should reflect the statements, while facts and responsibilities stay consistent. Keep your message record, then return to the course page to mark the step complete. This workbench does not update course completion.</p>
+<h2>Primary technical examples used to bound the guidance</h2>
+<p>Checked 2026-11-02. Confirm actual service configuration, responsibilities and outcomes for a real proposal.</p>
+<h3>Amazon EC2 Auto Scaling: configured capacity and policies</h3>
+<p>https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html</p>
+<h3>AWS shared responsibility model</h3>
+<p>https://aws.amazon.com/compliance/shared-responsibility-model/</p></details>
+<p class="altlinks"><a href="fallback.html">Open the text version</a> · <a href="fallback.pdf">Download the text version as a PDF</a></p>
+<script>/* Shared local-only progress and attempt history. No network, analytics or account storage. */
+(function (global) {
+  'use strict';
+  const SCHEMA = 1, LIMIT = 1800000;
+  const clone = value => JSON.parse(JSON.stringify(value));
+  function validateData(value, depth = 0) {
+    if (depth > 60) throw Error('Saved data is too deeply nested');
+    if (value === null || typeof value === 'boolean') return;
+    if (typeof value === 'string') { if (value.length > 100000) throw Error('Saved text is too long'); return; }
+    if (typeof value === 'number') { if (!Number.isFinite(value)) throw Error('Invalid number'); return; }
+    if (typeof value !== 'object') throw Error('Invalid saved value');
+    for (const [key, item] of Object.entries(value)) {
+      if (['__proto__', 'constructor', 'prototype'].includes(key)) throw Error('Unsafe saved key');
+      validateData(item, depth + 1);
+    }
+  }
+  function parse(raw, id, compatibility) {
+    if (raw === null) return null;
+    if (raw.length > LIMIT) throw Error('Saved copy is too large');
+    const value = JSON.parse(raw); validateData(value);
+    if (!value || value.schema !== SCHEMA || value.id !== id || typeof value.epoch !== 'string' || !Number.isInteger(value.revision) || value.revision < 0) throw Error('Invalid saved copy');
+    if (value.cleared === true) return value;
+    if (value.compatibility !== compatibility) throw Error('Saved copy belongs to a different activity edition');
+    if (!value.snapshot || !Array.isArray(value.history)) throw Error('Incomplete saved copy');
+    for (const attempt of value.history) {
+      if (!attempt || typeof attempt.title !== 'string' || typeof attempt.when !== 'string' || !Array.isArray(attempt.answers) || !Array.isArray(attempt.feedback)) throw Error('Invalid attempt');
+      if (attempt.answers.some(x => !x || typeof x.label !== 'string' || typeof x.value !== 'string') || attempt.feedback.some(x => typeof x !== 'string')) throw Error('Invalid attempt detail');
+    }
+    return value;
+  }
+  function createStore(getStorage, id, compatibility, random = () => String(Date.now()) + '-' + Math.random().toString(36).slice(2)) {
+    const key = 'futurelearn:progress:v1:' + id;
+    let baseline = null, epoch = random(), revision = 0, ready = false, paused = false;
+    function load() {
+      let raw;
+      try { raw = getStorage().getItem(key); } catch { ready = false; return {status: 'unavailable'}; }
+      try {
+        const value = parse(raw, id, compatibility);
+        baseline = raw; ready = true; paused = false;
+        if (value) { epoch = value.epoch; revision = value.revision; }
+        return {status: 'ok', value};
+      } catch (error) { baseline = raw; ready = true; paused = true; return {status: 'invalid', message: error.message}; }
+    }
+    function save(snapshot, history) {
+      if (!ready) {
+        const result = load();
+        if (result.status !== 'ok') return result;
+        if (result.value) { paused = true; return {status: 'conflict', value: result.value}; }
+      }
+      if (paused) return {status: 'paused'};
+      try {
+        const storage = getStorage(), current = storage.getItem(key);
+        if (current !== baseline) {
+          paused = true;
+          let value = null;
+          try { value = parse(current, id, compatibility); } catch {}
+          return {status: 'conflict', value, generationChanged: !!value && value.epoch !== epoch};
+        }
+        const value = {schema: SCHEMA, id, compatibility, epoch, revision: revision + 1, snapshot, history};
+        validateData(value);
+        const raw = JSON.stringify(value);
+        if (raw.length > LIMIT) throw Error('Saved work is too large');
+        storage.setItem(key, raw);
+        if (storage.getItem(key) !== raw) { paused = true; return {status: 'conflict'}; }
+        baseline = raw; revision++; return {status: 'ok'};
+      } catch { return {status: 'unavailable'}; }
+    }
+    function erase(legacyKeys = []) {
+      try {
+        const storage = getStorage();
+        // A tombstone contains no learner work and fences delayed saves in older tabs.
+        const value = {schema: SCHEMA, id, epoch: random(), revision: 0, cleared: true};
+        const raw = JSON.stringify(value);
+        storage.setItem(key, raw);
+        if (storage.getItem(key) !== raw) throw Error('Erase did not persist');
+        for (const legacy of legacyKeys) { if (legacy !== key) storage.removeItem(legacy); }
+        if (legacyKeys.some(legacy => legacy !== key && storage.getItem(legacy) !== null)) throw Error('Legacy erase failed');
+        baseline = raw; epoch = value.epoch; revision = 0; ready = true; paused = false;
+        return {status: 'ok', value};
+      } catch { paused = true; return {status: 'unavailable'}; }
+    }
+    return {key, load, save, erase, pause: () => { paused = true; }, get epoch() { return epoch; }};
+  }
+
+  // Presentation is encoded as inert, allowlisted DOM data, never stored/replayed HTML.
+  // Keeping existing keyed nodes retains their directly attached input/click listeners.
+  const TAGS = new Set('main figure figcaption aside header footer nav time output sup sub u s kbd samp mark abbr cite q wbr div section article p span strong b em i small ul ol li dl dt dd h1 h2 h3 h4 h5 h6 label fieldset legend input textarea select option optgroup button a img details summary table caption thead tbody tfoot tr th td blockquote pre code br hr progress meter svg g path circle rect line polyline polygon text title desc'.split(' '));
+  const ATTR = /^(id|class|hidden|disabled|open|checked|selected|type|name|value|for|role|tabindex|maxlength|min|max|step|rows|cols|multiple|placeholder|autocomplete|inputmode|width|height|alt|title|target|rel|colspan|rowspan|scope|viewBox|d|cx|cy|r|x|y|x1|x2|y1|y2|points|fill|stroke|stroke-width|preserveAspectRatio|aria-[a-z-]+|data-[a-z0-9-]+)$/;
+  function createCodec(document, rootIds, media = []) {
+    const urls = [...new Set([...document.querySelectorAll('img[src],a[href]')].map(e => e.getAttribute(e.tagName === 'IMG' ? 'src' : 'href')).concat(media).filter(x => typeof x === 'string'))].sort();
+    const transient = new Set(['pop', 'wob', 'newly-solved']);
+    function attributes(node) {
+      const result = {};
+      for (const a of node.attributes) {
+        if (ATTR.test(a.name)) result[a.name] = a.name === 'class' ? a.value.split(/\s+/).filter(x => !transient.has(x)).join(' ') : a.value;
+        else if ((a.name === 'src' || a.name === 'href') && urls.includes(a.value)) result[a.name] = urls.indexOf(a.value);
+      }
+      const style = {};
+      for (const name of node.style) {
+        const value = node.style.getPropertyValue(name);
+        if (/^(width|height|opacity|transform|background-color|color|border-color|--[a-z-]+)$/.test(name) && /^[a-z0-9\s#%.,()+-]+$/i.test(value) && !/url|expression/i.test(value)) style[name] = value;
+      }
+      if (Object.keys(style).length) result.style = style;
+      return result;
+    }
+    function encode(node) {
+      if (node.nodeType === 3) return ['#', node.data];
+      if (node.nodeType !== 1 || !TAGS.has(node.localName)) return null;
+      const props = {};
+      if (node.matches('input:not([type=file]),textarea,select')) { props.value = node.value; if (node.matches('input[type=checkbox],input[type=radio]')) props.checked = node.checked; }
+      return [node.localName, attributes(node), props, [...node.childNodes].map(encode).filter(Boolean)];
+    }
+    function validate(tree, budget = {n: 0}, depth = 0) {
+      if (++budget.n > 25000 || depth > 50 || !Array.isArray(tree)) throw Error('Invalid saved view');
+      if (tree[0] === '#') { if (tree.length !== 2 || typeof tree[1] !== 'string') throw Error('Invalid text'); return; }
+      if (tree.length !== 4 || !TAGS.has(tree[0]) || !tree[1] || !tree[2] || !Array.isArray(tree[3])) throw Error('Invalid saved element');
+      for (const [name, value] of Object.entries(tree[1])) {
+        if (name === 'href' || name === 'src') { if (!Number.isInteger(value) || !urls[value]) throw Error('Invalid resource'); }
+        else if (name === 'style') {
+          if (!value || typeof value !== 'object' || Array.isArray(value)) throw Error('Invalid style');
+          for (const [k, v] of Object.entries(value)) if (!/^(width|height|opacity|transform|background-color|color|border-color|--[a-z-]+)$/.test(k) || typeof v !== 'string' || !/^[a-z0-9\s#%.,()+-]+$/i.test(v) || /url|expression/i.test(v)) throw Error('Invalid style value');
+        } else if (!ATTR.test(name) || typeof value !== 'string') throw Error('Invalid attribute');
+      }
+      if (Object.keys(tree[2]).some(x => !['value', 'checked'].includes(x)) || (tree[2].value !== undefined && typeof tree[2].value !== 'string') || (tree[2].checked !== undefined && typeof tree[2].checked !== 'boolean')) throw Error('Invalid control');
+      for (const child of tree[3]) validate(child, budget, depth + 1);
+    }
+    const treeKey = tree => tree[0] === '#' ? null : tree[1].id ? 'id:' + tree[1].id : tree[0] === 'input' && tree[1].name ? 'input:' + tree[1].name + ':' + tree[1].value : tree[0] === 'option' ? 'option:' + tree[1].value : tree[0] === 'label' && tree[3].some(x => x[0] === 'input') ? 'label:' + treeKey(tree[3].find(x => x[0] === 'input')) : null;
+    function nodeKey(node) { return node.nodeType === 1 ? treeKey(encode(node)) : null; }
+    function patch(node, tree, svg = false) {
+      if (tree[0] === '#') { if (node?.nodeType === 3) { node.data = tree[1]; return node; } return document.createTextNode(tree[1]); }
+      const inSvg = svg || tree[0] === 'svg';
+      if (!node || node.nodeType !== 1 || node.localName !== tree[0]) node = inSvg ? document.createElementNS('http://www.w3.org/2000/svg', tree[0]) : document.createElement(tree[0]);
+      const attrs = tree[1];
+      for (const a of [...node.attributes]) if ((ATTR.test(a.name) || ['src', 'href', 'style'].includes(a.name)) && !(a.name in attrs)) node.removeAttribute(a.name);
+      for (const [name, value] of Object.entries(attrs)) {
+        if (name === 'style') { node.removeAttribute('style'); for (const [k, v] of Object.entries(value)) node.style.setProperty(k, v); }
+        else node.setAttribute(name, name === 'src' || name === 'href' ? urls[value] : value);
+      }
+      const old = [...node.childNodes], used = new Set(), next = [];
+      for (let i = 0; i < tree[3].length; i++) {
+        const child = tree[3][i], key = treeKey(child);
+        let match = key ? old.find(x => !used.has(x) && nodeKey(x) === key) : null;
+        if (!match && old[i] && !used.has(old[i]) && !nodeKey(old[i]) && ((child[0] === '#' && old[i].nodeType === 3) || old[i].localName === child[0])) match = old[i];
+        if (match) used.add(match);
+        next.push(patch(match, child, inSvg));
+      }
+      node.replaceChildren(...next);
+      for (const [key, value] of Object.entries(tree[2])) if (node.matches('input:not([type=file]),textarea,select')) node[key] = value;
+      return node;
+    }
+    function capture() { return Object.fromEntries(rootIds.map(id => { const tree = encode(document.getElementById(id)); if (!tree) throw Error('Missing supported activity root: ' + id); return [id, tree]; })); }
+    function restore(value) {
+      if (!value || Object.keys(value).sort().join('|') !== [...rootIds].sort().join('|')) throw Error('Saved view does not match');
+      for (const id of rootIds) { validate(value[id]); if (value[id][1]?.id !== id) throw Error('Invalid view root'); }
+      for (const id of rootIds) patch(document.getElementById(id), value[id]);
+    }
+    return {capture, restore, validate};
+  }
+
+  function mount(options) {
+    const document = global.document;
+    const codec = createCodec(document, options.roots || [], options.media || []);
+    const store = createStore(() => global.localStorage, options.id, options.compatibility);
+    let history = [], suspended = true, scheduled = false, lastSnapshot = '', health = 'ready';
+    const dialog = document.createElement('dialog'); dialog.className = 'ap-dialog'; dialog.setAttribute('aria-labelledby', 'ap-title');
+    dialog.innerHTML = '<h2 id="ap-title">Your saved work</h2><p>Work and checked attempts are saved automatically in this browser and device. Returning here restores your progress. This is not an account backup or cross-device sync. On a shared device, use Restart when finished.</p><p id="ap-status" role="status"></p><div class="ap-actions"><button type="button" id="ap-close">Close</button><button type="button" id="ap-load">Load latest saved work</button><button type="button" id="ap-export">Download a backup</button><button type="button" id="ap-import">Restore a backup</button><input type="file" id="ap-import-file" accept=".json,application/json" hidden><button type="button" id="ap-retry">Retry saving</button><button type="button" id="ap-restart">Restart activity</button></div><h3>Past attempts</h3><div id="ap-history"></div>';
+    document.body.append(dialog);
+    const status = dialog.querySelector('#ap-status'), list = dialog.querySelector('#ap-history');
+    const button = document.createElement('button'); button.type = 'button'; button.id = 'saved-work-toggle'; button.className = 'quiet ap-toggle';
+    const holder = document.querySelector('header .tools,.top .tools,#project-tools .tool-buttons,.toolbar') || document.querySelector('header,.intro');
+    (holder || document.body).append(button);
+    const live = document.createElement('span'); live.className = 'ap-sr'; live.setAttribute('role', 'status'); document.body.append(live);
+    const style = document.createElement('style');
+    style.textContent = '.ap-dialog{box-sizing:border-box;width:min(680px,calc(100% - 24px));max-height:85vh;overflow:auto;border:2px solid #0a6b66;border-radius:12px;padding:20px;color:#172d35;background:white;font:16px/1.5 system-ui}.ap-dialog::backdrop{background:#172d3570}.ap-dialog h2{margin-top:0}.ap-actions{display:flex;flex-wrap:wrap;gap:8px}.ap-dialog button{font:inherit;min-height:44px;padding:8px 12px;border:2px solid #0a6b66;border-radius:6px;background:white;color:#075d56;cursor:pointer}.ap-dialog button:focus-visible,.ap-dialog summary:focus-visible{outline:3px solid #172d35;outline-offset:3px}.ap-dialog details{border-top:1px solid #bdcdd1;padding:10px 0}.ap-dialog summary{cursor:pointer;font-weight:650}.ap-dialog dd{white-space:pre-wrap;overflow-wrap:anywhere;margin:0 0 10px}.ap-dialog dt{font-weight:650}.ap-dialog p{overflow-wrap:anywhere}.ap-toggle{font-size:14px!important;min-height:44px!important}.ap-toggle.ap-warning{background:#fff0ce!important;color:#62430b!important}.ap-sr{position:fixed;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}@media print{.ap-dialog,.ap-toggle,.ap-sr{display:none!important}}';
+    document.head.append(style);
+    function message(code) {
+      const messages = {ready: 'Automatic saving is ready.', ok: 'Saved in this browser. Return here to resume.', restored: 'Your saved work and past attempts have been restored.', cleared: 'All saved work and attempts for this activity have been cleared. Downloaded files are unchanged.', unavailable: 'Saving is unavailable or storage is full. Your work is still on this page. Download a backup before leaving, then retry saving.', invalid: 'The saved copy is unreadable or belongs to a different edition. It has been kept unchanged. Download a backup before choosing Restart.', conflict: 'Another tab changed the saved work. Saving is paused to protect both copies. Download your current backup or load the latest saved work.', paused: 'Saving is paused. Download a backup or load the latest saved work.'};
+      health = code; const text = messages[code] || messages.paused;
+      status.textContent = text;
+      button.textContent = ['ok', 'restored'].includes(code) ? 'Saved work · ' + history.length : ['ready', 'cleared'].includes(code) ? 'Saved work' : 'Check saved work';
+      button.classList.toggle('ap-warning', ['unavailable', 'invalid', 'conflict', 'paused'].includes(code));
+      button.setAttribute('aria-label', 'Saved work and ' + history.length + ' past attempts. ' + text);
+      if (!['ready', 'ok', 'restored'].includes(code)) live.textContent = text;
+    }
+    function snapshot() { return {state: clone(options.getState()), view: codec.capture()}; }
+    function apply(value) {
+      suspended = true;
+      try {
+        if (!value || value.cleared) { history = []; options.reset(); }
+        else {
+          codec.restore(value.snapshot.view); options.setState(clone(value.snapshot.state));
+          history = clone(value.history); options.afterRestore?.();
+        }
+        lastSnapshot = JSON.stringify(snapshot());
+      } finally { suspended = false; }
+    }
+    function load() {
+      const loaded = store.load();
+      if (loaded.status !== 'ok') { message(loaded.status); return false; }
+      try { if (loaded.value) apply(loaded.value); message(loaded.value?.cleared ? 'cleared' : loaded.value ? 'restored' : 'ready'); return true; }
+      catch { store.pause(); suspended = false; message('invalid'); return false; }
+    }
+    function capture(force = false) {
+      if (suspended) return;
+      const current = snapshot(), text = JSON.stringify(current);
+      if (!force && text === lastSnapshot) return;
+      const saved = store.save(current, history);
+      if (saved.status === 'conflict' && (saved.value?.cleared || saved.generationChanged)) { const latest = store.load(); if (latest.status === 'ok') { apply(latest.value); message(latest.value?.cleared ? 'cleared' : 'restored'); return; } }
+      if (saved.status === 'ok') lastSnapshot = text;
+      message(saved.status);
+    }
+    function schedule() { if (!suspended && !scheduled) { scheduled = true; queueMicrotask(() => { scheduled = false; capture(); }); } }
+    function renderHistory() {
+      list.replaceChildren();
+      if (!history.length) { const p = document.createElement('p'); p.textContent = 'No checked attempts saved yet. Your unfinished work is saved as you go.'; list.append(p); }
+      history.forEach((attempt, index) => {
+        const details = document.createElement('details'), summary = document.createElement('summary'), when = document.createElement('p'), dl = document.createElement('dl');
+        summary.textContent = (index + 1) + '. ' + attempt.title; when.textContent = new Date(attempt.when).toLocaleString();
+        for (const answer of attempt.answers) { const dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = answer.label; dd.textContent = answer.value; dl.append(dt, dd); }
+        details.append(summary, when, dl);
+        for (const text of attempt.feedback) { const p = document.createElement('p'); p.textContent = text; details.append(p); }
+        list.append(details);
+      });
+    }
+    function recordAttempt(action) {
+      const root = options.currentRoot?.() || document.querySelector('#interactive,main') || document.body;
+      const answers = [...root.querySelectorAll('input:not([type=file]):not([type=hidden]),textarea,select')].filter(e => !e.closest('[hidden]')).map(e => {
+        const label = (e.id && document.querySelector('label[for="' + global.CSS.escape(e.id) + '"]')?.textContent) || e.closest('label')?.textContent || e.closest('fieldset')?.querySelector('legend')?.textContent || e.name || e.id || 'Response';
+        return {label: label.trim(), value: e.matches('input[type=checkbox],input[type=radio]') ? (e.checked ? 'Selected: ' : 'Not selected: ') + e.value : e.tagName === 'SELECT' ? e.selectedOptions[0]?.textContent || e.value : e.value};
+      });
+      const feedback = [...root.querySelectorAll('.fb,.feedback,.field-feedback,[id$="-feedback"],[id^="feedback-"],#completion-status')].filter(e => !e.closest('[hidden]')).map(e => e.textContent.trim()).filter(Boolean);
+      history.push({when: new Date().toISOString(), title: (root.querySelector('h2,h3')?.textContent.trim() || options.title || document.title) + ' · ' + action, answers, feedback});
+      capture(true);
+    }
+    function restart(confirm = true) {
+      if (confirm && !global.confirm('Restart this activity? This permanently clears all saved answers, writing, progress and past attempts for this activity in this browser. Downloaded files are unchanged.')) return false;
+      const result = store.erase(options.legacyKeys || []);
+      if (result.status !== 'ok') { message(result.status); return false; }
+      apply(result.value); message('cleared'); renderHistory();
+      if (dialog.open) dialog.close();
+      (document.querySelector('#h-top,h1') || button).focus?.();
+      return true;
+    }
+    function backup() {
+      const data = JSON.stringify({schema: SCHEMA, id: options.id, compatibility: options.compatibility, epoch: 'backup', revision: 0, snapshot: snapshot(), history}, null, 2);
+      const a = document.createElement('a'), url = global.URL.createObjectURL(new Blob([data], {type: 'application/json'}));
+      a.href = url; a.download = options.id + '-saved-work.json'; a.click(); setTimeout(() => global.URL.revokeObjectURL(url), 1000);
+    }
+    button.addEventListener('click', () => { renderHistory(); dialog.showModal(); });
+    dialog.querySelector('#ap-close').addEventListener('click', () => { dialog.close(); button.focus(); });
+    dialog.querySelector('#ap-load').addEventListener('click', () => { load(); renderHistory(); });
+    dialog.querySelector('#ap-export').addEventListener('click', backup);
+    dialog.querySelector('#ap-import').addEventListener('click', () => dialog.querySelector('#ap-import-file').click());
+    dialog.querySelector('#ap-import-file').addEventListener('change', async event => {
+      const file = event.target.files[0]; event.target.value = ''; if (!file) return;
+      try {
+        if (file.size > LIMIT) throw Error('Backup is too large');
+        const value = parse(await file.text(), options.id, options.compatibility);
+        if (!value || value.cleared) throw Error('Backup has no work');
+        for (const tree of Object.values(value.snapshot.view)) codec.validate(tree);
+        if (!global.confirm('Replace your current work and attempt history with this backup? Download your current backup first if you want to keep both.')) return;
+        const loaded = store.load(); if (loaded.status !== 'ok') { message(loaded.status); return; }
+        apply(value); capture(true); renderHistory();
+      } catch { status.textContent = 'That backup could not be restored. Current work and the saved copy are kept.'; }
+    });
+    dialog.querySelector('#ap-retry').addEventListener('click', () => capture(true));
+    dialog.querySelector('#ap-restart').addEventListener('click', () => restart());
+    document.addEventListener('click', event => {
+      const target = event.target.closest('button');
+      if (!target || target.closest('.ap-dialog') || target === button) return;
+      if (target.type === 'submit' && target.form) return;
+      if ((options.restartIds || ['restart']).includes(target.id)) { event.preventDefault(); event.stopImmediatePropagation(); restart(!(options.confirmedRestartIds || ['erase-confirm']).includes(target.id)); }
+    }, true);
+    document.addEventListener('click', event => {
+      const target = event.target.closest('button');
+      if (!target || target.closest('.ap-dialog') || target === button) return;
+      if (target.type === 'submit' && target.form) return;
+      if (/^(check|complete)-|-(check)$/.test(target.id) || Object.keys(target.dataset).some(k => /^(check|show|reveal|complete)/i.test(k)) || /^(check|compare my|i have reviewed|complete this)/i.test(target.textContent.trim())) recordAttempt(target.textContent.trim());
+      else schedule();
+    });
+    document.addEventListener('submit', event => { if (!event.target.closest('.ap-dialog')) recordAttempt('Check answer'); });
+    document.addEventListener('input', schedule); document.addEventListener('change', schedule);
+    document.addEventListener('toggle', schedule, true);
+    const observer = new global.MutationObserver(schedule);
+    for (const id of options.roots || []) observer.observe(document.getElementById(id), {subtree: true, childList: true, characterData: true, attributes: true});
+    global.addEventListener('storage', event => {
+      if (event.key !== store.key && event.key !== null) return;
+      let value = null; try { value = parse(global.localStorage.getItem(store.key), options.id, options.compatibility); } catch {}
+      if (value && (value.cleared || value.epoch !== store.epoch)) { const latest = store.load(); if (latest.status === 'ok') { apply(latest.value); message(latest.value?.cleared ? 'cleared' : 'restored'); } }
+      else message('conflict');
+    });
+    suspended = false;
+    load();
+    // A migrated legacy capstone has already restored itself; save it in the shared format.
+    if (options.legacyKeys?.length && health === 'ready') { history = clone(options.initialHistory?.() || []); capture(true); }
+    const controller = {capture, restart, load, backup, recordAttempt, get history() { return clone(history); }, get health() { return health; }, get key() { return store.key; }};
+    global.ActivityProgressController = controller;
+    return controller;
+  }
+  const api = {createStore, parse, validateData, createCodec, mount};
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  global.ActivityProgress = api;
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>const DATA={"title": "Select the right framing", "intro": "Three stakeholders describe what matters to them. Identify the priority in each statement, then write a value message and explain why that framing fits this listener.", "boundary": "A role suggests useful questions; it does not determine every person’s priorities. Use the actual customer statement as evidence. Change the emphasis of your message without changing known facts or promising unverified results. Correct the structured choices and confirm each section before continuing. Wrong or blank choices lock confirmation, Next, Continue, later sections and the final record. Upstream edits re-lock dependent progress while keeping writing and attempts. Work saves automatically in this browser/device when storage is available; Restart clears this activity's work and past attempts. Free writing remains self-reviewed.", "scope": "This ungraded practice preserves three fictional source customers. No provider account or external submission is needed. Choices and filled fields are checked; the quality of your writing is self-reviewed.", "roles": [{"name": "Operations Manager", "meaning": "Oversees day-to-day operations. In the Silverpath case, the stated priority is responsive service during peaks without excess capacity spending; the title alone does not establish that priority."}, {"name": "Chief Technology Officer (CTO)", "meaning": "Leads technology decisions. In the Makeda case, the stated priority is protecting patient data and meeting requirements; do not assume every CTO has this same immediate concern."}, {"name": "Chief Financial Officer (CFO)", "meaning": "Leads financial management. In the Olamina case, the CFO explicitly asks for faster digital innovation with reliable, secure data. Do not replace that statement with a generic cost-saving message."}], "review": ["My value message responds to this stakeholder’s actual statement in clear customer language, and my explanation identifies the evidence for that emphasis.", "I have separated a possible benefit from a proven result and asked a question to confirm the priority or validate the proposed value."], "closing": "Compare all three messages. Different emphasis should reflect the statements, while facts and responsibilities stay consistent. Keep your message record, then return to the course page to mark the step complete. This workbench does not update course completion.", "cases": [{"id": "retail", "title": "Silverpath: Operations Manager", "short": "Peak service", "role": "Operations Manager", "sourceScenario": "You’re meeting with Silverpath Outfitters, a mid-sized company in the retail and consumer sector that specializes in casual apparel and everyday accessories.", "quote": "Our online orders have tripled, and our systems can’t keep up during peak seasons. We need to serve customers quickly without overspending on capacity.", "need": "peaks", "needs": [{"id": "features", "name": "Launching new digital features faster than competitors.", "feedback": "The statement is about handling existing online demand, not a request to launch new features faster."}, {"id": "peaks", "name": "Managing costs while keeping systems responsive during peak seasons.", "feedback": "This combines the two explicit priorities: quick service during peaks and avoiding excess capacity spending."}, {"id": "security", "name": "Improving data security for sensitive customer records.", "feedback": "Security remains important, but the supplied statement does not identify it as the primary concern."}, {"id": "stores", "name": "Reducing manual work in physical stores through automation.", "feedback": "The stated challenge concerns online orders and peak capacity, not physical-store processes."}], "fit": "Frame the possible value around responsive customer service during peaks and capacity aligned with demand. Configured scaling and monitoring may help, but performance and total cost depend on the workload, design and settings; the call proves no saving or service target.", "hint": "Link the message to the two outcomes in the statement, then ask what a successful peak period would look like.", "sampleMessage": "We could assess how configured capacity changes and monitoring would support responsive ordering during busy periods while avoiding unnecessary standing capacity. We would test the customer-service target and total cost before promising an improvement.", "sampleReason": "The Operations Manager explicitly mentions quick service and avoiding excess capacity spending. This message connects a possible approach to both outcomes without treating scaling as a guarantee.", "sampleQuestion": "What response-time target and spending limits matter during peak orders, and how would we measure a useful improvement?"}, {"id": "medical", "title": "Makeda: Chief Technology Officer", "short": "Data protection", "role": "Chief Technology Officer (CTO)", "sourceScenario": "You’re meeting with Makeda MedTech, a small company in the healthcare sector that specializes in wearable medical devices serving patients with chronic conditions and their providers.", "quote": "Our devices collect patient data around the clock. We must keep that information secure and meet every compliance requirement.", "need": "protection", "needs": [{"id": "experiments", "name": "Increasing the speed of experimentation for new product ideas.", "feedback": "The CTO does not ask for faster experimentation here. The immediate statement is about protecting data and meeting requirements."}, {"id": "protection", "name": "Keeping patient data secure and meeting strict healthcare compliance requirements.", "feedback": "This reflects the two explicit priorities in the statement. Selecting the need does not prove that any proposed solution meets the requirements."}, {"id": "scaling", "name": "Automating system scaling as more devices come online.", "feedback": "Device growth could raise capacity questions, but the statement does not identify scaling as the primary concern."}, {"id": "costs", "name": "Reducing operational costs across IT systems.", "feedback": "Cost can matter, but it is not the immediate priority expressed by this CTO."}], "fit": "Frame the value around a plan to protect sensitive data and support the customer’s required controls and evidence. Configuration, application access, operating responsibilities and applicable requirements need review. No platform or service alone guarantees security or proves compliance.", "hint": "Keep the language focused on the stated outcome, and ask which requirements and evidence the customer needs rather than claiming they are already met.", "sampleMessage": "We can explore how suitable data-protection controls and evidence processes could support your patient-data responsibilities. We would review the requirements, application access and operating responsibilities with your specialists before claiming that the solution meets them.", "sampleReason": "The CTO explicitly asks for protected patient information and compliance. The message addresses that concern in business language while leaving the controls and evidence to be confirmed.", "sampleQuestion": "Which data flows, access controls and compliance requirements must be covered, and what evidence would your responsible specialists need to assess them?"}, {"id": "advisory", "title": "Olamina: Chief Financial Officer", "short": "Digital innovation", "role": "Chief Financial Officer (CFO)", "sourceScenario": "You’re meeting with Olamina Advisory, a small company in the finance sector that specializes in ethical investment strategies.", "quote": "Our clients expect real-time insight into sustainable portfolios. We need to launch new digital tools quickly while keeping data reliable and secure.", "need": "innovation", "needs": [{"id": "archive", "name": "Reducing long-term data storage costs for archived records.", "feedback": "The CFO asks for new client tools with trustworthy data, not reduced archive-storage costs."}, {"id": "innovation", "name": "Delivering new digital tools quickly while keeping client data reliable and secure.", "feedback": "This directly reflects the CFO’s statement. Use that evidence rather than assuming that a finance title means the main message must be about price."}, {"id": "audit", "name": "Simplifying auditing and regulatory reporting for financial regulators.", "feedback": "Auditing can matter in finance, but it is not the immediate need expressed in this statement."}, {"id": "replacement", "name": "Replacing the existing tools before confirming client needs.", "feedback": "This would jump to an action the CFO has not requested. First confirm the desired digital experience and data requirements."}], "fit": "Connect faster delivery of useful client tools with reliable, protected information. Suitable cloud capabilities may support development and data controls, but release speed, data freshness and security require design, ownership and validation. Do not promise instant real-time insight or zero risk.", "hint": "Include the pace of delivery and the data qualities the CFO names. Confirm what those outcomes mean for this customer.", "sampleMessage": "We could assess how suitable development and data-control capabilities would help your team deliver useful client tools sooner while protecting trustworthy information. We would agree what timely insight means and validate release, reliability and security requirements before promising the outcome.", "sampleReason": "Although this listener is a CFO, the stated priorities are digital innovation and reliable, secure client data. The message follows those priorities rather than substituting a generic budget claim.", "sampleQuestion": "What should clients be able to do sooner, what does real-time insight mean here, and which data-quality and security conditions must a release meet?"}]};
+const IMAGES={"start": "data:image/webp;base64,UklGRjQEAABXRUJQVlA4ICgEAABQHACdASqgAHgAPm0ulUakIqIhJnIM2IANiU3bq8JbFEC648g3qo22fmA/Wb9o/eV/xHqo3iDn1fZgyGXwB/S+rTXV/2bwVfwr/GbjFf3HHXdqrxi3iZ8Yj/NfLp/rv8B5x/nP2C/1N9Jn1d+gj+26EzqiBUf93dX55Te2V7X0/rdVz6E8CwjE1l/w14C77IaVgxih9XmgY+hh7cGa9bLFzF/nsZ1WrI+GnNTE9QRh7adf/IKj5w52k6H4PiYtIf0Eg6o3DIo0U4/V3XioIUY+GDQQFkz4TFqexTYt/cwTPsy0zE1eKxbGtVgAAP78Iw3FB2NTAALz/r0Wdsw0WGdS+eqLyPQKdZA4pw+F0f/wAX1xmwvSujny801LLeXduLf8A7PsEf53/wiM+rofqOJ//8m7JhZRP9M37YZI9n/RU/+VD9ssOUPN2KHsFiWnlUUz59nDY9SQWtaChWVukTneRuhFbMbdwB9KFPc+ViN6/H8aD3JSu6J5e49nUcPIAwPFUwffzrfcKKGWr1VyFQJbwzz3mosbb0QD5Sid9/+aJ99xLNdmmvihYy/gPYi8pgeY3yit5lqf6kizO2NrNdlMbaXDzmdGBMpu0t1/ZdGPKMbfQ1lZRQ9aPTL1qvFUq+b6RBb0jQCDhW1hqdt5b5ts2JGJaDXKpYdMoPvZNum3B6dFGKgABlOC1pmNgbRNXVxomEzVG3iElQEDajHSmo3JjFxz6QbNIy1tSGwoAS3GxTddE/Jc59LaEWS8Xjk3n/76sd+IyX8RbihnIjPM8tX/CJ4kAp+W1/6dJMAhPpOOCnuuuvXFKRTcuxKqXEWJzronGM1f9fVAOwTkXlMGlh9aEKYvsUEO1kUo6o8KV7iDl62aIQWbiZ+3ok7rb+vhxDiC7RHNTPnS84dH3u3x3XWLZoRiKD0Vo6m+pdViZ5rN22UAVQ2wzzXe+D6VUeXI/+lmfBP5699NfMReYdOqZgjItMAEjc9HSXBez/UVABeHnZJNz/aqdN2y7f3BGGYR8piFz3Fcqwca+rT86XokTDzfP8UC8r5zkHeylCqcVFGq6zoM4ME4Chj6rlwDH1QGq0fyfI7zhQZ/FxVglNtSRfcTGTj/GrG2vv84Ror9O7FOXH+AOxlPf27bb4j5JMYHVWsh0PiTIqwxJkDqio+jaYW+tdji8dGeS6yAiJskU4tfa7I/EsrVscHv9tC6D1sl3IhB7uFwSp+Wazp/viPnXbPsAINOGc6VLVzg+rr3O2sHoRmgtzxucT/I6H0E0bWn9g0KtUaciObHRNE4ftXjykME0zeb87M3+inEBC8z62XNJtexP5LVe6/3Auf8ZTsSrVyIsWywDsAOZEj6u74o7JOxTK4xZn/zQ1VskbpPa7iMigkhr/ctmNUL1qStt/kLf4tGIqcgAAAAAA==", "retail": "data:image/webp;base64,UklGRjQEAABXRUJQVlA4ICgEAABQHACdASqgAHgAPm0ulUakIqIhJnIM2IANiU3bq8JbFEC648g3qo22fmA/Wb9o/eV/xHqo3iDn1fZgyGXwB/S+rTXV/2bwVfwr/GbjFf3HHXdqrxi3iZ8Yj/NfLp/rv8B5x/nP2C/1N9Jn1d+gj+26EzqiBUf93dX55Te2V7X0/rdVz6E8CwjE1l/w14C77IaVgxih9XmgY+hh7cGa9bLFzF/nsZ1WrI+GnNTE9QRh7adf/IKj5w52k6H4PiYtIf0Eg6o3DIo0U4/V3XioIUY+GDQQFkz4TFqexTYt/cwTPsy0zE1eKxbGtVgAAP78Iw3FB2NTAALz/r0Wdsw0WGdS+eqLyPQKdZA4pw+F0f/wAX1xmwvSujny801LLeXduLf8A7PsEf53/wiM+rofqOJ//8m7JhZRP9M37YZI9n/RU/+VD9ssOUPN2KHsFiWnlUUz59nDY9SQWtaChWVukTneRuhFbMbdwB9KFPc+ViN6/H8aD3JSu6J5e49nUcPIAwPFUwffzrfcKKGWr1VyFQJbwzz3mosbb0QD5Sid9/+aJ99xLNdmmvihYy/gPYi8pgeY3yit5lqf6kizO2NrNdlMbaXDzmdGBMpu0t1/ZdGPKMbfQ1lZRQ9aPTL1qvFUq+b6RBb0jQCDhW1hqdt5b5ts2JGJaDXKpYdMoPvZNum3B6dFGKgABlOC1pmNgbRNXVxomEzVG3iElQEDajHSmo3JjFxz6QbNIy1tSGwoAS3GxTddE/Jc59LaEWS8Xjk3n/76sd+IyX8RbihnIjPM8tX/CJ4kAp+W1/6dJMAhPpOOCnuuuvXFKRTcuxKqXEWJzronGM1f9fVAOwTkXlMGlh9aEKYvsUEO1kUo6o8KV7iDl62aIQWbiZ+3ok7rb+vhxDiC7RHNTPnS84dH3u3x3XWLZoRiKD0Vo6m+pdViZ5rN22UAVQ2wzzXe+D6VUeXI/+lmfBP5699NfMReYdOqZgjItMAEjc9HSXBez/UVABeHnZJNz/aqdN2y7f3BGGYR8piFz3Fcqwca+rT86XokTDzfP8UC8r5zkHeylCqcVFGq6zoM4ME4Chj6rlwDH1QGq0fyfI7zhQZ/FxVglNtSRfcTGTj/GrG2vv84Ror9O7FOXH+AOxlPf27bb4j5JMYHVWsh0PiTIqwxJkDqio+jaYW+tdji8dGeS6yAiJskU4tfa7I/EsrVscHv9tC6D1sl3IhB7uFwSp+Wazp/viPnXbPsAINOGc6VLVzg+rr3O2sHoRmgtzxucT/I6H0E0bWn9g0KtUaciObHRNE4ftXjykME0zeb87M3+inEBC8z62XNJtexP5LVe6/3Auf8ZTsSrVyIsWywDsAOZEj6u74o7JOxTK4xZn/zQ1VskbpPa7iMigkhr/ctmNUL1qStt/kLf4tGIqcgAAAAAA==", "medical": "data:image/webp;base64,UklGRjQEAABXRUJQVlA4ICgEAABQHACdASqgAHgAPm0ulUakIqIhJnIM2IANiU3bq8JbFEC648g3qo22fmA/Wb9o/eV/xHqo3iDn1fZgyGXwB/S+rTXV/2bwVfwr/GbjFf3HHXdqrxi3iZ8Yj/NfLp/rv8B5x/nP2C/1N9Jn1d+gj+26EzqiBUf93dX55Te2V7X0/rdVz6E8CwjE1l/w14C77IaVgxih9XmgY+hh7cGa9bLFzF/nsZ1WrI+GnNTE9QRh7adf/IKj5w52k6H4PiYtIf0Eg6o3DIo0U4/V3XioIUY+GDQQFkz4TFqexTYt/cwTPsy0zE1eKxbGtVgAAP78Iw3FB2NTAALz/r0Wdsw0WGdS+eqLyPQKdZA4pw+F0f/wAX1xmwvSujny801LLeXduLf8A7PsEf53/wiM+rofqOJ//8m7JhZRP9M37YZI9n/RU/+VD9ssOUPN2KHsFiWnlUUz59nDY9SQWtaChWVukTneRuhFbMbdwB9KFPc+ViN6/H8aD3JSu6J5e49nUcPIAwPFUwffzrfcKKGWr1VyFQJbwzz3mosbb0QD5Sid9/+aJ99xLNdmmvihYy/gPYi8pgeY3yit5lqf6kizO2NrNdlMbaXDzmdGBMpu0t1/ZdGPKMbfQ1lZRQ9aPTL1qvFUq+b6RBb0jQCDhW1hqdt5b5ts2JGJaDXKpYdMoPvZNum3B6dFGKgABlOC1pmNgbRNXVxomEzVG3iElQEDajHSmo3JjFxz6QbNIy1tSGwoAS3GxTddE/Jc59LaEWS8Xjk3n/76sd+IyX8RbihnIjPM8tX/CJ4kAp+W1/6dJMAhPpOOCnuuuvXFKRTcuxKqXEWJzronGM1f9fVAOwTkXlMGlh9aEKYvsUEO1kUo6o8KV7iDl62aIQWbiZ+3ok7rb+vhxDiC7RHNTPnS84dH3u3x3XWLZoRiKD0Vo6m+pdViZ5rN22UAVQ2wzzXe+D6VUeXI/+lmfBP5699NfMReYdOqZgjItMAEjc9HSXBez/UVABeHnZJNz/aqdN2y7f3BGGYR8piFz3Fcqwca+rT86XokTDzfP8UC8r5zkHeylCqcVFGq6zoM4ME4Chj6rlwDH1QGq0fyfI7zhQZ/FxVglNtSRfcTGTj/GrG2vv84Ror9O7FOXH+AOxlPf27bb4j5JMYHVWsh0PiTIqwxJkDqio+jaYW+tdji8dGeS6yAiJskU4tfa7I/EsrVscHv9tC6D1sl3IhB7uFwSp+Wazp/viPnXbPsAINOGc6VLVzg+rr3O2sHoRmgtzxucT/I6H0E0bWn9g0KtUaciObHRNE4ftXjykME0zeb87M3+inEBC8z62XNJtexP5LVe6/3Auf8ZTsSrVyIsWywDsAOZEj6u74o7JOxTK4xZn/zQ1VskbpPa7iMigkhr/ctmNUL1qStt/kLf4tGIqcgAAAAAA==", "advisory": "data:image/webp;base64,UklGRjQEAABXRUJQVlA4ICgEAABQHACdASqgAHgAPm0ulUakIqIhJnIM2IANiU3bq8JbFEC648g3qo22fmA/Wb9o/eV/xHqo3iDn1fZgyGXwB/S+rTXV/2bwVfwr/GbjFf3HHXdqrxi3iZ8Yj/NfLp/rv8B5x/nP2C/1N9Jn1d+gj+26EzqiBUf93dX55Te2V7X0/rdVz6E8CwjE1l/w14C77IaVgxih9XmgY+hh7cGa9bLFzF/nsZ1WrI+GnNTE9QRh7adf/IKj5w52k6H4PiYtIf0Eg6o3DIo0U4/V3XioIUY+GDQQFkz4TFqexTYt/cwTPsy0zE1eKxbGtVgAAP78Iw3FB2NTAALz/r0Wdsw0WGdS+eqLyPQKdZA4pw+F0f/wAX1xmwvSujny801LLeXduLf8A7PsEf53/wiM+rofqOJ//8m7JhZRP9M37YZI9n/RU/+VD9ssOUPN2KHsFiWnlUUz59nDY9SQWtaChWVukTneRuhFbMbdwB9KFPc+ViN6/H8aD3JSu6J5e49nUcPIAwPFUwffzrfcKKGWr1VyFQJbwzz3mosbb0QD5Sid9/+aJ99xLNdmmvihYy/gPYi8pgeY3yit5lqf6kizO2NrNdlMbaXDzmdGBMpu0t1/ZdGPKMbfQ1lZRQ9aPTL1qvFUq+b6RBb0jQCDhW1hqdt5b5ts2JGJaDXKpYdMoPvZNum3B6dFGKgABlOC1pmNgbRNXVxomEzVG3iElQEDajHSmo3JjFxz6QbNIy1tSGwoAS3GxTddE/Jc59LaEWS8Xjk3n/76sd+IyX8RbihnIjPM8tX/CJ4kAp+W1/6dJMAhPpOOCnuuuvXFKRTcuxKqXEWJzronGM1f9fVAOwTkXlMGlh9aEKYvsUEO1kUo6o8KV7iDl62aIQWbiZ+3ok7rb+vhxDiC7RHNTPnS84dH3u3x3XWLZoRiKD0Vo6m+pdViZ5rN22UAVQ2wzzXe+D6VUeXI/+lmfBP5699NfMReYdOqZgjItMAEjc9HSXBez/UVABeHnZJNz/aqdN2y7f3BGGYR8piFz3Fcqwca+rT86XokTDzfP8UC8r5zkHeylCqcVFGq6zoM4ME4Chj6rlwDH1QGq0fyfI7zhQZ/FxVglNtSRfcTGTj/GrG2vv84Ror9O7FOXH+AOxlPf27bb4j5JMYHVWsh0PiTIqwxJkDqio+jaYW+tdji8dGeS6yAiJskU4tfa7I/EsrVscHv9tC6D1sl3IhB7uFwSp+Wazp/viPnXbPsAINOGc6VLVzg+rr3O2sHoRmgtzxucT/I6H0E0bWn9g0KtUaciObHRNE4ftXjykME0zeb87M3+inEBC8z62XNJtexP5LVe6/3Auf8ZTsSrVyIsWywDsAOZEj6u74o7JOxTK4xZn/zQ1VskbpPa7iMigkhr/ctmNUL1qStt/kLf4tGIqcgAAAAAA==", "record": "data:image/webp;base64,UklGRjQEAABXRUJQVlA4ICgEAABQHACdASqgAHgAPm0ulUakIqIhJnIM2IANiU3bq8JbFEC648g3qo22fmA/Wb9o/eV/xHqo3iDn1fZgyGXwB/S+rTXV/2bwVfwr/GbjFf3HHXdqrxi3iZ8Yj/NfLp/rv8B5x/nP2C/1N9Jn1d+gj+26EzqiBUf93dX55Te2V7X0/rdVz6E8CwjE1l/w14C77IaVgxih9XmgY+hh7cGa9bLFzF/nsZ1WrI+GnNTE9QRh7adf/IKj5w52k6H4PiYtIf0Eg6o3DIo0U4/V3XioIUY+GDQQFkz4TFqexTYt/cwTPsy0zE1eKxbGtVgAAP78Iw3FB2NTAALz/r0Wdsw0WGdS+eqLyPQKdZA4pw+F0f/wAX1xmwvSujny801LLeXduLf8A7PsEf53/wiM+rofqOJ//8m7JhZRP9M37YZI9n/RU/+VD9ssOUPN2KHsFiWnlUUz59nDY9SQWtaChWVukTneRuhFbMbdwB9KFPc+ViN6/H8aD3JSu6J5e49nUcPIAwPFUwffzrfcKKGWr1VyFQJbwzz3mosbb0QD5Sid9/+aJ99xLNdmmvihYy/gPYi8pgeY3yit5lqf6kizO2NrNdlMbaXDzmdGBMpu0t1/ZdGPKMbfQ1lZRQ9aPTL1qvFUq+b6RBb0jQCDhW1hqdt5b5ts2JGJaDXKpYdMoPvZNum3B6dFGKgABlOC1pmNgbRNXVxomEzVG3iElQEDajHSmo3JjFxz6QbNIy1tSGwoAS3GxTddE/Jc59LaEWS8Xjk3n/76sd+IyX8RbihnIjPM8tX/CJ4kAp+W1/6dJMAhPpOOCnuuuvXFKRTcuxKqXEWJzronGM1f9fVAOwTkXlMGlh9aEKYvsUEO1kUo6o8KV7iDl62aIQWbiZ+3ok7rb+vhxDiC7RHNTPnS84dH3u3x3XWLZoRiKD0Vo6m+pdViZ5rN22UAVQ2wzzXe+D6VUeXI/+lmfBP5699NfMReYdOqZgjItMAEjc9HSXBez/UVABeHnZJNz/aqdN2y7f3BGGYR8piFz3Fcqwca+rT86XokTDzfP8UC8r5zkHeylCqcVFGq6zoM4ME4Chj6rlwDH1QGq0fyfI7zhQZ/FxVglNtSRfcTGTj/GrG2vv84Ror9O7FOXH+AOxlPf27bb4j5JMYHVWsh0PiTIqwxJkDqio+jaYW+tdji8dGeS6yAiJskU4tfa7I/EsrVscHv9tC6D1sl3IhB7uFwSp+Wazp/viPnXbPsAINOGc6VLVzg+rr3O2sHoRmgtzxucT/I6H0E0bWn9g0KtUaciObHRNE4ftXjykME0zeb87M3+inEBC8z62XNJtexP5LVe6/3Auf8ZTsSrVyIsWywDsAOZEj6u74o7JOxTK4xZn/zQ1VskbpPa7iMigkhr/ctmNUL1qStt/kLf4tGIqcgAAAAAA=="};
+const SOURCES={"checked": "2026-11-02", "scope": "Primary examples bounding claims in learner-authored value messages. No price, guaranteed result or legal-compliance verdict is taught.", "sources": [{"title": "Amazon EC2 Auto Scaling: configured capacity and policies", "url": "https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html", "supports": "Capacity adjustment uses configured groups, bounds and policies. Usage and application behaviour must be validated; scaling does not promise a fixed bill."}, {"title": "AWS shared responsibility model", "url": "https://aws.amazon.com/compliance/shared-responsibility-model/", "supports": "Customer responsibilities depend on the services, integration and applicable requirements. Selecting a service alone does not establish compliance."}]};
+// Shared board engine for the C1 activities: one fixed screen, illustrated tiles left and right open their step in the
+// centre stage. The activity's app.js fills in Board.tiles and the hooks below, then calls Board.start().
+// Tile: { id, title, short, image, side: 'left'|'right', render: () => html, slot: bool }
+const byId = id => document.getElementById(id);
+const safe = v => String(v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const Board = {
+  tiles: [],
+  faces: null,                              // { n, p, w } images for a reacting character; null = the current tile's picture
+  mood: { n: 'Focused.', p: 'Done.', w: 'Not yet.' },
+  cardLabel: (n, total) => `Progress ${n}/${total}`,
+  unlocked: () => true,
+  lockedMsg: () => '',
+  onOpen: () => {},
+  onClick: () => false,                     // return true when the activity handled the click
+  onReset: () => {},
+  st: null,
+  cur: 0,
+
+  idx(id) { return this.tiles.findIndex(t => t.id === id); },
+  slots() { return this.tiles.filter(t => t.slot).map(t => t.id); },
+  say(msg) { byId('live').textContent = ''; setTimeout(() => { byId('live').textContent = msg; }, 30); },
+  face(m) {
+    const f = byId('face'); f.className = m;
+    const src = this.faces ? this.faces[m] : this.tiles[this.cur].image;
+    f.innerHTML = `<img src="${src}" width="72" height="72" alt=""><span class="sr">${safe(this.mood[m])}</span>`;
+  },
+
+  start() {
+    byId('interactive').hidden = false;
+    this.build();
+    this.wire();
+  },
+  build() {
+    this.st = { done: {}, tries: {} };
+    this.onReset();
+    byId('stage-body').innerHTML = this.tiles.map((t, i) => `<section class="pane" id="pane-${t.id}" hidden aria-labelledby="ph-${t.id}">
+      <h2 id="ph-${t.id}" tabindex="-1"><span class="kick">Step ${i + 1} of ${this.tiles.length}</span> ${safe(t.title)}</h2>${t.render()}</section>`).join('');
+    const tile = t => `<li><button type="button" class="tile" data-tile="${t.id}" id="tile-${t.id}">
+      <span class="ico" aria-hidden="true"><img src="${t.image}" alt=""></span><span class="tt">${safe(t.short)}</span><span class="state" aria-hidden="true"></span><span class="sr st-text"></span></button></li>`;
+    byId('rail-left').innerHTML = this.tiles.filter(t => t.side === 'left').map(tile).join('');
+    byId('rail-right').innerHTML = this.tiles.filter(t => t.side === 'right').map(tile).join('');
+    byId('slots').innerHTML = this.slots().map(id => `<li><button type="button" class="slot" data-tile="${id}" id="slot-${id}"><strong>${safe(this.tiles[this.idx(id)].title)}</strong><span class="body muted">Not yet done.</span></button></li>`).join('');
+    this.open(0, true);
+  },
+
+  open(i, silent) {
+    const t = this.tiles[i];
+    if (!this.unlocked(t.id)) { const m = this.lockedMsg(t.id); this.say(m); byId('lockmsg').textContent = m; return; }
+    byId('lockmsg').textContent = '';
+    this.cur = i;
+    this.tiles.forEach(x => { byId('pane-' + x.id).hidden = x.id !== t.id; });
+    this.onOpen(t.id);
+    this.face(this.st.done[t.id] ? 'p' : 'n');
+    this.paint();
+    byId('stage-scroll').scrollTop = 0;
+    if (!silent) byId('ph-' + t.id).focus();
+  },
+  paint() {
+    this.tiles.forEach((t, i) => {
+      const b = byId('tile-' + t.id), done = !!this.st.done[t.id], lock = !this.unlocked(t.id);
+      b.className = 'tile' + (done ? ' done' : '') + (i === this.cur ? ' current' : '') + (lock ? ' locked' : '');
+      b.setAttribute('aria-current', i === this.cur ? 'step' : 'false');
+      b.querySelector('.state').textContent = done ? '✓' : lock ? '🔒' : '';
+      b.querySelector('.st-text').textContent = done ? ' (done)' : lock ? ' (locked)' : i === this.cur ? ' (current)' : ' (not started)';
+    });
+    const s = this.slots(), n = s.filter(id => this.st.done[id]).length;
+    byId('prog').textContent = `${n} of ${s.length} done`;
+    byId('bar').style.width = (s.length ? n / s.length * 100 : 0) + '%';
+    byId('card').classList.toggle('complete', n === s.length);
+    byId('unlocked').hidden = n !== s.length;
+    byId('toggle-card').textContent = this.cardLabel(n, s.length);
+    const last = this.tiles.length - 1, nx = byId('next'), pv = byId('prev');
+    pv.disabled = this.cur === 0; nx.disabled = this.cur === last;
+    nx.textContent = this.cur < last ? 'Next: ' + this.tiles[this.cur + 1].short + ' →' : 'Last step';
+    pv.textContent = this.cur ? '← ' + this.tiles[this.cur - 1].short : '←';
+  },
+  nextOpen() {
+    for (let k = 1; k <= this.tiles.length; k++) {
+      const j = (this.cur + k) % this.tiles.length, t = this.tiles[j];
+      if (!this.st.done[t.id] && this.unlocked(t.id)) return j;
+    }
+    return -1;
+  },
+
+  // Reactions
+  stamp(text) { const s = byId('stamp'); s.textContent = text; s.classList.remove('on'); void s.offsetWidth; s.classList.add('on'); },
+  wrong(fb) { this.face('w'); fb.classList.remove('wob'); void fb.offsetWidth; fb.classList.add('wob'); this.say(this.mood.w); },
+  fill(id, html) { const s = byId('slot-' + id); if (!s) return; const b = s.querySelector('.body'); b.className = 'body'; b.innerHTML = html; },
+  fly(id) {
+    const slot = byId('slot-' + id);
+    const pop = () => { if (slot) { slot.classList.add('filled', 'pop'); setTimeout(() => slot.classList.remove('pop'), 700); } };
+    if (!slot || reduced()) { pop(); return; }
+    const from = byId('tile-' + id).querySelector('.ico').getBoundingClientRect();
+    const to = (byId('card').hidden ? byId('toggle-card') : slot).getBoundingClientRect();
+    const c = document.createElement('div'); c.className = 'flyer'; c.textContent = '✓';
+    Object.assign(c.style, { left: from.left + 'px', top: from.top + 'px', width: from.width + 'px', height: from.height + 'px' });
+    document.body.appendChild(c);
+    const a = c.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${to.left + 12 - from.left}px,${to.top + 12 - from.top}px) scale(1.4)`, opacity: .2 }], { duration: 650, easing: 'cubic-bezier(.3,.7,.2,1)' });
+    a.onfinish = () => { c.remove(); pop(); };
+  },
+  // A step is finished: tick its tile, fill its slot, react, and offer the next open step inside `holder`.
+  complete(id, holder, stampText, slotHtml) {
+    this.st.done[id] = true;
+    if (slotHtml !== undefined) { this.fill(id, slotHtml); this.fly(id); }
+    this.face('p');
+    if (stampText) this.stamp(stampText);
+    const j = this.nextOpen();
+    if (holder && !holder.querySelector('[data-advance]')) {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'go'; b.dataset.advance = '1';
+      b.textContent = j >= 0 ? 'Continue to ' + this.tiles[j].short : 'All done';
+      holder.appendChild(b);
+    }
+    this.paint();
+    this.say(this.mood.p);
+  },
+  // Count a failed check; true once the "Show me the answer" escape should appear (after two).
+  failed(id) { this.st.tries[id] = (this.st.tries[id] || 0) + 1; return this.st.tries[id] >= 2; },
+
+  showCard(on) {
+    byId('card').hidden = !on;
+    byId('toggle-card').setAttribute('aria-expanded', String(on));
+    if (on) byId('closecard').focus();
+  },
+  wire() {
+    document.addEventListener('click', e => {
+      const t = e.target.closest('button');
+      if (!t || this.onClick(t)) return;
+      if (t.dataset.tile) this.open(this.idx(t.dataset.tile));
+      else if (t.dataset.advance) { const j = this.nextOpen(); if (j >= 0) this.open(j); else this.say('Every step is done.'); }
+      else if (t.id === 'prev') this.open(this.cur - 1);
+      else if (t.id === 'next') this.open(this.cur + 1);
+      else if (t.id === 'restart') { this.build(); byId('h-top').focus(); }
+      else if (t.id === 'toggle-card') this.showCard(byId('card').hidden);
+      else if (t.id === 'closecard') { this.showCard(false); byId('toggle-card').focus(); }
+      else if (t.id === 'casefile' && byId('casedlg')) byId('casedlg').showModal();
+      else if (t.id === 'closecase') byId('casedlg').close();
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !byId('card').hidden) { this.showCard(false); byId('toggle-card').focus(); } });
+  }
+};
+
+const VALUE_MESSAGE_WORKBOOK_TEMPLATE = {"styles": {"titleA": 6, "titleB": 6, "section": 8, "label": 9, "body": 10, "prompt": 12, "priority": 13, "review": 15, "note": 16}, "parts": {"xl/workbook.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48eDp3b3JrYm9vayB4bWxuczp4PSJodHRwOi8vc2NoZW1hcy5vcGVueG1sZm9ybWF0cy5vcmcvc3ByZWFkc2hlZXRtbC8yMDA2L21haW4iPjx4OnNoZWV0cz48eDpzaGVldCBuYW1lPSJNeSB2YWx1ZSBtZXNzYWdlcyIgc2hlZXRJZD0iMSIgcjppZD0iUjc2MDUxOWIxNGMwMjRkZjQiIHhtbG5zOnI9Imh0dHA6Ly9zY2hlbWFzLm9wZW54bWxmb3JtYXRzLm9yZy9vZmZpY2VEb2N1bWVudC8yMDA2L3JlbGF0aW9uc2hpcHMiIC8+PC94OnNoZWV0cz48L3g6d29ya2Jvb2s+", "xl/styles.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48eDpzdHlsZVNoZWV0IHhtbG5zOng9Imh0dHA6Ly9zY2hlbWFzLm9wZW54bWxmb3JtYXRzLm9yZy9zcHJlYWRzaGVldG1sLzIwMDYvbWFpbiI+PHg6Zm9udHMgY291bnQ9IjgiPjx4OmZvbnQ+PHg6c3ogdmFsPSIxMSIgLz48eDpuYW1lIHZhbD0iQ2FybGl0byIgLz48L3g6Zm9udD48eDpmb250Pjx4OnN6IHZhbD0iMTEiIC8+PHg6Y29sb3IgcmdiPSJGRjI2M0M1MSIgLz48eDpuYW1lIHZhbD0iQXJpYWwiIC8+PC94OmZvbnQ+PHg6Zm9udD48eDpiIC8+PHg6c3ogdmFsPSIxNSIgLz48eDpjb2xvciByZ2I9IkZGRkZGRkZGIiAvPjx4Om5hbWUgdmFsPSJBcmlhbCIgLz48L3g6Zm9udD48eDpmb250Pjx4OmIgLz48eDpzeiB2YWw9IjEyIiAvPjx4OmNvbG9yIHJnYj0iRkZGRkZGRkYiIC8+PHg6bmFtZSB2YWw9IkFyaWFsIiAvPjwveDpmb250Pjx4OmZvbnQ+PHg6YiAvPjx4OnN6IHZhbD0iMTEiIC8+PHg6Y29sb3IgcmdiPSJGRjI2M0M1MSIgLz48eDpuYW1lIHZhbD0iQXJpYWwiIC8+PC94OmZvbnQ+PHg6Zm9udD48eDpzeiB2YWw9IjExIiAvPjx4OmNvbG9yIHJnYj0iRkYzNTUwNUUiIC8+PHg6bmFtZSB2YWw9IkFyaWFsIiAvPjwveDpmb250Pjx4OmZvbnQ+PHg6c3ogdmFsPSIxMSIgLz48eDpjb2xvciByZ2I9IkZGMTU0QTMzIiAvPjx4Om5hbWUgdmFsPSJBcmlhbCIgLz48L3g6Zm9udD48eDpmb250Pjx4OmkgLz48eDpzeiB2YWw9IjExIiAvPjx4OmNvbG9yIHJnYj0iRkYzNTUwNUUiIC8+PHg6bmFtZSB2YWw9IkFyaWFsIiAvPjwveDpmb250PjwveDpmb250cz48eDpmaWxscyBjb3VudD0iOCI+PHg6ZmlsbD48eDpwYXR0ZXJuRmlsbCBwYXR0ZXJuVHlwZT0ibm9uZSIgLz48L3g6ZmlsbD48eDpmaWxsPjx4OnBhdHRlcm5GaWxsIHBhdHRlcm5UeXBlPSJncmF5MTI1IiAvPjwveDpmaWxsPjx4OmZpbGw+PHg6cGF0dGVybkZpbGwgcGF0dGVyblR5cGU9InNvbGlkIj48eDpmZ0NvbG9yIHJnYj0iRkYyNjNDNTEiIC8+PC94OnBhdHRlcm5GaWxsPjwveDpmaWxsPjx4OmZpbGw+PHg6cGF0dGVybkZpbGwgcGF0dGVyblR5cGU9InNvbGlkIj48eDpmZ0NvbG9yIHJnYj0iRkYwQjZCNkIiIC8+PC94OnBhdHRlcm5GaWxsPjwveDpmaWxsPjx4OmZpbGw+PHg6cGF0dGVybkZpbGwgcGF0dGVyblR5cGU9InNvbGlkIj48eDpmZ0NvbG9yIHJnYj0iRkZGRkYyQ0MiIC8+PC94OnBhdHRlcm5GaWxsPjwveDpmaWxsPjx4OmZpbGw+PHg6cGF0dGVybkZpbGwgcGF0dGVyblR5cGU9InNvbGlkIj48eDpmZ0NvbG9yIHJnYj0iRkZFREYxRjQiIC8+PC94OnBhdHRlcm5GaWxsPjwveDpmaWxsPjx4OmZpbGw+PHg6cGF0dGVybkZpbGwgcGF0dGVyblR5cGU9InNvbGlkIj48eDpmZ0NvbG9yIHJnYj0iRkZFN0Y0RjMiIC8+PC94OnBhdHRlcm5GaWxsPjwveDpmaWxsPjx4OmZpbGw+PHg6cGF0dGVybkZpbGwgcGF0dGVyblR5cGU9InNvbGlkIj48eDpmZ0NvbG9yIHJnYj0iRkZFM0Y0RUMiIC8+PC94OnBhdHRlcm5GaWxsPjwveDpmaWxsPjwveDpmaWxscz48eDpib3JkZXJzIGNvdW50PSIxIj48eDpib3JkZXI+PHg6bGVmdCAvPjx4OnJpZ2h0IC8+PHg6dG9wIC8+PHg6Ym90dG9tIC8+PHg6ZGlhZ29uYWwgLz48L3g6Ym9yZGVyPjwveDpib3JkZXJzPjx4OmNlbGxTdHlsZVhmcyBjb3VudD0iMSI+PHg6eGYgbnVtRm10SWQ9IjAiIGZvbnRJZD0iMCIgZmlsbElkPSIwIiBib3JkZXJJZD0iMCIgLz48L3g6Y2VsbFN0eWxlWGZzPjx4OmNlbGxYZnMgY291bnQ9IjE3Ij48eDp4ZiBudW1GbXRJZD0iMCIgZm9udElkPSIwIiBmaWxsSWQ9IjAiIGJvcmRlcklkPSIwIiB4ZklkPSIwIiAvPjx4OnhmIG51bUZtdElkPSIwIiBmb250SWQ9IjEiIGZpbGxJZD0iMCIgYm9yZGVySWQ9IjAiIHhmSWQ9IjAiIGFwcGx5TnVtYmVyRm9ybWF0PSIxIiBhcHBseUZvbnQ9IjEiIGFwcGx5RmlsbD0iMSIgYXBwbHlCb3JkZXI9IjEiIC8+PHg6eGYgbnVtRm10SWQ9IjAiIGZvbnRJZD0iMSIgZmlsbElkPSIwIiBib3JkZXJJZD0iMCIgeGZJZD0iMCIgYXBwbHlOdW1iZXJGb3JtYXQ9IjEiIGFwcGx5Rm9udD0iMSIgYXBwbHlGaWxsPSIxIiBhcHBseUJvcmRlcj0iMSIgYXBwbHlBbGlnbm1lbnQ9IjEiPjx4OmFsaWdubWVudCB3cmFwVGV4dD0iMSIgLz48L3g6eGY+PHg6eGYgbnVtRm10SWQ9IjAiIGZvbnRJZD0iMSIgZmlsbElkPSIwIiBib3JkZXJJZD0iMCIgeGZJZD0iMCIgYXBwbHlOdW1iZXJGb3JtYXQ9IjEiIGFwcGx5Rm9udD0iMSIgYXBwbHlGaWxsPSIxIiBhcHBseUJvcmRlcj0iMSIgYXBwbHlBbGlnbm1lbnQ9IjEiPjx4OmFsaWdubWVudCB2ZXJ0aWNhbD0idG9wIiB3cmFwVGV4dD0iMSIgLz48L3g6eGY+PHg6eGYgbnVtRm10SWQ9IjAiIGZvbnRJZD0iMSIgZmlsbElkPSIyIiBib3JkZXJJZD0iMCIgeGZJZD0iMCIgYXBwbHlOdW1iZXJGb3JtYXQ9IjEiIGFwcGx5Rm9udD0iMSIgYXBwbHlGaWxsPSIxIiBhcHBseUJvcmRlcj0iMSIgYXBwbHlBbGlnbm1lbnQ9IjEiPjx4OmFsaWdubWVudCB2ZXJ0aWNhbD0idG9wIiB3cmFwVGV4dD0iMSIgLz48L3g6eGY+PHg6eGYgbnVtRm10SWQ9IjAiIGZvbnRJZD0iMiIgZmlsbElkPSIyIiBib3JkZXJJZD0iMCIgeGZJZD0iMCIgYXBwbHlOdW1iZXJGb3JtYXQ9IjEiIGFwcGx5Rm9udD0iMSIgYXBwbHlGaWxsPSIxIiBhcHBseUJvcmRlcj0iMSIgYXBwbHlBbGlnbm1lbnQ9IjEiPjx4OmFsaWdubWVudCB2ZXJ0aWNhbD0idG9wIiB3cmFwVGV4dD0iMSIgLz48L3g6eGY+PHg6eGYgbnVtRm10SWQ9IjAiIGZvbnRJZD0iMiIgZmlsbElkPSIyIiBib3JkZXJJZD0iMCIgeGZJZD0iMCIgYXBwbHlOdW1iZXJGb3JtYXQ9IjEiIGFwcGx5Rm9udD0iMSIgYXBwbHlGaWxsPSIxIiBhcHBseUJvcmRlcj0iMSIgYXBwbHlBbGlnbm1lbnQ9IjEiPjx4OmFsaWdubWVudCB2ZXJ0aWNhbD0iY2VudGVyIiB3cmFwVGV4dD0iMSIgLz48L3g6eGY+PHg6eGYgbnVtRm10SWQ9IjAiIGZvbnRJZD0iMSIgZmlsbElkPSIzIiBib3JkZXJJZD0iMCIgeGZJZD0iMCIgYXBwbHlOdW1iZXJGb3JtYXQ9IjEiIGFwcGx5Rm9udD0iMSIgYXBwbHlGaWxsPSIxIiBhcHBseUJvcmRlcj0iMSIgYXBwbHlBbGlnbm1lbnQ9IjEiPjx4OmFsaWdubWVudCB2ZXJ0aWNhbD0idG9wIiB3cmFwVGV4dD0iMSIgLz48L3g6eGY+PHg6eGYgbnVtRm10SWQ9IjAiIGZvbnRJZD0iMyIgZmlsbElkPSIzIiBib3JkZXJJZD0iMCIgeGZJZD0iMCIgYXBwbHlOdW1iZXJGb3JtYXQ9IjEiIGFwcGx5Rm9udD0iMSIgYXBwbHlGaWxsPSIxIiBhcHBseUJvcmRlcj0iMSIgYXBwbHlBbGlnbm1lbnQ9IjEiPjx4OmFsaWdubWVudCB2ZXJ0aWNhbD0idG9wIiB3cmFwVGV4dD0iMSIgLz48L3g6eGY+PHg6eGYgbnVtRm10SWQ9IjAiIGZvbnRJZD0iNCIgZmlsbElkPSIwIiBib3JkZXJJZD0iMCIgeGZJZD0iMCIgYXBwbHlOdW1iZXJGb3JtYXQ9IjEiIGFwcGx5Rm9udD0iMSIgYXBwbHlGaWxsPSIxIiBhcHBseUJvcmRlcj0iMSIgYXBwbHlBbGlnbm1lbnQ9IjEiPjx4OmFsaWdubWVudCB2ZXJ0aWNhbD0idG9wIiB3cmFwVGV4dD0iMSIgLz48L3g6eGY+PHg6eGYgbnVtRm10SWQ9IjAiIGZvbnRJZD0iMSIgZmlsbElkPSI0IiBib3JkZXJJZD0iMCIgeGZJZD0iMCIgYXBwbHlOdW1iZXJGb3JtYXQ9IjEiIGFwcGx5Rm9udD0iMSIgYXBwbHlGaWxsPSIxIiBhcHBseUJvcmRlcj0iMSIgYXBwbHlBbGlnbm1lbnQ9IjEiPjx4OmFsaWdubWVudCB2ZXJ0aWNhbD0idG9wIiB3cmFwVGV4dD0iMSIgLz48L3g6eGY+PHg6eGYgbnVtRm10SWQ9IjAiIGZvbnRJZD0iMSIgZmlsbElkPSI1IiBib3JkZXJJZD0iMCIgeGZJZD0iMCIgYXBwbHlOdW1iZXJGb3JtYXQ9IjEiIGFwcGx5Rm9udD0iMSIgYXBwbHlGaWxsPSIxIiBhcHBseUJvcmRlcj0iMSIgYXBwbHlBbGlnbm1lbnQ9IjEiPjx4OmFsaWdubWVudCB2ZXJ0aWNhbD0idG9wIiB3cmFwVGV4dD0iMSIgLz48L3g6eGY+PHg6eGYgbnVtRm10SWQ9IjAiIGZvbnRJZD0iNSIgZmlsbElkPSI1IiBib3JkZXJJZD0iMCIgeGZJZD0iMCIgYXBwbHlOdW1iZXJGb3JtYXQ9IjEiIGFwcGx5Rm9udD0iMSIgYXBwbHlGaWxsPSIxIiBhcHBseUJvcmRlcj0iMSIgYXBwbHlBbGlnbm1lbnQ9IjEiPjx4OmFsaWdubWVudCB2ZXJ0aWNhbD0idG9wIiB3cmFwVGV4dD0iMSIgLz48L3g6eGY+PHg6eGYgbnVtRm10SWQ9IjAiIGZvbnRJZD0iMSIgZmlsbElkPSI2IiBib3JkZXJJZD0iMCIgeGZJZD0iMCIgYXBwbHlOdW1iZXJGb3JtYXQ9IjEiIGFwcGx5Rm9udD0iMSIgYXBwbHlGaWxsPSIxIiBhcHBseUJvcmRlcj0iMSIgYXBwbHlBbGlnbm1lbnQ9IjEiPjx4OmFsaWdubWVudCB2ZXJ0aWNhbD0idG9wIiB3cmFwVGV4dD0iMSIgLz48L3g6eGY+PHg6eGYgbnVtRm10SWQ9IjAiIGZvbnRJZD0iMSIgZmlsbElkPSI3IiBib3JkZXJJZD0iMCIgeGZJZD0iMCIgYXBwbHlOdW1iZXJGb3JtYXQ9IjEiIGFwcGx5Rm9udD0iMSIgYXBwbHlGaWxsPSIxIiBhcHBseUJvcmRlcj0iMSIgYXBwbHlBbGlnbm1lbnQ9IjEiPjx4OmFsaWdubWVudCB2ZXJ0aWNhbD0idG9wIiB3cmFwVGV4dD0iMSIgLz48L3g6eGY+PHg6eGYgbnVtRm10SWQ9IjAiIGZvbnRJZD0iNiIgZmlsbElkPSI3IiBib3JkZXJJZD0iMCIgeGZJZD0iMCIgYXBwbHlOdW1iZXJGb3JtYXQ9IjEiIGFwcGx5Rm9udD0iMSIgYXBwbHlGaWxsPSIxIiBhcHBseUJvcmRlcj0iMSIgYXBwbHlBbGlnbm1lbnQ9IjEiPjx4OmFsaWdubWVudCB2ZXJ0aWNhbD0idG9wIiB3cmFwVGV4dD0iMSIgLz48L3g6eGY+PHg6eGYgbnVtRm10SWQ9IjAiIGZvbnRJZD0iNyIgZmlsbElkPSIwIiBib3JkZXJJZD0iMCIgeGZJZD0iMCIgYXBwbHlOdW1iZXJGb3JtYXQ9IjEiIGFwcGx5Rm9udD0iMSIgYXBwbHlGaWxsPSIxIiBhcHBseUJvcmRlcj0iMSIgYXBwbHlBbGlnbm1lbnQ9IjEiPjx4OmFsaWdubWVudCB2ZXJ0aWNhbD0idG9wIiB3cmFwVGV4dD0iMSIgLz48L3g6eGY+PC94OmNlbGxYZnM+PHg6Y2VsbFN0eWxlcyBjb3VudD0iMSI+PHg6Y2VsbFN0eWxlIG5hbWU9Ik5vcm1hbCIgeGZJZD0iMCIgLz48L3g6Y2VsbFN0eWxlcz48L3g6c3R5bGVTaGVldD4=", "xl/theme/theme1.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48YTp0aGVtZSBuYW1lPSJDaGF0R1BUIiB4bWxuczphPSJodHRwOi8vc2NoZW1hcy5vcGVueG1sZm9ybWF0cy5vcmcvZHJhd2luZ21sLzIwMDYvbWFpbiI+PGE6dGhlbWVFbGVtZW50cz48YTpjbHJTY2hlbWUgbmFtZT0iQ2hhdEdQVCI+PGE6ZGsxPjxhOnN5c0NsciB2YWw9IndpbmRvd1RleHQiIGxhc3RDbHI9IjAwMDAwMCIgLz48L2E6ZGsxPjxhOmx0MT48YTpzeXNDbHIgdmFsPSJ3aW5kb3ciIGxhc3RDbHI9IkZGRkZGRiIgLz48L2E6bHQxPjxhOmRrMj48YTpzcmdiQ2xyIHZhbD0iMEUyODQxIiAvPjwvYTpkazI+PGE6bHQyPjxhOnNyZ2JDbHIgdmFsPSJFOEU4RTgiIC8+PC9hOmx0Mj48YTphY2NlbnQxPjxhOnNyZ2JDbHIgdmFsPSIxNTYwODIiIC8+PC9hOmFjY2VudDE+PGE6YWNjZW50Mj48YTpzcmdiQ2xyIHZhbD0iRTk3MTMyIiAvPjwvYTphY2NlbnQyPjxhOmFjY2VudDM+PGE6c3JnYkNsciB2YWw9IjE5NkIyNCIgLz48L2E6YWNjZW50Mz48YTphY2NlbnQ0PjxhOnNyZ2JDbHIgdmFsPSIwRjlFRDUiIC8+PC9hOmFjY2VudDQ+PGE6YWNjZW50NT48YTpzcmdiQ2xyIHZhbD0iQTAyQjkzIiAvPjwvYTphY2NlbnQ1PjxhOmFjY2VudDY+PGE6c3JnYkNsciB2YWw9IjRFQTcyRSIgLz48L2E6YWNjZW50Nj48YTpobGluaz48YTpzcmdiQ2xyIHZhbD0iNDY3ODg2IiAvPjwvYTpobGluaz48YTpmb2xIbGluaz48YTpzcmdiQ2xyIHZhbD0iOTY2MDdEIiAvPjwvYTpmb2xIbGluaz48L2E6Y2xyU2NoZW1lPjxhOmZvbnRTY2hlbWUgbmFtZT0iT2ZmaWNlIj48YTptYWpvckZvbnQ+PGE6bGF0aW4gdHlwZWZhY2U9IkNhbGlicmkgTGlnaHQiIC8+PGE6ZWEgdHlwZWZhY2U9IkNhbGlicmkgTGlnaHQiIC8+PGE6Y3MgdHlwZWZhY2U9IkNhbGlicmkgTGlnaHQiIC8+PC9hOm1ham9yRm9udD48YTptaW5vckZvbnQ+PGE6bGF0aW4gdHlwZWZhY2U9IkNhbGlicmkiIC8+PGE6ZWEgdHlwZWZhY2U9IkNhbGlicmkiIC8+PGE6Y3MgdHlwZWZhY2U9IkNhbGlicmkiIC8+PC9hOm1pbm9yRm9udD48L2E6Zm9udFNjaGVtZT48YTpmbXRTY2hlbWUgbmFtZT0iQ2hhdEdQVCI+PGE6ZmlsbFN0eWxlTHN0PjxhOnNvbGlkRmlsbD48YTpzY2hlbWVDbHIgdmFsPSJwaENsciIgLz48L2E6c29saWRGaWxsPjxhOmdyYWRGaWxsPjxhOmdzTHN0PjxhOmdzIHBvcz0iMCI+PGE6c2NoZW1lQ2xyIHZhbD0icGhDbHIiPjxhOnRpbnQgdmFsPSI2NzAwMCIgLz48YTpsdW1Nb2QgdmFsPSIxMTAwMDAiIC8+PGE6c2F0TW9kIHZhbD0iMTA1MDAwIiAvPjwvYTpzY2hlbWVDbHI+PC9hOmdzPjxhOmdzIHBvcz0iNTAwMDAiPjxhOnNjaGVtZUNsciB2YWw9InBoQ2xyIj48YTp0aW50IHZhbD0iNzMwMDAiIC8+PGE6bHVtTW9kIHZhbD0iMTA1MDAwIiAvPjxhOnNhdE1vZCB2YWw9IjEwMzAwMCIgLz48L2E6c2NoZW1lQ2xyPjwvYTpncz48YTpncyBwb3M9IjEwMDAwMCI+PGE6c2NoZW1lQ2xyIHZhbD0icGhDbHIiPjxhOnRpbnQgdmFsPSI4MTAwMCIgLz48YTpsdW1Nb2QgdmFsPSIxMDUwMDAiIC8+PGE6c2F0TW9kIHZhbD0iMTA5MDAwIiAvPjwvYTpzY2hlbWVDbHI+PC9hOmdzPjwvYTpnc0xzdD48YTpsaW4gYW5nPSI1NDAwMDAwIiBzY2FsZWQ9IjAiIC8+PC9hOmdyYWRGaWxsPjxhOmdyYWRGaWxsPjxhOmdzTHN0PjxhOmdzIHBvcz0iMCI+PGE6c2NoZW1lQ2xyIHZhbD0icGhDbHIiPjxhOnRpbnQgdmFsPSI5NDAwMCIgLz48YTpsdW1Nb2QgdmFsPSIxMDIwMDAiIC8+PGE6c2F0TW9kIHZhbD0iMTAzMDAwIiAvPjwvYTpzY2hlbWVDbHI+PC9hOmdzPjxhOmdzIHBvcz0iNTAwMDAiPjxhOnNjaGVtZUNsciB2YWw9InBoQ2xyIj48YTpzaGFkZSB2YWw9IjEwMDAwMCIgLz48YTpsdW1Nb2QgdmFsPSIxMDAwMDAiIC8+PGE6c2F0TW9kIHZhbD0iMTEwMDAwIiAvPjwvYTpzY2hlbWVDbHI+PC9hOmdzPjxhOmdzIHBvcz0iMTAwMDAwIj48YTpzY2hlbWVDbHIgdmFsPSJwaENsciI+PGE6c2hhZGUgdmFsPSI3ODAwMCIgLz48YTpsdW1Nb2QgdmFsPSI5OTAwMCIgLz48YTpzYXRNb2QgdmFsPSIxMjAwMDAiIC8+PC9hOnNjaGVtZUNscj48L2E6Z3M+PC9hOmdzTHN0PjxhOmxpbiBhbmc9IjU0MDAwMDAiIHNjYWxlZD0iMCIgLz48L2E6Z3JhZEZpbGw+PC9hOmZpbGxTdHlsZUxzdD48YTpsblN0eWxlTHN0PjxhOmxuIHc9IjEyNzAwIj48YTpzb2xpZEZpbGw+PGE6c2NoZW1lQ2xyIHZhbD0icGhDbHIiIC8+PC9hOnNvbGlkRmlsbD48YTpwcnN0RGFzaCB2YWw9InNvbGlkIiAvPjwvYTpsbj48YTpsbiB3PSIxOTA1MCI+PGE6c29saWRGaWxsPjxhOnNjaGVtZUNsciB2YWw9InBoQ2xyIiAvPjwvYTpzb2xpZEZpbGw+PGE6cHJzdERhc2ggdmFsPSJzb2xpZCIgLz48L2E6bG4+PGE6bG4gdz0iMjU0MDAiPjxhOnNvbGlkRmlsbD48YTpzY2hlbWVDbHIgdmFsPSJwaENsciIgLz48L2E6c29saWRGaWxsPjxhOnByc3REYXNoIHZhbD0ic29saWQiIC8+PC9hOmxuPjwvYTpsblN0eWxlTHN0PjxhOmVmZmVjdFN0eWxlTHN0PjxhOmVmZmVjdFN0eWxlPjxhOmVmZmVjdExzdCAvPjwvYTplZmZlY3RTdHlsZT48YTplZmZlY3RTdHlsZT48YTplZmZlY3RMc3QgLz48L2E6ZWZmZWN0U3R5bGU+PGE6ZWZmZWN0U3R5bGU+PGE6ZWZmZWN0THN0PjxhOm91dGVyU2hkdyBibHVyUmFkPSI1NzE1MCIgZGlzdD0iMTkwNTAiIGRpcj0iNTQwMDAwMCI+PGE6c3JnYkNsciB2YWw9IjAwMDAwMCI+PGE6YWxwaGEgdmFsPSI2MzAwMCIgLz48L2E6c3JnYkNscj48L2E6b3V0ZXJTaGR3PjwvYTplZmZlY3RMc3Q+PC9hOmVmZmVjdFN0eWxlPjwvYTplZmZlY3RTdHlsZUxzdD48YTpiZ0ZpbGxTdHlsZUxzdD48YTpzb2xpZEZpbGw+PGE6c2NoZW1lQ2xyIHZhbD0icGhDbHIiIC8+PC9hOnNvbGlkRmlsbD48YTpzb2xpZEZpbGw+PGE6c2NoZW1lQ2xyIHZhbD0icGhDbHIiPjxhOnRpbnQgdmFsPSI5NTAwMCIgLz48YTpzYXRNb2QgdmFsPSIxNzAwMDAiIC8+PC9hOnNjaGVtZUNscj48L2E6c29saWRGaWxsPjxhOmdyYWRGaWxsPjxhOmdzTHN0PjxhOmdzIHBvcz0iMCI+PGE6c2NoZW1lQ2xyIHZhbD0icGhDbHIiPjxhOnRpbnQgdmFsPSI5MzAwMCIgLz48YTpzaGFkZSB2YWw9Ijk4MDAwIiAvPjxhOmx1bU1vZCB2YWw9IjEwMjAwMCIgLz48YTpzYXRNb2QgdmFsPSIxNTAwMDAiIC8+PC9hOnNjaGVtZUNscj48L2E6Z3M+PGE6Z3MgcG9zPSI1MDAwMCI+PGE6c2NoZW1lQ2xyIHZhbD0icGhDbHIiPjxhOnRpbnQgdmFsPSI5ODAwMCIgLz48YTpzaGFkZSB2YWw9IjkwMDAwIiAvPjxhOmx1bU1vZCB2YWw9IjEwMzAwMCIgLz48YTpzYXRNb2QgdmFsPSIxMzAwMDAiIC8+PC9hOnNjaGVtZUNscj48L2E6Z3M+PGE6Z3MgcG9zPSIxMDAwMDAiPjxhOnNjaGVtZUNsciB2YWw9InBoQ2xyIj48YTpzaGFkZSB2YWw9IjYzMDAwIiAvPjxhOnNhdE1vZCB2YWw9IjEyMDAwMCIgLz48L2E6c2NoZW1lQ2xyPjwvYTpncz48L2E6Z3NMc3Q+PGE6bGluIGFuZz0iNTQwMDAwMCIgc2NhbGVkPSIwIiAvPjwvYTpncmFkRmlsbD48L2E6YmdGaWxsU3R5bGVMc3Q+PC9hOmZtdFNjaGVtZT48L2E6dGhlbWVFbGVtZW50cz48L2E6dGhlbWU+", "xl/sharedStrings.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48eDpzc3QgeG1sbnM6eD0iaHR0cDovL3NjaGVtYXMub3BlbnhtbGZvcm1hdHMub3JnL3NwcmVhZHNoZWV0bWwvMjAwNi9tYWluIiAvPg==", "xl/worksheets/sheet1.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48eDp3b3Jrc2hlZXQgeG1sbnM6eD0iaHR0cDovL3NjaGVtYXMub3BlbnhtbGZvcm1hdHMub3JnL3NwcmVhZHNoZWV0bWwvMjAwNi9tYWluIj48eDpzaGVldFByPjx4OnRhYkNvbG9yIHJnYj0iRkYwQjZCNkIiIC8+PC94OnNoZWV0UHI+PHg6c2hlZXRWaWV3cz48eDpzaGVldFZpZXcgc2hvd0dyaWRMaW5lcz0iMCIgd29ya2Jvb2tWaWV3SWQ9IjAiPjx4OnBhbmUgeVNwbGl0PSIyIiB0b3BMZWZ0Q2VsbD0iQTMiIGFjdGl2ZVBhbmU9ImJvdHRvbUxlZnQiIHN0YXRlPSJmcm96ZW4iIC8+PC94OnNoZWV0Vmlldz48L3g6c2hlZXRWaWV3cz48eDpzaGVldEZvcm1hdFByIGRlZmF1bHRSb3dIZWlnaHQ9IjE1IiAvPjx4OmNvbHM+PHg6Y29sIG1pbj0iMSIgbWF4PSIxIiB3aWR0aD0iMzQiIGhpZGRlbj0iMCIgY3VzdG9tV2lkdGg9IjEiIC8+PHg6Y29sIG1pbj0iMiIgbWF4PSIyIiB3aWR0aD0iOTgiIGhpZGRlbj0iMCIgY3VzdG9tV2lkdGg9IjEiIC8+PC94OmNvbHM+PHg6c2hlZXREYXRhPjx4OnJvdyByPSIxIiBodD0iMzAiIGN1c3RvbUhlaWdodD0iMSI+PHg6YyByPSJBMSIgcz0iMyIgLz48eDpjIHI9IkIxIiBzPSIzIiAvPjwveDpyb3c+PHg6cm93IHI9IjIiIGh0PSI0NCIgY3VzdG9tSGVpZ2h0PSIxIj48eDpjIHI9IkEyIiBzPSI2IiB0PSJzdHIiPjx4OnY+TXkgdmFsdWUgbWVzc2FnZXM8L3g6dj48L3g6Yz48eDpjIHI9IkIyIiBzPSI2IiB0PSJzdHIiPjx4OnY+WW91ciB0aHJlZSBzdGFrZWhvbGRlciBjb252ZXJzYXRpb25zPC94OnY+PC94OmM+PC94OnJvdz48eDpyb3cgcj0iMyIgaHQ9IjM2IiBjdXN0b21IZWlnaHQ9IjEiPjx4OmMgcj0iQTMiIHM9IjgiIHQ9InN0ciI+PHg6dj5TdGFrZWhvbGRlcjwveDp2PjwveDpjPjx4OmMgcj0iQjMiIHM9IjgiIHQ9InN0ciI+PHg6dj4xIG9mIDM8L3g6dj48L3g6Yz48L3g6cm93Pjx4OnJvdyByPSI0IiBodD0iMzAiIGN1c3RvbUhlaWdodD0iMSI+PHg6YyByPSJBNCIgcz0iOSIgdD0ic3RyIj48eDp2PkZpZWxkPC94OnY+PC94OmM+PHg6YyByPSJCNCIgcz0iMTAiIHQ9InN0ciI+PHg6dj5Zb3VyIHJlc3BvbnNlPC94OnY+PC94OmM+PC94OnJvdz48eDpyb3cgcj0iNSIgaHQ9IjMwIiBjdXN0b21IZWlnaHQ9IjEiPjx4OmMgcj0iQTUiIHM9IjMiIC8+PHg6YyByPSJCNSIgcz0iMTIiIHQ9InN0ciI+PHg6dj5DdXN0b21lciBzdGF0ZW1lbnQ8L3g6dj48L3g6Yz48L3g6cm93Pjx4OnJvdyByPSI2IiBodD0iMzAiIGN1c3RvbUhlaWdodD0iMSI+PHg6YyByPSJBNiIgcz0iMyIgLz48eDpjIHI9IkI2IiBzPSIxMyIgdD0ic3RyIj48eDp2PlNlbGVjdGVkIHByaW9yaXR5PC94OnY+PC94OmM+PC94OnJvdz48eDpyb3cgcj0iNyIgaHQ9IjMwIiBjdXN0b21IZWlnaHQ9IjEiPjx4OmMgcj0iQTciIHM9IjMiIC8+PHg6YyByPSJCNyIgcz0iMTUiIHQ9InN0ciI+PHg6dj5Qcmlvcml0eSBjaGVja2VkOyB3cml0aW5nIHNlbGYtcmV2aWV3ZWQ8L3g6dj48L3g6Yz48L3g6cm93Pjx4OnJvdyByPSI4IiBodD0iMzAiIGN1c3RvbUhlaWdodD0iMSI+PHg6YyByPSJBOCIgcz0iMyIgLz48eDpjIHI9IkI4IiBzPSIxNiIgdD0ic3RyIj48eDp2PlJlYWRpbmVzcyBub3RlPC94OnY+PC94OmM+PC94OnJvdz48L3g6c2hlZXREYXRhPjx4OnBhZ2VNYXJnaW5zIGxlZnQ9IjAuNyIgcmlnaHQ9IjAuNyIgdG9wPSIwLjc1IiBib3R0b209IjAuNzUiIGhlYWRlcj0iMC4zIiBmb290ZXI9IjAuMyIgLz48L3g6d29ya3NoZWV0Pg==", "_rels/.rels": "77u/PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48UmVsYXRpb25zaGlwcyB4bWxucz0iaHR0cDovL3NjaGVtYXMub3BlbnhtbGZvcm1hdHMub3JnL3BhY2thZ2UvMjAwNi9yZWxhdGlvbnNoaXBzIj48UmVsYXRpb25zaGlwIFR5cGU9Imh0dHA6Ly9zY2hlbWFzLm9wZW54bWxmb3JtYXRzLm9yZy9vZmZpY2VEb2N1bWVudC8yMDA2L3JlbGF0aW9uc2hpcHMvb2ZmaWNlRG9jdW1lbnQiIFRhcmdldD0iL3hsL3dvcmtib29rLnhtbCIgSWQ9IlI3NWE4ZGY0NmJiMjE0MmUxIiAvPjwvUmVsYXRpb25zaGlwcz4=", "xl/_rels/workbook.xml.rels": "77u/PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48UmVsYXRpb25zaGlwcyB4bWxucz0iaHR0cDovL3NjaGVtYXMub3BlbnhtbGZvcm1hdHMub3JnL3BhY2thZ2UvMjAwNi9yZWxhdGlvbnNoaXBzIj48UmVsYXRpb25zaGlwIFR5cGU9Imh0dHA6Ly9zY2hlbWFzLm9wZW54bWxmb3JtYXRzLm9yZy9vZmZpY2VEb2N1bWVudC8yMDA2L3JlbGF0aW9uc2hpcHMvc3R5bGVzIiBUYXJnZXQ9Ii94bC9zdHlsZXMueG1sIiBJZD0iUjk1ZmFjZDE5Mzk3ODRmZjEiIC8+PFJlbGF0aW9uc2hpcCBUeXBlPSJodHRwOi8vc2NoZW1hcy5vcGVueG1sZm9ybWF0cy5vcmcvb2ZmaWNlRG9jdW1lbnQvMjAwNi9yZWxhdGlvbnNoaXBzL3RoZW1lIiBUYXJnZXQ9Ii94bC90aGVtZS90aGVtZTEueG1sIiBJZD0iUmNlMWU5MjJmZjZmMDQ1YmEiIC8+PFJlbGF0aW9uc2hpcCBUeXBlPSJodHRwOi8vc2NoZW1hcy5vcGVueG1sZm9ybWF0cy5vcmcvb2ZmaWNlRG9jdW1lbnQvMjAwNi9yZWxhdGlvbnNoaXBzL3NoYXJlZFN0cmluZ3MiIFRhcmdldD0iL3hsL3NoYXJlZFN0cmluZ3MueG1sIiBJZD0iUjQ3MmY3NmQ5YmI0MjQ3NDYiIC8+PFJlbGF0aW9uc2hpcCBUeXBlPSJodHRwOi8vc2NoZW1hcy5vcGVueG1sZm9ybWF0cy5vcmcvb2ZmaWNlRG9jdW1lbnQvMjAwNi9yZWxhdGlvbnNoaXBzL3dvcmtzaGVldCIgVGFyZ2V0PSIveGwvd29ya3NoZWV0cy9zaGVldDEueG1sIiBJZD0iUjc2MDUxOWIxNGMwMjRkZjQiIC8+PC9SZWxhdGlvbnNoaXBzPg==", "[Content_Types].xml": "77u/PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48VHlwZXMgeG1sbnM9Imh0dHA6Ly9zY2hlbWFzLm9wZW54bWxmb3JtYXRzLm9yZy9wYWNrYWdlLzIwMDYvY29udGVudC10eXBlcyI+PERlZmF1bHQgRXh0ZW5zaW9uPSJ4bWwiIENvbnRlbnRUeXBlPSJhcHBsaWNhdGlvbi92bmQub3BlbnhtbGZvcm1hdHMtb2ZmaWNlZG9jdW1lbnQuc3ByZWFkc2hlZXRtbC5zaGVldC5tYWluK3htbCIgLz48RGVmYXVsdCBFeHRlbnNpb249InJlbHMiIENvbnRlbnRUeXBlPSJhcHBsaWNhdGlvbi92bmQub3BlbnhtbGZvcm1hdHMtcGFja2FnZS5yZWxhdGlvbnNoaXBzK3htbCIgLz48T3ZlcnJpZGUgUGFydE5hbWU9Ii94bC9zdHlsZXMueG1sIiBDb250ZW50VHlwZT0iYXBwbGljYXRpb24vdm5kLm9wZW54bWxmb3JtYXRzLW9mZmljZWRvY3VtZW50LnNwcmVhZHNoZWV0bWwuc3R5bGVzK3htbCIgLz48T3ZlcnJpZGUgUGFydE5hbWU9Ii94bC90aGVtZS90aGVtZTEueG1sIiBDb250ZW50VHlwZT0iYXBwbGljYXRpb24vdm5kLm9wZW54bWxmb3JtYXRzLW9mZmljZWRvY3VtZW50LnRoZW1lK3htbCIgLz48T3ZlcnJpZGUgUGFydE5hbWU9Ii94bC9zaGFyZWRTdHJpbmdzLnhtbCIgQ29udGVudFR5cGU9ImFwcGxpY2F0aW9uL3ZuZC5vcGVueG1sZm9ybWF0cy1vZmZpY2Vkb2N1bWVudC5zcHJlYWRzaGVldG1sLnNoYXJlZFN0cmluZ3MreG1sIiAvPjxPdmVycmlkZSBQYXJ0TmFtZT0iL3hsL3dvcmtzaGVldHMvc2hlZXQxLnhtbCIgQ29udGVudFR5cGU9ImFwcGxpY2F0aW9uL3ZuZC5vcGVueG1sZm9ybWF0cy1vZmZpY2Vkb2N1bWVudC5zcHJlYWRzaGVldG1sLndvcmtzaGVldCt4bWwiIC8+PC9UeXBlcz4="}};
+
+// Local Excel export using an Artifact Tool-authored package. Generic text/ZIP helpers carried from the project capstone.
+function splitWorkbookText(value) {
+  const chunks=[]; let text='', lines=1, width=0;
+  for (const char of String(value ?? '')) {
+    const advance=char==='\t'?4:(char.codePointAt(0)>=0x100 || 'MWmw'.includes(char))?2:1;
+    const newline=char==='\n'||char==='\r';
+    let nextLines=lines+(newline||width+advance>90?1:0);
+    if (text && (text.length+char.length>700 || nextLines>12)) { chunks.push({text,lines});text='';lines=1;width=0;nextLines=newline?2:1; }
+    text+=char;lines=nextLines;width=newline?0:width+advance>90?advance:width+advance;
+  }
+  if (text || !chunks.length) chunks.push({text,lines});
+  return chunks;
+}
+function workbookXMLText(value) {
+  return String(value).replace(/_x[0-9a-f]{4}_/gi,m=>'_x005F_'+m.slice(1))
+    .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\ufffe\uffff]/g,c=>'_x'+c.charCodeAt(0).toString(16).toUpperCase().padStart(4,'0')+'_')
+    .replace(/[&<>"'\r]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;','\r':'&#13;'}[c]));
+}
+function workbookCRC32(bytes) {
+  let crc=0xffffffff;
+  for(const byte of bytes){crc^=byte;for(let bit=0;bit<8;bit++)crc=(crc>>>1)^((crc&1)?0xedb88320:0);}
+  return (crc^0xffffffff)>>>0;
+}
+function workbookZip(parts) {
+  const enc=new TextEncoder(),local=[],directory=[];let offset=0;
+  const header=(size)=>{const bytes=new Uint8Array(size);return {bytes,view:new DataView(bytes.buffer)};};
+  for(const [name,text] of Object.entries(parts)){
+    const filename=enc.encode(name),data=enc.encode(text),crc=workbookCRC32(data),h=header(30+filename.length),v=h.view;
+    v.setUint32(0,0x04034b50,true);v.setUint16(4,20,true);v.setUint16(6,0x800,true);v.setUint16(12,0x21,true);v.setUint32(14,crc,true);v.setUint32(18,data.length,true);v.setUint32(22,data.length,true);v.setUint16(26,filename.length,true);h.bytes.set(filename,30);
+    const c=header(46+filename.length),cv=c.view;cv.setUint32(0,0x02014b50,true);cv.setUint16(4,20,true);cv.setUint16(6,20,true);cv.setUint16(8,0x800,true);cv.setUint16(14,0x21,true);cv.setUint32(16,crc,true);cv.setUint32(20,data.length,true);cv.setUint32(24,data.length,true);cv.setUint16(28,filename.length,true);cv.setUint32(42,offset,true);c.bytes.set(filename,46);
+    local.push(h.bytes,data);directory.push(c.bytes);offset+=h.bytes.length+data.length;
+  }
+  const size=directory.reduce((n,b)=>n+b.length,0),end=header(22);end.view.setUint32(0,0x06054b50,true);end.view.setUint16(8,directory.length,true);end.view.setUint16(10,directory.length,true);end.view.setUint32(12,size,true);end.view.setUint32(16,offset,true);
+  const result=new Uint8Array(offset+size+22);let position=0;for(const bytes of [...local,...directory,end.bytes]){result.set(bytes,position);position+=bytes.length;}return result;
+}
+function valueMessageWorkbookRows(records,data,downloadedAt=new Date()) {
+  if(!data||!Array.isArray(data.cases)||data.cases.length!==3||!Array.isArray(records)||records.length!==3)throw new Error('Complete all three messages before downloading.');
+  const ids=data.cases.map(c=>c.id);
+  if(new Set(ids).size!==3||new Set(records.map(r=>r?.id)).size!==3||records.some(r=>!ids.includes(r?.id)))throw new Error('Message records do not match this activity.');
+  for(const c of data.cases){
+    const r=records.find(r=>r.id===c.id);
+    if(!r||r.confirmed!==true||r.need!==c.need||!c.needs.some(o=>o.id===r.need))throw new Error('Check and review all three priorities before downloading.');
+    for(const field of ['message','reason','confirm'])if(typeof r[field]!=='string'||!r[field].trim()||r[field].length>4000)throw new Error('Complete each message, explanation and question before downloading.');
+  }
+  if(!(downloadedAt instanceof Date)||!Number.isFinite(downloadedAt.getTime()))throw new Error('Invalid download date.');
+  const rows=[];
+  const add=(label,text,kind='body')=>{
+    for(const[i,part]of splitWorkbookText(text).entries())rows.push({label:i?label+' (continued)':label,text:part.text,kind,lines:Math.max(part.lines,Math.ceil((label.length+(i?12:0))/27))});
+  };
+  add('','','note');add('My value messages','Your three stakeholder conversations','title');
+  add('About this record','Your current messages, explanations and questions. Priority choices are checked; writing is self-reviewed.','note');
+  add('Using this workbook','You can edit this personal copy in Excel. Excel edits do not update the activity; keep an editable draft from the activity to restore work there.','note');
+  add('Downloaded',downloadedAt.toISOString().replace('T',' ').slice(0,19)+' UTC','note');
+  data.cases.forEach((c,i)=>{
+    const r=records.find(r=>r.id===c.id),priority=c.needs.find(o=>o.id===r.need);
+    add(c.title,'Stakeholder '+(i+1)+' of 3','section');
+    add('Customer context',c.sourceScenario,'prompt');add('Customer statement',c.quote,'prompt');
+    add('Your selected priority',priority.name,'priority');add('Feedback on your priority',priority.feedback,'prompt');
+    add('Your value message',r.message);add('Why this framing fits',r.reason);add('Your confirmation question',r.confirm);
+    add('Review status','Priority checked; writing self-reviewed.','review');add('','','note');
+  });
+  return rows;
+}
+function valueMessageWorksheetXML(rows,styles,source) {
+  const required=['titleA','titleB','section','label','body','prompt','priority','review','note'];
+  if(!styles||required.some(k=>!Number.isInteger(styles[k])||styles[k]<0)||!source.includes('<x:sheetData>'))throw new Error('The Excel template is incomplete.');
+  const cell=(ref,value,style)=>'<x:c r="'+ref+'" s="'+style+'" t="inlineStr"><x:is><x:t xml:space="preserve">'+workbookXMLText(value)+'</x:t></x:is></x:c>';
+  const body=rows.map((row,i)=>{
+    const r=i+1,height=row.kind==='title'?44:Math.max(row.kind==='section'?36:28,Math.min(240,row.lines*17+12));
+    const a=row.kind==='title'?styles.titleA:row.kind==='section'?styles.section:styles.label;
+    const b=row.kind==='title'?styles.titleB:row.kind==='section'?styles.section:styles[row.kind]??styles.body;
+    return '<x:row r="'+r+'" ht="'+height+'" customHeight="1">'+cell('A'+r,row.label,a)+cell('B'+r,row.text,b)+'</x:row>';
+  }).join('');
+  let xml=source.replace(/<x:sheetData>[\s\S]*?<\/x:sheetData>/,()=>'<x:sheetData>'+body+'</x:sheetData>');
+  if(/<x:dimension\b/.test(xml))xml=xml.replace(/<x:dimension\b[^>]*\/>/,'<x:dimension ref="A1:B'+rows.length+'"/>');
+  else xml=xml.replace('<x:sheetViews>','<x:dimension ref="A1:B'+rows.length+'"/><x:sheetViews>');
+  xml=xml.replace('</x:sheetPr>','<x:pageSetUpPr fitToPage="1"/></x:sheetPr>');
+  xml=xml.replace('</x:worksheet>','<x:pageSetup paperSize="9" orientation="landscape" fitToWidth="1" fitToHeight="0"/></x:worksheet>');
+  return xml;
+}
+function createValueMessageWorkbook(records,data,template,downloadedAt=new Date()) {
+  const rows=valueMessageWorkbookRows(records,data,downloadedAt),parts={};
+  if(!template||!template.parts||typeof template.parts!=='object')throw new Error('The Excel template is incomplete.');
+  for(const[name,encoded]of Object.entries(template.parts))parts[name]=new TextDecoder().decode(Uint8Array.from(atob(encoded),c=>c.charCodeAt(0)));
+  const sheet='xl/worksheets/sheet1.xml';
+  if(!parts[sheet]||!parts['[Content_Types].xml']||!parts['xl/styles.xml'])throw new Error('The Excel template is incomplete.');
+  parts[sheet]=valueMessageWorksheetXML(rows,template.styles,parts[sheet]);return workbookZip(parts);
+}
+if(typeof module!=='undefined'&&module.exports)module.exports={valueMessageWorkbookRows,valueMessageWorksheetXML,createValueMessageWorkbook,splitWorkbookText,workbookXMLText,workbookCRC32};
+
+const CASES=DATA.cases,IDS=CASES.map(c=>c.id),FORMAT='c2-value-messages-v1';let checked={},pending=null;
+const option=(c,id)=>c.needs.find(o=>o.id===id);
+function reference(){return `<details class="reference"><summary>Review the role and evidence reminder</summary><div class="profile"><p>${safe(DATA.boundary)}</p>${DATA.roles.map(r=>`<h3>${safe(r.name)}</h3><p>${safe(r.meaning)}</p>`).join('')}</div></details>`;}
+function sample(c){return `<details class="reference"><summary>Compare with one possible message after drafting</summary><div class="profile"><p>This is a possible message, not a script to copy, a proven outcome or an agreed solution. It does not fill your writing.</p><p><strong>Possible value message:</strong> ${safe(c.sampleMessage)}</p><p><strong>Why this framing:</strong> ${safe(c.sampleReason)}</p><p><strong>Question to confirm:</strong> ${safe(c.sampleQuestion)}</p></div></details>`;}
+function task(c){return `<section class="panel"><h3>Stakeholder and customer context</h3><p>${safe(c.sourceScenario)}</p><p><strong>${safe(c.role)} says:</strong></p><blockquote>${safe(c.quote)}</blockquote></section>${reference()}<label class="field" for="${c.id}-need">Identify the priority in this statement</label><select id="${c.id}-need" data-change="${c.id}"><option value="">Choose one</option>${c.needs.map(o=>`<option value="${o.id}">${safe(o.name)}</option>`).join('')}</select><p>${safe(c.hint)}</p><label class="field" for="${c.id}-message">Your value message for this stakeholder</label><p class="muted">Connect a possible benefit to the stated priority in plain customer language. Keep unverified outcomes conditional.</p><textarea id="${c.id}-message" data-write="${c.id}" maxlength="4000" rows="4"></textarea><label class="field" for="${c.id}-reason">Why does this framing fit this listener?</label><p class="muted">Refer to the customer's words, rather than relying on a job-title stereotype.</p><textarea id="${c.id}-reason" data-write="${c.id}" maxlength="4000" rows="3"></textarea><label class="field" for="${c.id}-confirm">Your question to confirm the priority or validate the value</label><textarea id="${c.id}-confirm" data-write="${c.id}" maxlength="4000" rows="3"></textarea><button type="button" data-check="${c.id}">Check the priority and completeness</button><section class="fb" id="fb-${c.id}" tabindex="-1" role="status" hidden></section><fieldset><legend>Self-review your writing</legend>${DATA.review.map((t,j)=>`<label class="pick"><input type="checkbox" id="${c.id}-review-${j}" data-review="${c.id}"><span>${safe(t)}</span></label>`).join('')}</fieldset><p>The priority choice is checked. The meaning and quality of your message, explanation and question are self-reviewed.</p><div class="actions"><button type="button" data-complete="${c.id}" disabled>I have reviewed this message</button><button type="button" data-continue="${c.id}" hidden>Continue</button></div>${sample(c)}`;}
+function read(id){return {need:byId(id+'-need').value,message:byId(id+'-message').value,reason:byId(id+'-reason').value,confirm:byId(id+'-confirm').value};}
+function assess(c,v){return v.need===c.need;}
+function signature(id){return JSON.stringify(read(id));}
+function reviewed(id){return DATA.review.every((_,j)=>byId(id+'-review-'+j).checked);}
+function valid(id){const c=CASES.find(c=>c.id===id),v=read(id);return checked[id]===signature(id)&&assess(c,v)&&!!v.message.trim()&&!!v.reason.trim()&&!!v.confirm.trim();}
+function sync(id){byId('pane-'+id).querySelector('[data-complete]').disabled=!(valid(id)&&reviewed(id))||!!Board.st.done[id];}
+function clearStamp(){byId('stamp').textContent='';byId('stamp').classList.remove('on');}
+function invalidate(id){reopenFrom(id);delete checked[id];delete Board.st.done[id];DATA.review.forEach((_,j)=>byId(id+'-review-'+j).checked=false);byId('whole-review').checked=false;byId('fb-'+id).hidden=true;byId('pane-'+id).querySelector('[data-continue]').hidden=true;clearStamp();sync(id);Board.fill(id,'Changed: check the choices and review your writing again.');Board.paint();updateRecord();}
+function focusFeedback(box){const scroller=byId('stage-scroll');if(scroller.scrollHeight>scroller.clientHeight+2)scroller.scrollTop+=box.getBoundingClientRect().top-scroller.getBoundingClientRect().top-12;else window.scrollTo({top:Math.max(0,window.scrollY+box.getBoundingClientRect().top-12),behavior:'auto'});box.focus({preventScroll:true});}
+function check(c){const v=read(c.id),ok=assess(c,v),box=byId('fb-'+c.id);box.hidden=false;const names={message:'your value message',reason:'why the framing fits this listener',confirm:'your confirmation or validation question'},missing=Object.keys(names).filter(f=>!v[f].trim()).map(f=>names[f]);checked[c.id]=ok&&!missing.length?signature(c.id):null;const o=option(c,v.need);box.innerHTML=`<p><strong>${ok?'The priority fits this stakeholder statement':'Review the priority in the statement'}</strong></p><p><strong>Your selected priority:</strong> ${safe(o?.name||'Not chosen. Choose one priority; your existing writing is kept.')}</p>${o?`<p>${safe(o.feedback)}</p>`:''}<p>${safe(c.fit)}</p>${missing.length?`<p>Still to write: ${safe(missing.join('; '))}. Existing writing is kept.</p>`:'<p>All three writing fields contain a response. That does not verify the quality of the prose. Use the two self-review statements before recording your message.</p>'}`;sync(c.id);focusFeedback(box);}
+function updateRecord(){if(!byId('written-record'))return;byId('written-record').innerHTML=CASES.map(c=>{const v=read(c.id);return `<section class="panel"><h3>${safe(c.title)}</h3><p>${Board.st.done[c.id]?'Priority checked; writing self-reviewed.':'Draft: review not complete.'}</p><blockquote>${safe(c.quote)}</blockquote><p><strong>Selected priority:</strong> ${safe(option(c,v.need)?.name||'Not chosen.')}</p><dl><dt>Your value message</dt><dd>${safe(v.message||'Not entered yet.')}</dd><dt>Why the framing fits</dt><dd>${safe(v.reason||'Not entered yet.')}</dd><dt>Your confirmation or validation question</dt><dd>${safe(v.confirm||'Not entered yet.')}</dd></dl></section>`;}).join('');byId('download').disabled=!(allConfirmed()&&byId('whole-review').checked);}
+function download(text,name,type){const u=URL.createObjectURL(new Blob([text],{type}));try{const a=document.createElement('a');a.href=u;a.download=name;a.click();}finally{setTimeout(()=>URL.revokeObjectURL(u),1000);}}
+function notify(msg){byId('save-status').textContent=msg;Board.say(msg);}
+Board.tiles=[{id:'start',title:'Frame value around the stated priority',short:'Your task',image:IMAGES.start,side:'left',render:()=>`<p>${safe(DATA.intro)}</p><p>${safe(DATA.boundary)}</p><p>${safe(DATA.scope)}</p>${reference()}<p>For each stakeholder, identify the priority, write a value message, explain why the framing fits and ask a question to confirm or validate. Check the choice and completeness, then assess the meaning with the self-review statements. A possible message is available after drafting.</p><p>Use Save editable draft to keep unfinished work. Each writing field allows 4,000 characters. Restore asks before replacing writing and reopens reviews. The complete text version and PDF support offline work.</p><button type="button" id="begin">Start the first stakeholder</button>`},...CASES.map((c,i)=>({id:c.id,title:c.title,short:c.short,image:IMAGES[c.id],side:i===0?'left':'right',slot:true,render:()=>task(c)})),{id:'record',title:'Review and keep your three value messages',short:'Your record',image:IMAGES.record,side:'right',render:()=>`<p>Your current messages appear below, including unfinished drafts. Reopen any case to edit.</p><div id="written-record"></div><label class="pick"><input type="checkbox" id="whole-review"><span>I have checked that each message follows the stated priority and that its possible value and validation needs are clear.</span></label><button type="button" id="download" disabled>Download my three value messages (Excel)</button><p id="download-status" role="status"></p><p>${safe(DATA.closing)}</p>`}];
+Board.unlocked=()=>true;Board.cardLabel=()=>`Messages ${IDS.filter(id=>Board.st.done[id]).length}/3`;Board.mood={n:'Reviewing the stakeholder statement.',p:'Message reviewed.',w:'Review the stated priority.'};
+Board.onReset=()=>{checked={};pending=null;clearStamp();byId('card').hidden=true;byId('toggle-card').setAttribute('aria-expanded','false');if(byId('restore-warning'))byId('restore-warning').hidden=true;};Board.onOpen=id=>{if(id==='record')updateRecord();};
+Board.onClick=b=>{
+ if(b.id==='restart'){if(IDS.some(id=>Object.values(read(id)).some(Boolean))&&!confirm('Start again and clear your messages? Save an editable draft first if you want to keep them.'))return true;return false;}
+ if(b.id==='begin'){Board.open(1);return true;}
+ const id=b.dataset.check||b.dataset.complete||b.dataset.continue,c=CASES.find(c=>c.id===id);
+ if(b.dataset.check){check(c);return true;}
+ if(b.dataset.complete){if(!Board.unlocked(id)||!valid(id)||!reviewed(id))return true;Board.complete(id,null,'Self-reviewed','Priority checked; writing reviewed');sync(id);const n=byId('pane-'+id).querySelector('[data-continue]');n.hidden=false;n.focus();updateRecord();return true;}
+ if(b.dataset.continue){Board.open(Board.idx(id)+1);return true;}
+ if(b.id==='save-work'){download(JSON.stringify({format:FORMAT,cases:Object.fromEntries(IDS.map(id=>[id,read(id)]))},null,2),'my-value-messages-draft.json','application/json');notify('Editable draft downloaded. Keep it to restore unfinished work later.');return true;}
+ if(b.id==='restore-work'){byId('restore-file').click();return true;}
+ if(b.id==='restore-cancel'){pending=null;byId('restore-warning').hidden=true;notify('Restore cancelled. Current writing kept.');return true;}
+ if(b.id==='restore-confirm'){if(!pending)return true;CASES.forEach(c=>{const v=pending[c.id];for(const f of ['need','message','reason','confirm'])byId(c.id+'-'+f).value=v[f];invalidate(c.id);});pending=null;byId('restore-warning').hidden=true;updateRecord();notify('Draft restored. Check the choices and review your writing again.');Board.open(1);return true;}
+ if(b.id==='download'){
+  if(b.disabled||!allConfirmed()||!byId('whole-review').checked)return true;
+  try{
+   const bytes=createValueMessageWorkbook(messageWorkbookRecords(),DATA,VALUE_MESSAGE_WORKBOOK_TEMPLATE);
+   download(bytes,'my-three-value-messages.xlsx','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+   byId('download-status').textContent='Your formatted Excel workbook has been downloaded.';
+  }catch(error){byId('download-status').textContent='Could not create the Excel download. Your messages are still here; please try again.';}
+  return true;
+ }return false;
+};
+
+function allConfirmed(){return IDS.every(id=>Board.st.done[id]&&valid(id)&&reviewed(id));}
+function messageWorkbookRecords(){return CASES.map(c=>({id:c.id,...read(c.id),confirmed:!!Board.st.done[c.id]&&valid(c.id)&&reviewed(c.id)}));}
+function reopenFrom(id,preserveCurrent=false){IDS.slice(IDS.indexOf(id)).forEach(next=>{delete Board.st.done[next];if(!(preserveCurrent&&next===id)){delete checked[next];DATA.review.forEach((_,j)=>byId(next+'-review-'+j).checked=false);byId('fb-'+next).hidden=true;}byId('pane-'+next).querySelector('[data-continue]').hidden=true;Board.fill(next,'Recheck this section. Your writing is kept.');sync(next);});}
+Board.unlocked=id=>Board.tiles.slice(1,Board.idx(id)).filter(t=>t.slot).every(t=>Board.st?.done[t.id]&&valid(t.id)&&reviewed(t.id));
+Board.lockedMsg=()=> 'Correct and confirm each earlier section before continuing. Your writing is kept.';
+const originalPaint=Board.paint;Board.paint=function(){originalPaint.call(this);byId('next').disabled=this.cur===this.tiles.length-1||!this.unlocked(this.tiles[this.cur+1].id);this.tiles.forEach(t=>byId('tile-'+t.id).setAttribute('aria-disabled',String(!this.unlocked(t.id))));};
+
+Board.start();const toolbar=document.createElement('section');toolbar.className='save-tools';toolbar.setAttribute('aria-label','Keep or restore your writing');toolbar.innerHTML='<button type="button" id="save-work">Save editable draft</button><button type="button" id="restore-work" class="quiet">Restore draft</button><input id="restore-file" type="file" accept=".json,application/json" hidden><p id="save-status" role="status"></p><div id="restore-warning" hidden><p>Replace all current work with the selected draft? Review status will be cleared.</p><button type="button" id="restore-confirm">Replace my current work</button><button type="button" id="restore-cancel" class="quiet">Cancel restore</button></div>';byId('interactive').before(toolbar);
+document.addEventListener('input',e=>{if(e.target.dataset.write)invalidate(e.target.dataset.write);});document.addEventListener('change',e=>{if(e.target.dataset.change)invalidate(e.target.dataset.change);if(e.target.dataset.review){const id=e.target.dataset.review;if(!reviewed(id)){reopenFrom(id,true);delete Board.st.done[id];byId('whole-review').checked=false;byId('pane-'+id).querySelector('[data-continue]').hidden=true;clearStamp();Board.fill(id,'Self-review reopened.');Board.paint();}sync(id);updateRecord();}if(e.target.id==='whole-review')updateRecord();});
+byId('restore-file').addEventListener('change',async e=>{const file=e.target.files[0];pending=null;byId('restore-warning').hidden=true;if(!file)return;try{if(file.size>1000000)throw Error();const v=JSON.parse(await file.text());if(v.format!==FORMAT||!v.cases||typeof v.cases!=='object'||Array.isArray(v.cases))throw Error();const rows={};for(const c of CASES){const r=v.cases[c.id];if(!r||typeof r!=='object'||Array.isArray(r))throw Error();if(typeof r.need!=='string'||r.need&&!option(c,r.need))throw Error();for(const f of ['message','reason','confirm'])if(typeof r[f]!=='string'||r[f].length>4000)throw Error();rows[c.id]={need:r.need,message:r.message,reason:r.reason,confirm:r.confirm};}pending=rows;byId('restore-warning').hidden=false;notify('Draft read. Confirm below before replacing current work.');byId('restore-confirm').focus();}catch{notify('That is not a valid draft for this activity. Your current writing is kept.');}e.target.value='';});
+
+
+
+let restoredEdition=2;
+ActivityProgress.mount({id:"c2-select-right-framing",compatibility:"state-v1:7c7e82ae13d6dfecedcd",title:document.title,media:Object.values(IMAGES),roots:['stage-body','slots','stamp'],getState:()=>({board:Board.st,cur:Board.cur,checked,assessmentVersion:2}),setState:v=>{Board.st=v.board;Board.cur=v.cur;checked=v.checked||{};restoredEdition=v.assessmentVersion;},afterRestore:()=>{
+ const values=CASES.map(c=>[...byId('pane-'+c.id).querySelectorAll('input[id],select[id],textarea[id]')].map(e=>({id:e.id,value:e.value,checked:e.checked}))),feedbackShown=CASES.map(c=>!byId('fb-'+c.id).hidden),oldBoard=Board.st,oldChecked=checked,cur=Board.cur,whole=byId('whole-review').checked;
+ const compatibleReviewState=restoredEdition===2||restoredEdition===undefined;
+ Board.build();values.flat().forEach(v=>{const e=byId(v.id);if(e){e.value=v.value;if(e.type==='checkbox'||e.type==='radio')e.checked=compatibleReviewState?v.checked:!e.dataset.review&&v.checked;}});Board.st=oldBoard;checked=compatibleReviewState?oldChecked:{};if(!compatibleReviewState)Board.st.done={};let incomplete=false;
+ CASES.forEach(c=>{if(incomplete||!valid(c.id)||!reviewed(c.id))delete Board.st.done[c.id];if(!Board.st.done[c.id])incomplete=true;const i=IDS.indexOf(c.id);if(compatibleReviewState&&feedbackShown[i])check(c);Board.fill(c.id,Board.st.done[c.id]?'Choices checked; writing reviewed.':'Recheck this section. Your writing is kept.');sync(c.id);byId('pane-'+c.id).querySelector('[data-continue]').hidden=!Board.st.done[c.id];});byId('whole-review').checked=!incomplete&&whole;updateRecord();if(Board.tiles[cur]&&Board.unlocked(Board.tiles[cur].id))Board.open(cur,true);else Board.open(IDS.findIndex(id=>!Board.st.done[id])+1,true);Board.paint();
+ },reset:()=>Board.build(),currentRoot:()=>byId('pane-'+Board.tiles[Board.cur].id)});
+</script></body></html>
