@@ -1,0 +1,220 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Capstone sales project</title><style>:root{color-scheme:light;--ink:#192c3c;--muted:#506577;--paper:#fff;--line:#c6d5de;--accent:#6651c9;--green:#087c5b}*{box-sizing:border-box}body{margin:0;background:#edf2f5;color:var(--ink);font:16px/1.55 system-ui,sans-serif}a{color:#44319e}button,input,textarea{font:inherit}button,a.button{border:1px solid #9a8ddd;border-radius:9px;padding:9px 13px;background:#fff;color:#362477;cursor:pointer;text-decoration:none}button:hover,a.button:hover{background:#f1edff}button.primary{background:var(--accent);color:#fff}button:disabled{opacity:.55;cursor:default}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid #cc6a14;outline-offset:3px}header{max-width:1440px;margin:auto;padding:26px 28px 12px}.eyebrow{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}h1{font-size:clamp(1.65rem,3vw,2.35rem);line-height:1.2;margin:8px 0 12px}h2{font-size:1.4rem;line-height:1.3}h3{font-size:1.08rem}p{margin:0 0 13px}.intro{max-width:900px}.utility{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin:15px 0}.notice{font-size:.92rem;color:var(--muted)}.board{display:grid;grid-template-columns:minmax(170px,225px) minmax(360px,1fr) minmax(170px,225px);gap:18px;max-width:1440px;margin:0 auto;padding:12px 28px 30px}.rail{display:flex;flex-direction:column;gap:12px}.task-link{text-align:left;min-height:77px;display:flex;flex-direction:column;justify-content:center;width:100%}.task-link[aria-current=true]{border:2px solid var(--accent);background:#eee9ff}.task-link.done{border-left:6px solid var(--green)}.task-link .status{font-size:.82rem;color:var(--muted)}.screen{background:var(--paper);border:1px solid var(--line);border-radius:16px;box-shadow:0 7px 22px #24374d0b;min-height:640px;overflow:hidden}.screen-head{background:#203e54;color:#fff;padding:20px 24px}.screen-head p{margin:4px 0 0;color:#e0ebf4}.screen-body{padding:24px}.panel{display:none}.panel.active{display:block}details{border:1px solid var(--line);border-radius:9px;margin:12px 0;background:#fff}summary{cursor:pointer;font-weight:650;padding:12px 15px}details>div{padding:0 16px 12px}.case-card{border-left:4px solid #28a4a4;padding-left:14px;margin:16px 0}.case-card h3{margin:0 0 5px}.task-response{width:100%;min-height:220px;resize:vertical;padding:12px;border:1px solid #879da9;border-radius:9px;color:var(--ink);background:#fcfdff}.task-response:focus{border-color:var(--accent)}label{display:block;font-weight:600;margin:12px 0 7px}.checks{padding:12px 16px;background:#f1f7f4;border-radius:9px;margin:14px 0}.checks li{margin:6px 0}.actions{display:flex;flex-wrap:wrap;gap:10px;margin:15px 0}.progress-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:15px}.progress-card strong{display:block}progress{width:100%;accent-color:var(--green);height:14px}.feedback{border-left:4px solid #6b7db2;padding:10px 13px;background:#f1f4fb;margin-top:12px}.feedback.good{border-color:var(--green);background:#edf7f1}.question{border-bottom:1px solid var(--line);padding:15px 0}.question:first-child{padding-top:0}.question legend{font-weight:650}.question label{font-weight:400;display:flex;gap:10px;align-items:flex-start;padding:5px;margin:3px 0}.question input{margin-top:6px;flex:none}.question fieldset{border:0;padding:0;margin:0}.mini{font-size:.88rem;color:var(--muted)}#live{min-height:28px;max-width:1384px;margin:auto;padding:0 28px;color:#07573f;font-weight:600}.downloads{display:flex;flex-wrap:wrap;gap:8px}.export-summary{display:none}.reference-table{display:grid;gap:10px}.reference-table div{padding:10px;border-bottom:1px solid var(--line)}.reference-table strong{display:block}footer{max-width:1384px;margin:auto;padding:0 28px 25px}.hidden-file{position:absolute;left:-9999px}.print-note{display:none}@media(max-width:1000px){.board{grid-template-columns:170px 1fr}.right{grid-column:1;grid-row:2}.screen{grid-column:2;grid-row:1/span 2}.screen-body{padding:18px}}@media(max-width:680px){header{padding:20px 16px 8px}.board{display:flex;flex-direction:column;padding:10px 16px 22px}.rail{display:grid;grid-template-columns:1fr 1fr;gap:8px}.right{display:flex;flex-direction:column}.screen{order:1;min-height:0}.left{order:0}.right{order:2}.task-link{min-height:65px}.screen-head{padding:16px}.screen-body{padding:16px}.progress-card{grid-column:1/-1}.task-response{min-height:230px}#live{padding:0 16px}.question label{padding:9px 0}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}@media print{body{background:#fff;color:#111;font:11pt/1.4 Arial,sans-serif}header{padding:0}.board,.utility,.notice,#live,footer,.intro{display:none}.export-summary{display:block}.export-summary h2{break-before:page}.export-summary h2:first-of-type{break-before:auto}.export-summary pre{font:inherit;white-space:pre-wrap;overflow-wrap:anywhere}.print-note{display:block}.eyebrow{color:#111}h1{font-size:21pt}}
+
+@media(min-width:1001px){.rail{position:sticky;top:18px;align-self:start}}
+
+button,a.button,select,summary{min-height:44px}select{display:block;width:100%;max-width:100%;font:inherit;padding:10px;border:1px solid #879da9;border-radius:8px;background:white;color:var(--ink)}.board>*{min-width:0}.screen{overflow:visible}.task-link{overflow-wrap:anywhere}.task-response{min-height:160px}.revision-field{border-top:2px solid var(--line);margin-top:18px;padding-top:10px}.self-check{display:flex;align-items:flex-start;gap:10px;font-weight:400;padding:9px;border:1px solid var(--line);border-radius:8px;min-height:44px}.self-check input{flex:0 0 22px;width:22px;height:22px;margin-top:2px;accent-color:var(--green)}.record-section{border-bottom:1px solid var(--line);padding:12px 0}dt{font-weight:700}dd{white-space:pre-wrap;overflow-wrap:anywhere;margin:4px 0 16px}.transcript-turn{padding:8px 0;border-bottom:1px solid var(--line)}blockquote{margin:8px 0 16px;padding-left:12px;border-left:4px solid #28a4a4;overflow-wrap:anywhere}#restore-warning{border:2px solid var(--accent);border-radius:10px;padding:12px;max-width:900px}#text-version{max-width:1000px;margin:18px auto;padding:0 20px;overflow-wrap:anywhere}#text-version>summary{font-size:1.1rem}#text-version h1{font-size:1.7rem}#text-version h2{font-size:1.35rem}.complete-text{padding:16px;background:white}#plan-record dd,#review-record dd{font-weight:400}.professional-review{padding:12px;background:#f1f7f4;border-radius:8px}button[data-open]{max-width:100%;white-space:normal}.task-response,select{scroll-margin-top:15px}@media(max-width:680px){.task-response{min-height:180px}.utility{align-items:stretch}.utility button,.utility a{max-width:100%}.rail{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.screen-body{padding:14px}#text-version{padding:0 12px}.self-check{padding:8px}}@media print{#text-version{display:none}.record-section{break-inside:auto}.record-section h3{break-after:avoid}dd{white-space:pre-wrap}}
+</style></head><body><header><a href="index.html">Open interactive capstone</a><p><a href="fallback.pdf">Download the complete PDF</a></p></header><main class="complete-text" style="max-width:950px;margin:auto"><h1>Capstone sales project</h1>
+<p>Bring the course skills together in one opportunity plan for Ashbourne Global. Use the scenario and scoping conversation to plan stakeholder engagement, tailored value, two objection responses and a joint technical follow-up call.</p>
+<p>This is ungraded practice. Your writing is not submitted, automatically graded or certified. The final scored course assessment is separate. No cloud account, deployment or paid service is needed.</p>
+<p>Customer goals are requirements to investigate, not proven results. Keep source facts, your judgement and proposed actions distinct. The case supplies no budget, final approval rights, confirmed architecture, verified customer testimonial or guaranteed cost/performance/security outcome.</p>
+<p>Draft the four sections. Review your actual work against the criteria and the worked example, revise where useful, then record what you changed or why you kept the draft. Checks report completeness only; you assess the meaning and evidence. You can also download an editable draft as a backup.</p>
+<p>Use the source template’s length suggestions as planning guides, not grading limits: about 150-200 words for the combined stakeholder map and the call plan, 3-4 sentences per value statement, and 100-150 words per objection response. Clear, supported reasoning matters more than matching a count. Each browser writing field allows 4,000 characters.</p>
+<h2>Customer case and goals</h2>
+<p>Ashbourne Global is a mid-sized professional services company that provides human capital solutions and leadership development programs to international non-profits and corporations. The organization delivers most of its programs through a client learning platform that hosts digital courses, assessments, and resources.</p>
+<p>The leadership team is now exploring cloud capabilities to modernize this platform and improve program analytics. The current, on-premises system makes it difficult to track learner progress across regions and customer accounts. Reporting is manual and time-consuming, and the platform cannot easily scale for large client programs or new content formats. These limitations impact the company’s ability to deliver personalized learning experiences and demonstrate its impact on customers.</p>
+<p>Customer goals to investigate, not verified results:</p>
+<ul><li>Support more learners without performance issues.</li></ul>
+<ul><li>Provide real-time dashboards for program outcomes.</li></ul>
+<ul><li>Integrate securely with existing HR and CRM systems.</li></ul>
+<ul><li>Provide predictable and transparent costs for long-term planning.</li></ul>
+<h3>Nina Okafor - Director of IT</h3>
+<p>Oversees system modernization and is responsible for security, integration, and long-term technical strategy.</p>
+<h3>Marcus Lee - Finance Manager</h3>
+<p>Manages budgets and evaluates total cost of ownership and return on investment.</p>
+<h3>Sofia Martinez - Operations Lead</h3>
+<p>Coordinates program delivery across regions and needs better visibility into performance and capacity.</p>
+<h3>Aisha Bello - Learning Manager</h3>
+<p>Represents facilitators and learners, focusing on engagement, completion rates, and learner feedback.</p>
+<h2>Scoping conversation</h2>
+<p>This fictional conversation is an early scoping call. The next meeting is a proposed technical follow-up. Use the customer statements as evidence; the seller’s proposals still require validation. Treat your plan as preparation rather than a completed sale.</p>
+<h3>Opening</h3>
+<p>You (Sales representative): Thank you for meeting with me today. I’d like to learn more about your modernization priorities and understand what matters most as you explore options for your learning platform.</p>
+<p>Nina (Director of IT): Thanks for joining us. We’ve outgrown our current system, and we need to make some decisions quickly. I’m particularly focused on security, integration, and ensuring that whatever we choose can scale without creating technical debt.</p>
+<h3>Understanding the current challenges</h3>
+<p>You (Sales representative): Of course. Can you share what’s creating the most pressure right now?</p>
+<p>Sofia (Operations Lead): Operationally, reporting has become a bottleneck. Each region uses a slightly different data format, so compiling program performance takes several days. We need better visibility and more consistent dashboards.</p>
+<p>Aisha (Learning Manager): From the learner&#x27;s perspective, we can’t establish engagement patterns in real-time. If someone falls behind in a leadership program, we typically only find out after the course has ended. We want insights that let us intervene sooner.</p>
+<p>Marcus (Finance Manager): For me, predictability is key. Our on-premises environment incurs irregular costs, including hardware, maintenance, and upgrades. We need a clearer idea of long-term spending and ROI.</p>
+<h3>Future goals</h3>
+<p>You (Sales representative): It sounds like the modernization initiative needs to support growth, visibility, and consistent outcomes. What does success look like for your team?</p>
+<p>Nina (Director of IT): A secure, cloud-based platform that integrates with our HR and CRM systems. We don’t want learners to log into five different tools.</p>
+<p>Sofia (Operations Lead): Consistency. If we can standardize reporting and reduce manual work, it frees us to focus on program quality.</p>
+<p>Aisha (Learning Manager): Better analytics. We aim to identify which modules have the most significant impact and adjust content accordingly.</p>
+<p>Marcus (Finance Manager): And we need a payment model that reflects usage and growth, not significant upfront investments.</p>
+<h3>Exploring cloud as an option</h3>
+<p>You (Sales representative): Based on what you’ve shared, cloud capabilities may be worth exploring for scalability, reporting and integration. We would need to validate the design, data and requirements. What concerns should we investigate?</p>
+<p>Nina (Director of IT): My main hesitation is migration. Moving years of learner data sounds complicated and risky. How do we know the transition will be secure?</p>
+<p>You (Sales representative): I understand why that risk matters. Which data and security requirements should a technical assessment address? We can prepare a session to explore migration and integration options; no comparable customer outcome has been supplied.</p>
+<h3>Stakeholder objection 1 (Technical risk)</h3>
+<p>Nina (Director of IT): That helps, but I’d still want to understand exactly how integration with our HR system would work.</p>
+<p>You (Sales representative): I can propose a technical session focused on your HR integration requirements and how options would be validated.</p>
+<h3>Stakeholder objection 2 (Cost and ROI)</h3>
+<p>Marcus (Finance Manager): My concern is cost. Cloud pricing models look flexible, but I need more clarity on how they translate into yearly spending. I don’t want surprises.</p>
+<p>You (Sales representative): I understand the need for clarity. We can examine projected usage, cost components and uncertainty, compare scenarios with your current baseline, and agree what evidence you need. Usage-based pricing alone does not guarantee a predictable annual bill.</p>
+<p>Marcus (Finance Manager): Yes, that would help. I want to compare that to what we’re spending on maintaining our current system.</p>
+<h3>Alignment on engagement needs</h3>
+<p>You (Sales representative): Aisha, earlier, you mentioned wanting real-time insights. Can you share more about how that affects your team?</p>
+<p>Aisha (Learning Manager): When we run programs for international clients, they expect impact reporting to be provided immediately. Right now, we can’t provide that. Better analytics would help us show how learners progress and where they need support.</p>
+<p>Sofia (Operations Lead): And from operations, that kind of visibility would let us adjust scheduling and resources faster.</p>
+<h3>Next steps and joint technical call</h3>
+<p>You (Sales representative): A proposed next step is a joint call with a solutions architect. We can prepare to assess the following topics and agree what needs further evidence:</p>
+<ul><li>Migration and integration options</li></ul>
+<ul><li>Reporting needs and required update frequency</li></ul>
+<ul><li>Cost scenarios based on projected usage and stated assumptions</li></ul>
+<ul><li>Detailed technical questions and validation steps</li></ul>
+<p>Nina (Director of IT): That would be useful for me. I want to understand exactly what the migration timeline could look like.</p>
+<p>Marcus (Finance Manager): And I’d appreciate seeing a clearer view of cost scenarios.</p>
+<p>Aisha (Learning Manager): I’d like to review the analytics dashboard if possible.</p>
+<p>Sofia (Operations Lead): Yes, I want to ensure it supports regional workflows.</p>
+<p>You (Sales representative): Let’s agree the session arrangements and share a proposed agenda in advance so everyone can prepare.</p>
+<h2>Two response frameworks</h2>
+<h3>Acknowledge-Ask</h3>
+<p>Acknowledge the concern respectfully and ask an open question to understand requirements before offering an explanation or claim.</p>
+<h3>Feel-Felt-Found</h3>
+<p>Acknowledge the concern, relate a verified comparable experience and explain the supported finding with its limits. No comparable outcome is supplied here: identify the Felt/Found evidence you would need rather than inventing a customer story. You can acknowledge and ask while evidence is unavailable.</p>
+<h2>Working in the browser or this text version</h2>
+<p>Use paper or a text editor with this complete text version, or the blank text template. The four sections contain 15 substantive writing fields, two framework selectors and four review/revision notes. Draft, compare with the criteria and example, revise and record your review note. The browser checks completeness only; it does not grade prose or certify a proposed solution.</p>
+<p>Save editable draft downloads unfinished local JSON. Every writing field allows 4,000 characters. Restore asks before replacement; Cancel restore keeps current work. Invalid JSON, wrong-format files, missing/extra/invalid fields or choices, overlong fields and files over 1,000,000 bytes change nothing. The limit supports the activity’s own maximum UTF-8 draft. Restoring clears all reviews. Clear plan asks before deleting writing and clears the progress/review cues. Nothing is submitted. Work and checked attempts save automatically in this browser on this device when storage is available. Keep the editable JSON as a separate backup; Restart clears saved work and attempts after confirmation.</p>
+<p>Check completeness lists missing field and framework labels and keeps existing writing. When every field is present, it reports presence only, not accuracy or meaning. Use all self-review statements and I have reviewed this section. Editing any writing or choice reopens the section and whole-plan review. Reopen this section for another look keeps writing but clears review. The full plan view also shows unfinished drafts. After all four sections and the professional-communication checks are reviewed, Download my opportunity plan contains all 19 actual authored fields and two selected frameworks. Editable JSON remains available at any stage. Print my responses prepares the same current response record for the browser’s print/save-PDF dialog.</p>
+<h2>Buyer roles and responsibilities</h2>
+<p>Map all four stakeholders. For each, describe known responsibilities, evidence for your assessment of influence, what authority still needs confirmation and a proposed engagement action. Begin Nina’s entry with a two-sentence opportunity summary: the customer’s goal, what the conversation establishes and the biggest unanswered question. Once in this section, preferably in Nina’s opening entry, name the person or people you would involve next, explain why, and identify evidence that could change that priority. You can propose a joint conversation; a job title alone does not establish authority.</p>
+<h3>Nina Okafor - Director of IT</h3>
+<p>Include known responsibilities, a supported influence judgement or question, and how you would engage Nina. Start with your short opportunity summary and the biggest unanswered question. Then explain Nina’s role and whether you would involve her in the next conversation, with your reason.</p>
+<h3>Marcus Lee - Finance Manager</h3>
+<p>Connect budgeting and cost evaluation to a supported engagement plan; do not assume signing authority.</p>
+<h3>Sofia Martinez - Operations Lead</h3>
+<p>Include regional reporting/workflow needs and influence to confirm.</p>
+<h3>Aisha Bello - Learning Manager</h3>
+<p>Include facilitator/learner needs and an engagement action; do not dismiss this perspective because of hierarchy.</p>
+<h3>Your review and revision note</h3>
+<p>After comparing your actual section with the criteria and example, describe one change you made and why, or explain why you kept it. Revise the section itself where needed.</p>
+<h3>Self-review your actual section</h3>
+<ul><li>I covered all four people with their actual responsibilities and priorities.</li></ul>
+<ul><li>Influence/authority judgements are supported or explicitly marked for confirmation.</li></ul>
+<ul><li>Each stakeholder has a proposed engagement action; my summary distinguishes known evidence from open questions, and I justify who to involve next and what could change that priority.</li></ul>
+<p>Compare the actual writing with these criteria and the worked section below. Revise where useful, record the review note and explain a sound decision to keep material. Filled fields and selected statements do not establish quality.</p>
+<h2>Tailored cloud value statements</h2>
+<p>Write three concise value statements covering all four stakeholder perspectives. Link a capability hypothesis to a goal, a proposed measure and what must be validated; one statement can address Sofia and Aisha together. In Nina’s statement or its supporting note, record one relevant capability source (course step title or document/link), the specific fact it supports, and what it does not establish for Ashbourne. Use a real source you have checked; do not invent a quotation or treat a general capability as a validated customer solution.</p>
+<h3>Value for Nina: secure modernization and integration</h3>
+<p>Explain a possible capability and business value, a measure to agree and technical validation still needed. Include one source, the capability fact it supports and the customer-specific question it leaves open.</p>
+<h3>Value for Marcus: cost visibility and comparison</h3>
+<p>Use cost scenarios and explicit assumptions; do not promise a fixed bill, saving or return.</p>
+<h3>Value for Sofia and Aisha: reporting and learner insight</h3>
+<p>Address both regional workflow and learner/facilitator needs, with proposed measures and data-freshness questions.</p>
+<h3>Your review and revision note</h3>
+<p>After comparing your actual section with the criteria and example, describe one change you made and why, or explain why you kept it. Revise the section itself where needed.</p>
+<h3>Self-review your actual section</h3>
+<ul><li>Each statement connects a capability to named customer priorities, with all four perspectives covered.</li></ul>
+<ul><li>Proposed measures have a baseline or question to establish one; targets are not presented as measured results.</li></ul>
+<ul><li>The wording stays clear and conditional where design, cost, security or data outcomes are unverified. I identify a checked source, its supported fact and the remaining customer-specific gap.</li></ul>
+<p>Compare the actual writing with these criteria and the worked section below. Revise where useful, record the review note and explain a sound decision to keep material. Filled fields and selected statements do not establish quality.</p>
+<h2>Responses to two supplied objections</h2>
+<p>The two concerns are already identified in the transcript. Choose a framework for each, write a response and prepare a relevant follow-up/evidence action. Either taught framework may be used thoughtfully; no comparable customer outcome is supplied. If you select Feel-Felt-Found, identify the comparable experience and supported finding you would need to verify before using it; the case does not provide them. State what is missing rather than inventing a customer story.</p>
+<h3>Nina Okafor - Director of IT</h3>
+<p>My main hesitation is migration. Moving years of learner data sounds complicated and risky. How do we know the transition will be secure?</p>
+<h3>Marcus Lee - Finance Manager</h3>
+<p>My concern is cost. Cloud pricing models look flexible, but I need more clarity on how they translate into yearly spending. I don’t want surprises.</p>
+<h3>Framework for Nina’s response</h3>
+<p>Choose either framework and justify its use in the response.</p>
+<ul><li>Acknowledge-Ask</li></ul>
+<ul><li>Feel-Felt-Found</li></ul>
+<h3>Framework for Marcus’s response</h3>
+<p>Choose either framework and justify its use in the response.</p>
+<ul><li>Acknowledge-Ask</li></ul>
+<ul><li>Feel-Felt-Found</li></ul>
+<h3>Your response to Nina</h3>
+<p>Use the chosen framework, the actual migration/integration concern and a professional opening. Do not claim a proven secure transition.</p>
+<h3>Follow-up and evidence for Nina</h3>
+<p>Identify the technical questions, evidence or test and proposed next action. If using Feel-Felt-Found, state what comparable evidence is missing. Explain briefly why your selected framework fits the evidence in this concern, as well as the follow-up you propose.</p>
+<h3>Your response to Marcus</h3>
+<p>Use the chosen framework and annual spending concern without promising savings or a predictable bill.</p>
+<h3>Follow-up and evidence for Marcus</h3>
+<p>Identify required cost inputs, uncertainty and a proposed action/owner to confirm. Explain briefly why your selected framework fits the evidence in this concern, as well as the follow-up you propose.</p>
+<h3>Your review and revision note</h3>
+<p>After comparing your actual section with the criteria and example, describe one change you made and why, or explain why you kept it. Revise the section itself where needed.</p>
+<h3>Self-review your actual section</h3>
+<ul><li>Both supplied objections have a selected framework, an actual response, a reason the framework fits the evidence, and a specific follow-up/evidence plan.</li></ul>
+<ul><li>The response acknowledges the concern and uses a relevant open question or verified evidence; no testimonial is invented.</li></ul>
+<ul><li>Follow-up moves toward validation and understanding, without claiming the concern is already resolved.</li></ul>
+<p>Compare the actual writing with these criteria and the worked section below. Revise where useful, record the review note and explain a sound decision to keep material. Filled fields and selected statements do not establish quality.</p>
+<h2>Joint technical follow-up call plan</h2>
+<p>Plan the follow-up to the scoping call. Include the objective, all participants and contributions, a focused agenda and proposed follow-up actions with owners and timing to agree.</p>
+<h3>Your proposed call objective</h3>
+<p>Connect the next conversation to the customer’s evaluation needs and unknowns.</p>
+<h3>Participants and primary contributions</h3>
+<p>Include all four customer contacts, you and a technical teammate; confirm authority and attendance rather than assuming them.</p>
+<h3>Your agenda and handoff</h3>
+<p>Connect business goals to technical questions, include customer input and preserve reporting/cost/learner needs. Write the actual sentence you would use to hand over to your technical teammate: connect the customer’s question to the focused contribution you need, and invite the customer to confirm the focus.</p>
+<h3>Proposed follow-up actions, owners and timing to agree</h3>
+<p>Name actions and suggested owners, dependencies and how timing will be agreed. Do not invent a committed deadline.</p>
+<h3>Your review and revision note</h3>
+<p>After comparing your actual section with the criteria and example, describe one change you made and why, or explain why you kept it. Revise the section itself where needed.</p>
+<h3>Self-review your actual section</h3>
+<ul><li>The objective and agenda address the actual migration/integration, cost and reporting/learner needs.</li></ul>
+<ul><li>All four customer perspectives and complementary sales/technical contributions are present. My agenda includes a specific customer-purpose handoff sentence.</li></ul>
+<ul><li>Follow-up names proposed actions and owners, with dependencies and timing to agree rather than invented commitments.</li></ul>
+<p>Compare the actual writing with these criteria and the worked section below. Revise where useful, record the review note and explain a sound decision to keep material. Filled fields and selected statements do not establish quality.</p>
+<h2>Worked opportunity plan and commentary</h2>
+<p>This is one possible plan, not a script to copy or additional customer facts. Sound alternatives are welcome. Examples do not fill your writing.</p>
+<h2>Buyer roles and responsibilities</h2>
+<p>A useful stakeholder map connects evidence to engagement. Seniority alone does not establish signing authority, and the learner/facilitator perspective is necessary to a workable plan. Treat an influence assessment as a judgement to support and confirm.</p>
+<h3>Nina Okafor - Director of IT</h3>
+<p>Ashbourne wants to scale its learning operations while improving reporting and keeping integration secure and costs understandable. The conversation establishes these priorities, but not the required architecture or buying authority; the biggest open question is which integration and security constraints would rule out an approach. I would first propose a short joint discussion with Nina and Marcus to test technical constraints alongside the cost evidence needed, asking both to confirm who else must participate. If an urgent operational dependency emerges from Sofia, I would change that sequence. Nina leads the technical evaluation of modernization needs, including security, integration and long-term strategy. Her concerns make her an important technical contributor; final investment approval is not established. I would confirm her decision role and prepare migration/data-flow questions with a solutions architect.</p>
+<h3>Marcus Lee - Finance Manager</h3>
+<p>Marcus evaluates budgets, total cost and return. I would engage him on current costs, usage assumptions and annual scenarios. His budget-assessment role is known; procurement and approval authority remain to confirm. A useful next step is agreeing the inputs and uncertainty to show in a cost comparison. The case says he evaluates total cost of ownership and return on investment, so I would seek his input on comparison assumptions; that evidence does not confirm spending approval rights.</p>
+<h3>Sofia Martinez - Operations Lead</h3>
+<p>Sofia coordinates regional delivery and describes reporting that takes several days because formats differ. She contributes essential workflow evidence. I would ask her to map reporting inputs and a useful first improvement, and confirm how she participates in evaluation and adoption rather than assigning an unsupported influence rating.</p>
+<h3>Aisha Bello - Learning Manager</h3>
+<p>Aisha represents learners and facilitators and wants earlier engagement insight and useful impact reporting. I would involve her in defining alerts, feedback and evaluation criteria. Her implementation insight is important; the case does not establish low influence or final decision rights. I would confirm her part in acceptance and adoption. Her stated focus on engagement, completion rates and learner feedback is evidence of a useful contribution to acceptance criteria; I would ask how that contribution affects the buying decision.</p>
+<h3>Your review and revision note</h3>
+<p>I replaced a claim that Marcus approves the purchase with the supported statement that he evaluates cost and return. I added a joint first-conversation proposal and the operational evidence that would change its priority; buying authority remains a question to confirm.</p>
+<h2>Tailored cloud value statements</h2>
+<p>The three statements cover all four role perspectives. Technical value addresses Nina’s integration/security concern; financial value supports Marcus’s evidence-based comparison; operational and learner value connects Sofia’s workflows with Aisha’s engagement and impact needs. Different sound wording is welcome.</p>
+<h3>Value for Nina: secure modernization and integration</h3>
+<p>A suitably designed cloud platform could support growth and integration while addressing your security requirements. We would assess data flows, access controls and migration options against your HR/CRM and learner-access needs. Agree performance and integration acceptance criteria before claiming a successful design or transition. Source checked: Google Cloud, “IAM overview” (Google Cloud documentation &gt; Identity and Access Management &gt; IAM overview; accessed 23 November 2026). IAM uses principals, roles and resources to manage permissions for Google Cloud resources. This supports discussing access control; it does not show that Ashbourne’s HR/CRM systems integrate securely or that its compliance needs are met. Nina and the technical teammate would need to confirm the identity model, interfaces and required controls before recommending a design. This is an illustrative capability source, not a provider recommendation. A proposed measure is the proportion of agreed test transactions that transfer correctly under the required access controls; first ask Nina what happens today and agree the acceptance threshold with the specialist.</p>
+<h3>Value for Marcus: cost visibility and comparison</h3>
+<p>A transparent model of usage, service and operating costs could help you compare modernization options with your current baseline. We would agree usage ranges, assumptions and costs to include, then show annual scenarios and uncertainty. This supports a better-informed decision without assuming that usage-based pricing automatically improves predictability or lowers spending. A proposed measure is the annual total-cost range under agreed low, expected and high usage assumptions. First ask Marcus for the current annual baseline, included cost categories and the acceptable uncertainty range.</p>
+<h3>Value for Sofia and Aisha: reporting and learner insight</h3>
+<p>Consistent reporting inputs and suitable analytics could reduce manual compilation and make learner-progress information more useful across regions. Sofia can help define reporting workflow and effort, while Aisha defines the insight and intervention timing learners and facilitators need. We would measure the current process and agree useful freshness, quality and access criteria before promising real-time reporting or improved learning outcomes.</p>
+<h3>Your review and revision note</h3>
+<p>I added a checked capability source and separated its general access-control fact from Ashbourne’s unverified integration needs. I also added proposed technical and annual-cost measures, with baseline questions rather than invented results.</p>
+<h2>Responses to two supplied objections</h2>
+<p>A framework structures listening; it does not guarantee acceptance. The worked responses use Acknowledge-Ask because important facts are missing. A Feel-Felt-Found plan would need a verified comparable experience and supported finding, clearly scoped to this customer. The source’s other-customer savings and migration assertions are not evidence to repeat.</p>
+<p>Framework for Nina’s response: Acknowledge-Ask</p>
+<p>Framework for Marcus’s response: Acknowledge-Ask</p>
+<h3>Your response to Nina</h3>
+<p>I understand why moving years of learner data and connecting your HR system raises concerns. Which data, integration and security requirements would a technical assessment need to address first? We can explore migration options and a validation approach with the solutions architect before making a claim about the transition.</p>
+<h3>Follow-up and evidence for Nina</h3>
+<p>I chose Acknowledge-Ask because the concern identifies uncertainty we still need to clarify; no comparable customer result is supplied. Propose a technical session to map HR/CRM data flows, access needs and migration constraints, then agree an initial validation or pilot scope. Nina and the technical teammate should confirm the acceptance criteria and dependencies. No verified comparable outcome is available for a Felt/Found claim.</p>
+<h3>Your response to Marcus</h3>
+<p>That concern makes sense. What costs should the annual comparison include, and which usage or growth scenarios would make it useful for your planning? We can compare explicit scenarios with the current system baseline and show the assumptions and uncertainty rather than promise that a flexible pricing model removes surprises.</p>
+<h3>Follow-up and evidence for Marcus</h3>
+<p>I chose Acknowledge-Ask because the concern identifies uncertainty we still need to clarify; no comparable customer result is supplied. Propose collecting the current hardware, maintenance, upgrade and operating costs with Marcus and estimating realistic usage ranges with the technical teammate. Prepare a dated scenario comparison with assumptions and exclusions, and agree who will validate each input. A verified comparable saving or return is not supplied.</p>
+<h3>Your review and revision note</h3>
+<p>I kept Acknowledge-Ask for both supplied concerns because the case gives uncertainties to clarify. I added that rationale to each follow-up and kept a verified comparable experience as an evidence requirement if I later use Feel-Felt-Found.</p>
+<h2>Joint technical follow-up call plan</h2>
+<p>The follow-up connects the whole plan: stakeholder responsibilities shape the questions, value statements suggest measures, and objection responses identify evidence to gather. A useful agenda leaves room for customer correction and unknowns. Neither the meeting nor a proposed demonstration proves a technical outcome.</p>
+<h3>Your proposed call objective</h3>
+<p>Confirm the priority modernization requirements and agree what evidence is needed to assess migration/integration, useful reporting and annual cost scenarios. The intended outcome is a shared scope for further validation, not an approved architecture or purchase commitment.</p>
+<h3>Participants and primary contributions</h3>
+<p>Proposed participants: Nina for IT/security/integration, Marcus for cost inputs and evaluation, Sofia for regional workflows, Aisha for learner/facilitator insight, me as sales representative, and a solutions architect for technical assessment. I coordinate the business context and agenda; the architect leads technical inquiry. Confirm attendance, decision roles and any additional specialists needed.</p>
+<h3>Your agenda and handoff</h3>
+<p>Begin by asking each customer participant to confirm their priority requirement and success criteria. Recap the scoping evidence, then invite the architect to explore migration and HR/CRM integration requirements. Review reporting workflows, data quality and useful update frequency with Sofia and Aisha. Review usage/cost assumptions with Marcus, capture unanswered questions, and agree a bounded validation step. Proposed handoff: “Nina, you raised secure HR and CRM integration. With your agreement, I’ll ask our technical teammate to help us identify the interfaces, access controls and evidence we need before suggesting a design. Is that the most useful place to start?”</p>
+<h3>Proposed follow-up actions, owners and timing to agree</h3>
+<p>Propose that I circulate the agenda and consolidate questions; Nina and the architect confirm system/data-flow information; Marcus validates baseline cost inputs; Sofia and Aisha define workflow and reporting acceptance needs. Agree the owners, dependencies and review date together. A migration timeline, cost comparison and any demonstration remain drafts until the required information and scope are confirmed.</p>
+<h3>Your review and revision note</h3>
+<p>I replaced a vague instruction to let the architect speak with a handoff sentence tied to Nina’s integration question. I kept all four customer perspectives and made follow-up owners and timing proposals to agree, rather than commitments already accepted.</p>
+<h2>Optional further concerns</h2>
+<h3>Optional further concern: Sofia</h3>
+<p>A hypothetical additional concern from the worked-example material, not a statement raised in the supplied scoping call. It is not a third required objection.</p>
+<p>Our team is managing multiple programs. I am concerned that the transition may affect operational capacity.</p>
+<p>Ask which program cycles and regional workflows are most sensitive, then assess a possible transition/pilot scope with the technical teammate. Agree continuity criteria and evidence rather than promising no disruption.</p>
+<h3>Optional further concern: Aisha</h3>
+<p>A hypothetical additional concern from the worked-example material, not a statement raised in the supplied scoping call. It is not a fourth required objection.</p>
+<p>I want to avoid interruptions for learners and facilitators during the transition.</p>
+<p>Ask which learner groups, facilitator tasks and progress records need protection. Explore validation, communication and support requirements with the relevant people; do not guarantee an uninterrupted transition.</p>
+<h2>Professional communication and whole-plan review</h2>
+<ul><li>My plan is clear and professional, with all four stakeholder perspectives and both supplied objections addressed.</li></ul>
+<ul><li>Facts, assumptions, proposed measures/actions and evidence still needed are distinguishable; I have not invented authority, testimonials or guaranteed outcomes.</li></ul>
+<ul><li>The stakeholder map, value statements, objection responses and technical call plan support the same early-stage opportunity.</li></ul>
+<p>Keep the actual Excel plan and editable JSON, including your four review/revision notes. Return to the course page to mark the step complete. This is ungraded practice and does not update course completion; the scored course assessment is separate.</p></main></body></html>
