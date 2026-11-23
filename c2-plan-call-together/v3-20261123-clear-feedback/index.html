@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Plan the call together</title><style>*{box-sizing:border-box}[hidden]{display:none!important}
+:root{--navy:#14213d;--teal:#1fa3a3;--teal-d:#0b6b6b;--amber:#f4a261;--paper:#faf6ee;--coral:#e76f51;--ink:#172b36;--line:#c9d6da;--ok:#2f8f60}
+html{color-scheme:light}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 system-ui,sans-serif}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-9999px;top:0}.skip:focus{left:8px;z-index:100;background:white;padding:8px}
+a{color:#07516d}
+header.top{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--navy);color:white;height:64px}
+header.top h1{font-size:1.15rem;margin:0}
+header.top .tools{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+header.top button{background:transparent;color:white;border-color:white;margin:0}
+.app{display:grid;grid-template-columns:190px minmax(0,1fr) 190px;gap:14px;padding:14px 18px;height:calc(100vh - 64px);min-height:560px;position:relative}
+.rail,.card,.stage{background:white;border:1px solid var(--line);border-radius:14px;min-height:0}
+.rail{padding:10px;overflow:auto;display:flex;flex-direction:column;justify-content:center}.rail h2,.card h2{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:#35505e;margin:2px 4px 8px}
+ul.list{list-style:none;margin:0;padding:0}ul.list li{margin:0 0 8px}
+button{font:inherit;cursor:pointer;min-height:44px;padding:10px 14px;border-radius:8px;border:2px solid var(--teal-d);background:var(--teal-d);color:white}
+button.quiet{background:white;color:var(--teal-d)}button:disabled{opacity:.45;cursor:default}
+.tile{position:relative;display:grid;grid-template-columns:58px 1fr auto;align-items:center;gap:8px;width:100%;text-align:left;background:#eef1f2;color:#40545d;border:2px solid transparent;border-radius:12px;padding:6px;min-height:86px;transition:transform .2s,background .2s,box-shadow .2s}
+.rail-left .tile:hover{transform:translateX(3px)}.rail-right .tile:hover{transform:translateX(-3px)}
+.ico{display:block;width:58px;height:70px;border-radius:8px;overflow:hidden;background:#d7dfe2}.ico img{width:100%;height:100%;display:block;object-fit:cover}
+.tt{font-weight:700;line-height:1.15;font-size:.82rem}.state{font-size:1rem}
+.tile.current{background:white;color:var(--navy);border:2px solid var(--teal);box-shadow:0 0 0 4px #1fa3a329;animation:pulse 2.4s ease-in-out infinite}
+.tile.done{background:#e3f4ec;color:#154a33;border:2px solid var(--ok)}.tile.locked{opacity:.65}
+@keyframes pulse{50%{box-shadow:0 0 0 8px #1fa3a314}}
+.stage{display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 34px #14213d1f;position:relative}
+.shead{display:flex;gap:14px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,#e9f7f6,white)}
+#face img{display:block;width:72px;height:72px;object-fit:cover;border-radius:50%;border:4px solid var(--teal);transition:transform .25s}#face.p img{border-color:var(--amber)}#face.w img{border-color:var(--coral)}
+.shead .meta{flex:1}.shead .meta strong{display:block;font-size:1.05rem}.muted{color:#35505e}
+#stamp{border:3px solid var(--teal-d);color:var(--teal-d);font-weight:800;letter-spacing:.03em;font-size:1.05rem;padding:4px 10px;border-radius:6px;transform:rotate(-6deg);opacity:0;max-width:220px;text-align:center}
+#stamp.on{animation:stamp 1.1s ease-out forwards}
+@keyframes stamp{0%{opacity:0;transform:rotate(-6deg) scale(2.2)}25%{opacity:1;transform:rotate(-6deg) scale(1)}85%{opacity:1}100%{opacity:0}}
+#stage-scroll{flex:1;overflow-y:auto;padding:16px 22px;overscroll-behavior:contain}
+.pane h2{font-size:1.4rem;margin:.1em 0 .5em;outline-offset:6px}.kick{display:block;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-d)}
+fieldset{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0;min-width:0}fieldset.done{border:2px solid var(--ok)}legend{font-weight:700;padding:0 6px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px}.choices.one{grid-template-columns:1fr}
+.pick{display:flex;gap:10px;align-items:flex-start;min-height:44px;padding:8px;border:1px solid #dbe4e7;border-radius:8px;cursor:pointer}.pick input{width:22px;height:22px;flex:0 0 22px;margin-top:2px;accent-color:var(--teal-d)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.go{background:var(--amber);border-color:var(--amber);color:var(--navy);font-weight:700}
+.fb p{margin:.4em 0}.fb .ok{font-weight:700;color:#1d5a3c}.wob{animation:wob .35s}@keyframes wob{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.landing{display:grid;grid-template-columns:minmax(260px,1fr) minmax(300px,1fr);gap:22px;align-items:center}.landing>img{display:block;width:100%;max-height:330px;object-fit:cover;border-radius:14px}.landing h3{font-size:1.5rem;margin:.2em 0}
+.field{display:block;font-weight:600;margin-top:14px}input[type=text],textarea,select{font:inherit;display:block;width:100%;padding:10px;border:1px solid #627784;border-radius:6px;min-height:44px;background:white;color:inherit}textarea{min-height:120px}
+.panel{border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:10px 0}
+.snav{display:flex;justify-content:space-between;gap:8px;padding:10px 20px;border-top:1px solid var(--line);background:#f6fafa}
+#lockmsg{padding:0 20px;margin:0;color:#8a3b1c}
+.card{position:absolute;right:222px;top:118px;z-index:20;width:min(390px,calc(100vw - 40px));max-height:calc(100% - 140px);padding:12px;overflow:auto;box-shadow:0 14px 42px #14213d44}
+.chead{display:flex;justify-content:space-between;align-items:center;gap:8px}.chead h2{margin:0 4px}
+.card .bar{height:10px;border-radius:6px;background:#e1e8ea;overflow:hidden;margin:10px 4px 12px}
+#bar{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--amber));transition:width .6s}
+#prog{margin:0 4px 8px;font-weight:600}
+.slot{display:block;width:100%;text-align:left;background:#f1f4f5;color:#5b6d76;border:2px dashed #b9c6cb;border-radius:12px;padding:10px 12px;min-height:60px}
+.slot strong{display:block;font-size:.9rem}.slot .body{display:block;font-size:.85rem;font-weight:400}.slot ul{margin:.3em 0 0;padding-left:1.1em}.slot li{margin:0 0 3px}
+.slot.filled{background:#e7f6f6;color:var(--ink);border:2px solid var(--teal)}.slot.pop{animation:pop .6s}
+@keyframes pop{40%{transform:scale(1.04);box-shadow:0 0 0 6px #1fa3a333}}
+.card.complete{box-shadow:0 0 0 3px var(--amber),0 8px 30px #f4a26166}
+.unlocked{display:flex;gap:12px;align-items:center;margin:4px 4px 10px;font-weight:700;color:#8a4a12}.unlocked img{width:56px;height:56px;border-radius:10px;object-fit:cover}
+.flyer{position:fixed;z-index:50;display:grid;place-items:center;border-radius:10px;background:var(--ok);color:white;font-weight:800;pointer-events:none}
+dialog{max-width:720px;border:1px solid var(--line);border-radius:14px;padding:20px}dialog::backdrop{background:#14213d88}
+:focus-visible{outline:3px solid #9c3d00;outline-offset:3px}
+#text-version{max-width:860px;margin:18px auto;padding:0 18px 24px}#text-version>summary{font:inherit;min-height:48px;padding:12px;cursor:pointer;font-weight:700}
+#text-version h1{font-size:clamp(1.5rem,4vw,2.3rem);line-height:1.2}#text-version h2{font-size:1.35rem}#text-version h3{font-size:1.1rem}
+.altlinks{text-align:center}
+.dossier{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:start}.dossier img{width:100%;border-radius:12px;display:block}.dossier .panel{margin:0}
+.scenario{font-size:1.05rem;margin:0}.quote{font-size:1.08rem;font-weight:600;border-left:5px solid var(--teal-d);padding-left:12px;margin:.4em 0}
+.pick:has(input:checked){border-color:var(--teal-d);background:#e7f6f6}
+@media(max-width:900px){.dossier{grid-template-columns:1fr}.dossier img{max-width:260px}.app{grid-template-columns:112px minmax(0,1fr) 112px;padding:8px;gap:8px}.rail{padding:5px}.rail h2{font-size:.68rem}.tile{grid-template-columns:1fr;min-height:92px;text-align:center}.ico{width:100%;height:54px}.tt{font-size:.72rem}.state{position:absolute;top:4px;right:6px}.card{right:128px}.shead{padding:8px 12px}#stage-scroll{padding:12px}.snav{padding:8px 12px}.choices{grid-template-columns:1fr}.landing{grid-template-columns:1fr}.landing>img{max-height:230px}}
+@media(max-width:620px){header.top{flex-wrap:wrap;height:auto;padding:10px 16px}.app{height:auto;min-height:0;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto}.rail{min-width:0;overflow-x:auto;justify-content:flex-start}.rail ul{display:flex;gap:8px}.rail li{flex:0 0 145px;margin:0}.tile{grid-template-columns:52px 1fr;text-align:left;min-height:72px}.ico{width:52px;height:58px}.rail-left{grid-row:1}.stage{grid-row:2;min-height:70vh}.rail-right{grid-row:3}.card{position:fixed;inset:80px 16px auto 16px;width:auto;max-height:70vh}.shead{flex-wrap:wrap}#face img{width:56px;height:56px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}#stamp.on{opacity:1}}
+@media print{.app,header.top .tools,.skip{display:none}#text-version{max-width:none}}
+summary,button{min-height:44px}summary{padding:10px;cursor:pointer}.reference{border:1px solid #b6c6c5;border-radius:8px;margin:12px 0}.reference p{padding:0 16px}fieldset{min-width:0}.shead .meta{min-width:0}#stamp{display:none;transform:none!important;animation:none!important;max-width:100%;font-size:.85rem}#stamp.on{display:block;opacity:1}.data-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}.data-controls label{min-width:0;font-weight:650}select{max-width:100%;height:auto;white-space:normal}select option{font:inherit}.dataset{border:1px solid var(--line);border-radius:10px;padding:12px}.table-scroll{overflow:auto;max-height:340px;border:1px solid var(--line);margin-top:12px;max-width:100%}table{border-collapse:collapse;min-width:740px;width:100%;font-size:.9rem}caption{text-align:left;padding:8px;font-weight:650}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}thead th{position:sticky;top:0;background:#e1efed;z-index:1}tbody tr:nth-child(even){background:#f7f9f8}.counts{padding:0;list-style:none}.counts li{display:grid;grid-template-columns:100px minmax(0,1fr) 24px;gap:8px;align-items:center;padding:3px 0}.countbar{height:14px;background:var(--teal-d);width:calc(var(--count)*18%);max-width:100%;border-radius:3px}.field{margin-top:16px}.fb{margin:16px 0;padding:12px;border:2px solid var(--teal-d);border-radius:8px}#review-record ul{padding-left:22px;overflow-wrap:anywhere}.table-scroll:focus-visible{outline:3px solid #9c3d00}.data-status{font-weight:650}
+@media(max-width:900px){.shead{display:grid;grid-template-columns:56px minmax(0,1fr)}.shead .meta{grid-column:2}#toggle-card{grid-column:1/-1;justify-self:start}#stamp{grid-column:1/-1;width:100%}.data-controls{grid-template-columns:1fr}}
+@media(max-width:620px){.rail h2{position:sticky;left:0;max-width:100%;white-space:normal;line-height:1.35}}
+.metric-chart{padding:0;list-style:none}.metric-chart li{padding:10px 0;border-bottom:1px solid var(--line)}.metric-series{margin-top:5px}.metric-series>span:first-child{display:block;font-size:.9rem}.metric-bar{display:block;height:13px;min-width:1px;border-radius:3px;background:#176d70}.reference-bar{background:#b66b2f}.record-table{margin-top:12px}.metric-chart li>strong{display:block}.data-controls .pick{align-self:end;font-weight:400}
+.save-tools{padding:10px 18px;border-bottom:1px solid var(--line)}.save-tools>button{margin:0 8px 4px 0}.save-tools p:empty{display:none}.save-tools p{margin:6px 0}.profile{padding:0 16px 12px}.profile li{margin:8px 0}.profile h3{font-size:1rem}.pane select{margin-bottom:10px}.pane button[data-check]{margin-top:16px}dt{font-weight:700}dd{margin:3px 0 14px;white-space:pre-wrap;overflow-wrap:anywhere}textarea{resize:vertical}.reference{overflow-wrap:anywhere}#restore-warning{padding:12px;border:2px solid var(--teal-d);border-radius:8px;max-width:720px}
+</style></head><body>
+<a class="skip" href="#stage-scroll">Skip to the current step</a><a class="skip" href="#text-version">Go to complete text version</a>
+<header class="top"><div><h1 id="h-top" tabindex="-1">Plan the call together</h1></div><div class="tools"><button type="button" id="restart" class="quiet">Start again</button></div></header>
+<noscript><p style="padding:12px 20px">Use the complete text version below, or <a href="fallback.html">open the text version</a> or <a href="fallback.pdf">the PDF</a>. Everything in the activity is included.</p></noscript>
+<div id="interactive" class="app" hidden>
+<nav class="rail rail-left" aria-label="Case and business opening steps"><h2>Case and business opening</h2><ul class="list" id="rail-left"></ul></nav>
+<main class="stage" aria-label="Current step" data-activity-id="w5-a4-s5" data-version="v3-20261123-clear-feedback">
+<div class="shead"><div id="face"></div><div class="meta"><strong>One call. Shared purpose.</strong><span class="muted">Business value, technical input and a joint response for Amira.</span></div><div id="stamp" aria-hidden="true"></div><button type="button" id="toggle-card" class="quiet" aria-expanded="false" aria-controls="card">Progress</button></div>
+<div id="stage-scroll" tabindex="-1"><div id="stage-body"></div></div>
+<p id="lockmsg" role="status"></p>
+<div class="snav"><button type="button" id="prev" class="quiet">←</button><button type="button" id="next" class="quiet">Next →</button></div>
+</main>
+<nav class="rail rail-right" aria-label="Teamwork and your plan steps"><h2>Teamwork and your plan</h2><ul class="list" id="rail-right"></ul></nav>
+<aside class="card" id="card" aria-label="Your joint call plan" hidden><div class="chead"><h2>Your joint call plan</h2><button type="button" id="closecard" class="quiet">Close</button></div><div class="bar" aria-hidden="true"><div id="bar"></div></div><p id="prog"></p><div class="unlocked" id="unlocked" hidden><img src="data:image/webp;base64,UklGRjQEAABXRUJQVlA4ICgEAABQHACdASqgAHgAPm0ulUakIqIhJnIM2IANiU3bq8JbFEC648g3qo22fmA/Wb9o/eV/xHqo3iDn1fZgyGXwB/S+rTXV/2bwVfwr/GbjFf3HHXdqrxi3iZ8Yj/NfLp/rv8B5x/nP2C/1N9Jn1d+gj+26EzqiBUf93dX55Te2V7X0/rdVz6E8CwjE1l/w14C77IaVgxih9XmgY+hh7cGa9bLFzF/nsZ1WrI+GnNTE9QRh7adf/IKj5w52k6H4PiYtIf0Eg6o3DIo0U4/V3XioIUY+GDQQFkz4TFqexTYt/cwTPsy0zE1eKxbGtVgAAP78Iw3FB2NTAALz/r0Wdsw0WGdS+eqLyPQKdZA4pw+F0f/wAX1xmwvSujny801LLeXduLf8A7PsEf53/wiM+rofqOJ//8m7JhZRP9M37YZI9n/RU/+VD9ssOUPN2KHsFiWnlUUz59nDY9SQWtaChWVukTneRuhFbMbdwB9KFPc+ViN6/H8aD3JSu6J5e49nUcPIAwPFUwffzrfcKKGWr1VyFQJbwzz3mosbb0QD5Sid9/+aJ99xLNdmmvihYy/gPYi8pgeY3yit5lqf6kizO2NrNdlMbaXDzmdGBMpu0t1/ZdGPKMbfQ1lZRQ9aPTL1qvFUq+b6RBb0jQCDhW1hqdt5b5ts2JGJaDXKpYdMoPvZNum3B6dFGKgABlOC1pmNgbRNXVxomEzVG3iElQEDajHSmo3JjFxz6QbNIy1tSGwoAS3GxTddE/Jc59LaEWS8Xjk3n/76sd+IyX8RbihnIjPM8tX/CJ4kAp+W1/6dJMAhPpOOCnuuuvXFKRTcuxKqXEWJzronGM1f9fVAOwTkXlMGlh9aEKYvsUEO1kUo6o8KV7iDl62aIQWbiZ+3ok7rb+vhxDiC7RHNTPnS84dH3u3x3XWLZoRiKD0Vo6m+pdViZ5rN22UAVQ2wzzXe+D6VUeXI/+lmfBP5699NfMReYdOqZgjItMAEjc9HSXBez/UVABeHnZJNz/aqdN2y7f3BGGYR8piFz3Fcqwca+rT86XokTDzfP8UC8r5zkHeylCqcVFGq6zoM4ME4Chj6rlwDH1QGq0fyfI7zhQZ/FxVglNtSRfcTGTj/GrG2vv84Ror9O7FOXH+AOxlPf27bb4j5JMYHVWsh0PiTIqwxJkDqio+jaYW+tdji8dGeS6yAiJskU4tfa7I/EsrVscHv9tC6D1sl3IhB7uFwSp+Wazp/viPnXbPsAINOGc6VLVzg+rr3O2sHoRmgtzxucT/I6H0E0bWn9g0KtUaciObHRNE4ftXjykME0zeb87M3+inEBC8z62XNJtexP5LVe6/3Auf8ZTsSrVyIsWywDsAOZEj6u74o7JOxTK4xZn/zQ1VskbpPa7iMigkhr/ctmNUL1qStt/kLf4tGIqcgAAAAAA==" alt="">Three sections reviewed. Check the whole plan and keep it.</div><ul class="list" id="slots"></ul></aside>
+</div>
+<div id="live" class="sr" role="status" aria-live="polite"></div>
+
+<details id="text-version"><summary>Complete text version: everything in the activity, including all feedback</summary><h1>Plan the call together</h1>
+<p>Complete text version</p>
+<p>Prepare one joint customer call with Lucy, your solutions architect. Turn the Dawnstar Diagnostics case into a coordinated plan for business value, technical input and a useful response to Amira’s operational question.</p>
+<p>This is a proposed plan for the fictional call, not an agreed customer solution. Confirm priorities, responsibilities, data and support needs with the people involved. No service, data freshness, cost, delivery result or support entitlement is guaranteed by this short case.</p>
+<p>Four planning decisions are checked. Your own messages, handoffs and follow-up plan are checked for completeness and self-reviewed for meaning. No CRM login, provider account, external submission or real teammate conversation is required.</p>
+<h2>Known customer case</h2>
+<p>You and Lucy are preparing for a joint call with Amira. The meeting is scheduled for tomorrow morning, and your goal is to help her explore how cloud capabilities could improve operational efficiency and order fulfillment.</p>
+<p>Before you meet, you and Lucy decide to review what you know about the customer. Dawnstar Diagnostics is a mid-sized healthcare company that distributes medical equipment to hospitals and clinics. The company is growing quickly, but Amira’s team is struggling with outdated inventory systems, inconsistent data, and delayed deliveries.</p>
+<p>Amira is eager to modernize operations, but she wants to see clear business value before committing to new technology. She is analytical and results-focused but also cautious about adopting large-scale solutions without proven outcomes.</p>
+<p>You lead the business conversation; Lucy is your solutions architect and contributes technical assessment. Amira contributes the customer’s goals, constraints and operational requirements. Agree how you will work together rather than treating those roles as exclusive speaking rights.</p>
+<h3>Amira&#x27;s question for the practice response</h3>
+<p>This sounds promising, but our team doesn’t have much experience managing data systems. How would this actually work for us day to day?</p>
+<p>Work in order. Wrong or blank structured choices keep confirmation, Next, Continue, later tiles, summary slots and the final record locked. Correct and confirm each earlier section before continuing. Your writing is kept. Earlier edits reopen dependent confirmations without erasing writing or past attempts. There is no attempt-count escape; worked examples do not confer completion. Prose remains self-reviewed.</p>
+<p>Feedback labels each planning choice Correct, Not quite or Choose one. Change this choice returns keyboard focus to the choice needing attention without erasing writing. The message beside confirmation explains whether to correct a choice, complete writing, check again or finish self-review.</p>
+<h2>Using the joint-call board or this text version</h2>
+<p>Use paper or a text editor to prepare one coordinated call plan. The three sections cover the business opening, team handoff and joint response/follow-up. Check four planning choices and write all nine fields. The known case stays available in every section. Examples are comparison material after drafting and never fill your writing.</p>
+<p>Check the plan section gives feedback for each selected choice and identifies missing writing. Choices remain editable and existing writing is kept. All three writing fields in each section must contain a response; that does not verify prose quality. Use the two self-review statements and I have reviewed this section. Changed choices or writing reopen the section and the final whole-plan check.</p>
+<p>Save editable draft downloads unfinished local JSON. Each writing field allows 4,000 characters. Restore asks before replacing work; Cancel restore keeps current work. Malformed, wrong-format, invalid-choice, overlong-field or files over 1,000,000 bytes change nothing. The limit supports the activity&#x27;s own maximum UTF-8 draft. Restore clears reviews. Start again asks before clearing work. Work and past attempts save automatically in this browser/device when storage is available. Restart clears this activity’s saved work and attempts; Cancel keeps it. Compatible old writing/history survives but requires fresh checks. Other activities and exports are unaffected.</p>
+<p>After reviewing all three sections and the whole plan, Download my joint call plan saves the known case, all four planning choices and all nine authored writing fields as text. Keep editable JSON to restore later.</p>
+<h2>1. Agree the business opening</h2>
+<p>Before the call, agree who leads the business opening and how it connects to Amira’s stated needs. Then write your own message and purpose for the call.</p>
+<h3>Who primarily leads the business-value framing in this call?</h3>
+<ul><li>You, the sales representative, with Lucy contributing technical context.</li></ul>
+<ul><li>Lucy alone, while you avoid the business discussion.</li></ul>
+<h3>Which emphasis best fits the supplied customer goals?</h3>
+<ul><li>Lead with the scale and geographic reach of cloud infrastructure.</li></ul>
+<ul><li>Explore improved operational efficiency, delivery performance and useful supply-chain visibility.</li></ul>
+<ul><li>Promise lower costs by moving every existing system to the cloud.</li></ul>
+<ul><li>Lead with a provider’s healthcare security and compliance reputation.</li></ul>
+<h3>Write your plan section before comparing</h3>
+<p>Your business opening for Amira: Connect the known inventory, data and delivery problems to possible customer value in clear language.</p>
+<p>Why does that message fit this customer?: Refer to the case evidence and distinguish a proposed benefit from a proven result.</p>
+<p>Your proposed call objective and a question to confirm it: Describe what you and Lucy hope to learn or agree, then invite Amira to confirm the priority.</p>
+<h3>Feedback: compare after choosing</h3>
+<h3>Who primarily leads the business-value framing in this call?</h3>
+<p>You, the sales representative, with Lucy contributing technical context. (strongest fit for this case). This is the planned lead in this scenario. Invite Amira to confirm priorities and use Lucy’s input; business value is a shared concern, not an exclusive right to speak.</p>
+<p>Lucy alone, while you avoid the business discussion. Lucy contributes technical context, but handing off all business framing would miss your planned sales role. Prepare the business opening together and lead it yourself.</p>
+<h3>Which emphasis best fits the supplied customer goals?</h3>
+<p>Lead with the scale and geographic reach of cloud infrastructure. Infrastructure detail may be relevant later, but it does not directly connect the opening to inventory, data consistency and delayed deliveries.</p>
+<p>Explore improved operational efficiency, delivery performance and useful supply-chain visibility. (strongest fit for this case). This directly connects to the stated business challenges. These are outcomes to assess, not verified improvements or a promise that dashboards alone fix deliveries.</p>
+<p>Promise lower costs by moving every existing system to the cloud. The case does not establish a whole-system migration or a saving. Do not substitute a blanket cost claim for the customer’s stated operational needs.</p>
+<p>Lead with a provider’s healthcare security and compliance reputation. Security requirements may matter, but reputation alone neither addresses the main operational need nor proves the customer’s requirements are met.</p>
+<p>If any writing field is empty, the feedback lists its label as still to write. Existing writing is kept. When all three fields contain a response, that does not verify prose quality. Keep the section as a proposed plan; confirm responsibilities, technical assumptions and support arrangements before making a commitment. Use these self-review statements:</p>
+<ul><li>My writing uses the known case and keeps proposed benefits, actions and assumptions distinct from confirmed results or commitments.</li></ul>
+<ul><li>My business and technical contributions connect clearly, invite Amira’s input and identify what must be confirmed before promising an outcome or support arrangement.</li></ul>
+<h3>One possible plan section</h3>
+<p>This is a possible plan, not an agreed solution, committed action or script to copy. It does not fill your writing.</p>
+<h3>Your business opening for Amira</h3>
+<p>We would like to explore where more consistent inventory information and useful reporting could help your team improve order fulfilment. Before proposing technology, we want to understand the delivery bottlenecks and what useful visibility means for your team.</p>
+<h3>Why does that message fit this customer?</h3>
+<p>The case names outdated inventory systems, inconsistent data and delayed deliveries. This opening stays with those operational concerns and asks for evidence before promising better performance.</p>
+<h3>Your proposed call objective and a question to confirm it</h3>
+<p>Proposed objective: agree which operational problem and information flow to investigate first. Ask Amira which delivery or reporting issue has the greatest impact and what a useful outcome from this call would be.</p>
+<h2>2. Coordinate business and technical input</h2>
+<p>Agree the leads and prepare a useful brief for Lucy. Her technical explanation should test how the proposed capabilities relate to Amira’s operational goals.</p>
+<h3>How should you divide the primary contributions in this planned call?</h3>
+<ul><li>Lucy leads the business context; you deliver the technical assessment without her input.</li></ul>
+<ul><li>You lead the business context; Lucy leads technical assessment, with both listening and contributing.</li></ul>
+<ul><li>Both discuss business value and leave all technical questions unowned.</li></ul>
+<ul><li>Ask Amira to resolve the technical details herself while your team gives only a pitch.</li></ul>
+<h3>What is the strongest initial focus for Lucy’s technical contribution here?</h3>
+<ul><li>Explain global data-centre distribution before exploring the inventory problem.</li></ul>
+<ul><li>Assess inventory data flows, reporting needs and how proposed tracking/analytics could support delivery visibility.</li></ul>
+<ul><li>Present a complete migration roadmap before confirming systems and constraints.</li></ul>
+<ul><li>Discuss only compute cost tools and assume that this resolves delivery delays.</li></ul>
+<h3>Write your plan section before comparing</h3>
+<p>Your technical brief for Lucy: Specify the customer goal, the technical questions and what she should validate.</p>
+<p>Your handoff and how the two messages complement each other: Write a sentence you could use to invite Lucy in, and explain the link from business outcome to technical inquiry.</p>
+<p>Questions or dependencies to confirm before the call: Identify missing information and agree who will prepare or ask about it. Do not invent answers.</p>
+<h3>Feedback: compare after choosing</h3>
+<h3>How should you divide the primary contributions in this planned call?</h3>
+<p>Lucy leads the business context; you deliver the technical assessment without her input. This reverses the planned leads and leaves technical claims without Lucy’s assessment. Agree complementary roles instead.</p>
+<p>You lead the business context; Lucy leads technical assessment, with both listening and contributing. (strongest fit for this case). This is the planned division. Both teammates connect their contributions to the customer’s goals and invite Amira to correct assumptions.</p>
+<p>Both discuss business value and leave all technical questions unowned. A shared business goal is useful, but technical questions still need a named lead and follow-up.</p>
+<p>Ask Amira to resolve the technical details herself while your team gives only a pitch. Amira provides essential requirements and context; that does not replace your team’s responsibility to prepare and own an appropriate technical assessment.</p>
+<h3>What is the strongest initial focus for Lucy’s technical contribution here?</h3>
+<p>Explain global data-centre distribution before exploring the inventory problem. Location choices can matter, but the supplied priority is operational visibility and delivery performance. First connect the technical discussion to that need.</p>
+<p>Assess inventory data flows, reporting needs and how proposed tracking/analytics could support delivery visibility. (strongest fit for this case). This connects technical work to the case. Verify data quality, integration and required update frequency; no particular tool or real-time result is established.</p>
+<p>Present a complete migration roadmap before confirming systems and constraints. The case does not supply enough detail to commit to a full roadmap. Establish systems, constraints and the useful first scope before proposing milestones.</p>
+<p>Discuss only compute cost tools and assume that this resolves delivery delays. Costs may be considered, but compute spending alone does not explain the stated inventory and delivery problem.</p>
+<p>If any writing field is empty, the feedback lists its label as still to write. Existing writing is kept. When all three fields contain a response, that does not verify prose quality. Keep the section as a proposed plan; confirm responsibilities, technical assumptions and support arrangements before making a commitment. Use these self-review statements:</p>
+<ul><li>My writing uses the known case and keeps proposed benefits, actions and assumptions distinct from confirmed results or commitments.</li></ul>
+<ul><li>My business and technical contributions connect clearly, invite Amira’s input and identify what must be confirmed before promising an outcome or support arrangement.</li></ul>
+<h3>One possible plan section</h3>
+<p>This is a possible plan, not an agreed solution, committed action or script to copy. It does not fill your writing.</p>
+<h3>Your technical brief for Lucy</h3>
+<p>Amira needs clearer inventory and delivery visibility. Please help us understand the current inventory systems, inconsistent data formats, integration needs and useful reporting frequency before we discuss a suitable approach.</p>
+<h3>Your handoff and how the two messages complement each other</h3>
+<p>Lucy, could you help us explore which data flows and reporting options would support the delivery visibility Amira needs? I will keep the discussion tied to the operational problem while Lucy assesses feasibility and unknowns.</p>
+<h3>Questions or dependencies to confirm before the call</h3>
+<p>Proposed preparation: I confirm Amira’s priority and agenda; Lucy identifies the systems/data-flow questions and any information needed for an assessment. We both confirm what we can explain on the call and what needs follow-up.</p>
+<h2>3. Plan the joint response and follow-up</h2>
+<p>Practise the question supplied in the case as a possible moment in the planned call. You lead the response and involve Lucy where technical or operating details need assessment.</p>
+<p>Amira&#x27;s question: This sounds promising, but our team doesn’t have much experience managing data systems. How would this actually work for us day to day?</p>
+<h3>Write your plan section before comparing</h3>
+<p>Your joint response to Amira: Acknowledge the concern, use plain language and ask about daily work before offering support as if it were already agreed.</p>
+<p>How will you and Lucy coordinate the response?: Explain who leads, when to hand over and how you will check understanding.</p>
+<p>Your proposed follow-up, owners and timing to agree: Include support scope, training or operating responsibilities to confirm. Proposed owners and timing are not customer commitments.</p>
+<h3>Feedback: compare after choosing</h3>
+<p>If any writing field is empty, the feedback lists its label as still to write. Existing writing is kept. When all three fields contain a response, that does not verify prose quality. Keep the section as a proposed plan; confirm responsibilities, technical assumptions and support arrangements before making a commitment. Use these self-review statements:</p>
+<ul><li>My writing uses the known case and keeps proposed benefits, actions and assumptions distinct from confirmed results or commitments.</li></ul>
+<ul><li>My business and technical contributions connect clearly, invite Amira’s input and identify what must be confirmed before promising an outcome or support arrangement.</li></ul>
+<h3>One possible plan section</h3>
+<p>This is a possible plan, not an agreed solution, committed action or script to copy. It does not fill your writing.</p>
+<h3>Your joint response to Amira</h3>
+<p>That is an important concern. Could you walk us through a typical inventory update and who handles a delivery issue today? Lucy and I can then explore which operating tasks, training and support options would need to be considered before recommending an approach.</p>
+<h3>How will you and Lucy coordinate the response?</h3>
+<p>I acknowledge the concern and ask about the team’s daily work. Lucy helps assess the operating tasks, responsibilities and available options. I connect that explanation back to the customer’s goals and ask Amira whether it addresses the concern.</p>
+<h3>Your proposed follow-up, owners and timing to agree</h3>
+<p>Propose that I record Amira’s daily-work and training questions, while Lucy identifies operating responsibilities and support options to assess. Agree owners and a follow-up date with Amira. Confirm scope, availability and any commercial arrangements before promising ongoing support.</p>
+<h2>Review and keep your joint call plan</h2>
+<p>I have checked the plan as a whole: the business message, technical handoff and joint response support the same customer goals, with proposed owners and validation needs clear. Review the three sections as one call plan. Confirm the handoff and follow-up with Lucy, and treat customer questions and support needs as items to explore. Keep your plan, then return to the course page to mark the step complete. This workbench does not update course completion.</p></details>
+<p class="altlinks"><a href="fallback.html">Open the text version</a> · <a href="fallback.pdf">Download the text version as a PDF</a></p>
+<script>/* Shared local-only progress and attempt history. No network, analytics or account storage. */
+(function (global) {
+  'use strict';
+  const SCHEMA = 1, LIMIT = 1800000;
+  const clone = value => JSON.parse(JSON.stringify(value));
+  function validateData(value, depth = 0) {
+    if (depth > 60) throw Error('Saved data is too deeply nested');
+    if (value === null || typeof value === 'boolean') return;
+    if (typeof value === 'string') { if (value.length > 100000) throw Error('Saved text is too long'); return; }
+    if (typeof value === 'number') { if (!Number.isFinite(value)) throw Error('Invalid number'); return; }
+    if (typeof value !== 'object') throw Error('Invalid saved value');
+    for (const [key, item] of Object.entries(value)) {
+      if (['__proto__', 'constructor', 'prototype'].includes(key)) throw Error('Unsafe saved key');
+      validateData(item, depth + 1);
+    }
+  }
+  function parse(raw, id, compatibility) {
+    if (raw === null) return null;
+    if (raw.length > LIMIT) throw Error('Saved copy is too large');
+    const value = JSON.parse(raw); validateData(value);
+    if (!value || value.schema !== SCHEMA || value.id !== id || typeof value.epoch !== 'string' || !Number.isInteger(value.revision) || value.revision < 0) throw Error('Invalid saved copy');
+    if (value.cleared === true) return value;
+    if (value.compatibility !== compatibility) throw Error('Saved copy belongs to a different activity edition');
+    if (!value.snapshot || !Array.isArray(value.history)) throw Error('Incomplete saved copy');
+    for (const attempt of value.history) {
+      if (!attempt || typeof attempt.title !== 'string' || typeof attempt.when !== 'string' || !Array.isArray(attempt.answers) || !Array.isArray(attempt.feedback)) throw Error('Invalid attempt');
+      if (attempt.answers.some(x => !x || typeof x.label !== 'string' || typeof x.value !== 'string') || attempt.feedback.some(x => typeof x !== 'string')) throw Error('Invalid attempt detail');
+    }
+    return value;
+  }
+  function createStore(getStorage, id, compatibility, random = () => String(Date.now()) + '-' + Math.random().toString(36).slice(2)) {
+    const key = 'futurelearn:progress:v1:' + id;
+    let baseline = null, epoch = random(), revision = 0, ready = false, paused = false;
+    function load() {
+      let raw;
+      try { raw = getStorage().getItem(key); } catch { ready = false; return {status: 'unavailable'}; }
+      try {
+        const value = parse(raw, id, compatibility);
+        baseline = raw; ready = true; paused = false;
+        if (value) { epoch = value.epoch; revision = value.revision; }
+        return {status: 'ok', value};
+      } catch (error) { baseline = raw; ready = true; paused = true; return {status: 'invalid', message: error.message}; }
+    }
+    function save(snapshot, history) {
+      if (!ready) {
+        const result = load();
+        if (result.status !== 'ok') return result;
+        if (result.value) { paused = true; return {status: 'conflict', value: result.value}; }
+      }
+      if (paused) return {status: 'paused'};
+      try {
+        const storage = getStorage(), current = storage.getItem(key);
+        if (current !== baseline) {
+          paused = true;
+          let value = null;
+          try { value = parse(current, id, compatibility); } catch {}
+          return {status: 'conflict', value, generationChanged: !!value && value.epoch !== epoch};
+        }
+        const value = {schema: SCHEMA, id, compatibility, epoch, revision: revision + 1, snapshot, history};
+        validateData(value);
+        const raw = JSON.stringify(value);
+        if (raw.length > LIMIT) throw Error('Saved work is too large');
+        storage.setItem(key, raw);
+        if (storage.getItem(key) !== raw) { paused = true; return {status: 'conflict'}; }
+        baseline = raw; revision++; return {status: 'ok'};
+      } catch { return {status: 'unavailable'}; }
+    }
+    function erase(legacyKeys = []) {
+      try {
+        const storage = getStorage();
+        // A tombstone contains no learner work and fences delayed saves in older tabs.
+        const value = {schema: SCHEMA, id, epoch: random(), revision: 0, cleared: true};
+        const raw = JSON.stringify(value);
+        storage.setItem(key, raw);
+        if (storage.getItem(key) !== raw) throw Error('Erase did not persist');
+        for (const legacy of legacyKeys) { if (legacy !== key) storage.removeItem(legacy); }
+        if (legacyKeys.some(legacy => legacy !== key && storage.getItem(legacy) !== null)) throw Error('Legacy erase failed');
+        baseline = raw; epoch = value.epoch; revision = 0; ready = true; paused = false;
+        return {status: 'ok', value};
+      } catch { paused = true; return {status: 'unavailable'}; }
+    }
+    return {key, load, save, erase, pause: () => { paused = true; }, get epoch() { return epoch; }};
+  }
+
+  // Presentation is encoded as inert, allowlisted DOM data, never stored/replayed HTML.
+  // Keeping existing keyed nodes retains their directly attached input/click listeners.
+  const TAGS = new Set('main figure figcaption aside header footer nav time output sup sub u s kbd samp mark abbr cite q wbr div section article p span strong b em i small ul ol li dl dt dd h1 h2 h3 h4 h5 h6 label fieldset legend input textarea select option optgroup button a img details summary table caption thead tbody tfoot tr th td blockquote pre code br hr progress meter svg g path circle rect line polyline polygon text title desc'.split(' '));
+  const ATTR = /^(id|class|hidden|disabled|open|checked|selected|type|name|value|for|role|tabindex|maxlength|min|max|step|rows|cols|multiple|placeholder|autocomplete|inputmode|width|height|alt|title|target|rel|colspan|rowspan|scope|viewBox|d|cx|cy|r|x|y|x1|x2|y1|y2|points|fill|stroke|stroke-width|preserveAspectRatio|aria-[a-z-]+|data-[a-z0-9-]+)$/;
+  function createCodec(document, rootIds, media = []) {
+    const urls = [...new Set([...document.querySelectorAll('img[src],a[href]')].map(e => e.getAttribute(e.tagName === 'IMG' ? 'src' : 'href')).concat(media).filter(x => typeof x === 'string'))].sort();
+    const transient = new Set(['pop', 'wob', 'newly-solved']);
+    function attributes(node) {
+      const result = {};
+      for (const a of node.attributes) {
+        if (ATTR.test(a.name)) result[a.name] = a.name === 'class' ? a.value.split(/\s+/).filter(x => !transient.has(x)).join(' ') : a.value;
+        else if ((a.name === 'src' || a.name === 'href') && urls.includes(a.value)) result[a.name] = urls.indexOf(a.value);
+      }
+      const style = {};
+      for (const name of node.style) {
+        const value = node.style.getPropertyValue(name);
+        if (/^(width|height|opacity|transform|background-color|color|border-color|--[a-z-]+)$/.test(name) && /^[a-z0-9\s#%.,()+-]+$/i.test(value) && !/url|expression/i.test(value)) style[name] = value;
+      }
+      if (Object.keys(style).length) result.style = style;
+      return result;
+    }
+    function encode(node) {
+      if (node.nodeType === 3) return ['#', node.data];
+      if (node.nodeType !== 1 || !TAGS.has(node.localName)) return null;
+      const props = {};
+      if (node.matches('input:not([type=file]),textarea,select')) { props.value = node.value; if (node.matches('input[type=checkbox],input[type=radio]')) props.checked = node.checked; }
+      return [node.localName, attributes(node), props, [...node.childNodes].map(encode).filter(Boolean)];
+    }
+    function validate(tree, budget = {n: 0}, depth = 0) {
+      if (++budget.n > 25000 || depth > 50 || !Array.isArray(tree)) throw Error('Invalid saved view');
+      if (tree[0] === '#') { if (tree.length !== 2 || typeof tree[1] !== 'string') throw Error('Invalid text'); return; }
+      if (tree.length !== 4 || !TAGS.has(tree[0]) || !tree[1] || !tree[2] || !Array.isArray(tree[3])) throw Error('Invalid saved element');
+      for (const [name, value] of Object.entries(tree[1])) {
+        if (name === 'href' || name === 'src') { if (!Number.isInteger(value) || !urls[value]) throw Error('Invalid resource'); }
+        else if (name === 'style') {
+          if (!value || typeof value !== 'object' || Array.isArray(value)) throw Error('Invalid style');
+          for (const [k, v] of Object.entries(value)) if (!/^(width|height|opacity|transform|background-color|color|border-color|--[a-z-]+)$/.test(k) || typeof v !== 'string' || !/^[a-z0-9\s#%.,()+-]+$/i.test(v) || /url|expression/i.test(v)) throw Error('Invalid style value');
+        } else if (!ATTR.test(name) || typeof value !== 'string') throw Error('Invalid attribute');
+      }
+      if (Object.keys(tree[2]).some(x => !['value', 'checked'].includes(x)) || (tree[2].value !== undefined && typeof tree[2].value !== 'string') || (tree[2].checked !== undefined && typeof tree[2].checked !== 'boolean')) throw Error('Invalid control');
+      for (const child of tree[3]) validate(child, budget, depth + 1);
+    }
+    const treeKey = tree => tree[0] === '#' ? null : tree[1].id ? 'id:' + tree[1].id : tree[0] === 'input' && tree[1].name ? 'input:' + tree[1].name + ':' + tree[1].value : tree[0] === 'option' ? 'option:' + tree[1].value : tree[0] === 'label' && tree[3].some(x => x[0] === 'input') ? 'label:' + treeKey(tree[3].find(x => x[0] === 'input')) : null;
+    function nodeKey(node) { return node.nodeType === 1 ? treeKey(encode(node)) : null; }
+    function patch(node, tree, svg = false) {
+      if (tree[0] === '#') { if (node?.nodeType === 3) { node.data = tree[1]; return node; } return document.createTextNode(tree[1]); }
+      const inSvg = svg || tree[0] === 'svg';
+      if (!node || node.nodeType !== 1 || node.localName !== tree[0]) node = inSvg ? document.createElementNS('http://www.w3.org/2000/svg', tree[0]) : document.createElement(tree[0]);
+      const attrs = tree[1];
+      for (const a of [...node.attributes]) if ((ATTR.test(a.name) || ['src', 'href', 'style'].includes(a.name)) && !(a.name in attrs)) node.removeAttribute(a.name);
+      for (const [name, value] of Object.entries(attrs)) {
+        if (name === 'style') { node.removeAttribute('style'); for (const [k, v] of Object.entries(value)) node.style.setProperty(k, v); }
+        else node.setAttribute(name, name === 'src' || name === 'href' ? urls[value] : value);
+      }
+      const old = [...node.childNodes], used = new Set(), next = [];
+      for (let i = 0; i < tree[3].length; i++) {
+        const child = tree[3][i], key = treeKey(child);
+        let match = key ? old.find(x => !used.has(x) && nodeKey(x) === key) : null;
+        if (!match && old[i] && !used.has(old[i]) && !nodeKey(old[i]) && ((child[0] === '#' && old[i].nodeType === 3) || old[i].localName === child[0])) match = old[i];
+        if (match) used.add(match);
+        next.push(patch(match, child, inSvg));
+      }
+      node.replaceChildren(...next);
+      for (const [key, value] of Object.entries(tree[2])) if (node.matches('input:not([type=file]),textarea,select')) node[key] = value;
+      return node;
+    }
+    function capture() { return Object.fromEntries(rootIds.map(id => { const tree = encode(document.getElementById(id)); if (!tree) throw Error('Missing supported activity root: ' + id); return [id, tree]; })); }
+    function restore(value) {
+      if (!value || Object.keys(value).sort().join('|') !== [...rootIds].sort().join('|')) throw Error('Saved view does not match');
+      for (const id of rootIds) { validate(value[id]); if (value[id][1]?.id !== id) throw Error('Invalid view root'); }
+      for (const id of rootIds) patch(document.getElementById(id), value[id]);
+    }
+    return {capture, restore, validate};
+  }
+
+  function mount(options) {
+    const document = global.document;
+    const codec = createCodec(document, options.roots || [], options.media || []);
+    const store = createStore(() => global.localStorage, options.id, options.compatibility);
+    let history = [], suspended = true, scheduled = false, lastSnapshot = '', health = 'ready';
+    const dialog = document.createElement('dialog'); dialog.className = 'ap-dialog'; dialog.setAttribute('aria-labelledby', 'ap-title');
+    dialog.innerHTML = '<h2 id="ap-title">Your saved work</h2><p>Work and checked attempts are saved automatically in this browser and device. Returning here restores your progress. This is not an account backup or cross-device sync. On a shared device, use Restart when finished.</p><p id="ap-status" role="status"></p><div class="ap-actions"><button type="button" id="ap-close">Close</button><button type="button" id="ap-load">Load latest saved work</button><button type="button" id="ap-export">Download a backup</button><button type="button" id="ap-import">Restore a backup</button><input type="file" id="ap-import-file" accept=".json,application/json" hidden><button type="button" id="ap-retry">Retry saving</button><button type="button" id="ap-restart">Restart activity</button></div><h3>Past attempts</h3><div id="ap-history"></div>';
+    document.body.append(dialog);
+    const status = dialog.querySelector('#ap-status'), list = dialog.querySelector('#ap-history');
+    const button = document.createElement('button'); button.type = 'button'; button.id = 'saved-work-toggle'; button.className = 'quiet ap-toggle';
+    const holder = document.querySelector('header .tools,.top .tools,#project-tools .tool-buttons,.toolbar') || document.querySelector('header,.intro');
+    (holder || document.body).append(button);
+    const live = document.createElement('span'); live.className = 'ap-sr'; live.setAttribute('role', 'status'); document.body.append(live);
+    const style = document.createElement('style');
+    style.textContent = '.ap-dialog{box-sizing:border-box;width:min(680px,calc(100% - 24px));max-height:85vh;overflow:auto;border:2px solid #0a6b66;border-radius:12px;padding:20px;color:#172d35;background:white;font:16px/1.5 system-ui}.ap-dialog::backdrop{background:#172d3570}.ap-dialog h2{margin-top:0}.ap-actions{display:flex;flex-wrap:wrap;gap:8px}.ap-dialog button{font:inherit;min-height:44px;padding:8px 12px;border:2px solid #0a6b66;border-radius:6px;background:white;color:#075d56;cursor:pointer}.ap-dialog button:focus-visible,.ap-dialog summary:focus-visible{outline:3px solid #172d35;outline-offset:3px}.ap-dialog details{border-top:1px solid #bdcdd1;padding:10px 0}.ap-dialog summary{cursor:pointer;font-weight:650}.ap-dialog dd{white-space:pre-wrap;overflow-wrap:anywhere;margin:0 0 10px}.ap-dialog dt{font-weight:650}.ap-dialog p{overflow-wrap:anywhere}.ap-toggle{font-size:14px!important;min-height:44px!important}.ap-toggle.ap-warning{background:#fff0ce!important;color:#62430b!important}.ap-sr{position:fixed;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}@media print{.ap-dialog,.ap-toggle,.ap-sr{display:none!important}}';
+    document.head.append(style);
+    function message(code) {
+      const messages = {ready: 'Automatic saving is ready.', ok: 'Saved in this browser. Return here to resume.', restored: 'Your saved work and past attempts have been restored.', cleared: 'All saved work and attempts for this activity have been cleared. Downloaded files are unchanged.', unavailable: 'Saving is unavailable or storage is full. Your work is still on this page. Download a backup before leaving, then retry saving.', invalid: 'The saved copy is unreadable or belongs to a different edition. It has been kept unchanged. Download a backup before choosing Restart.', conflict: 'Another tab changed the saved work. Saving is paused to protect both copies. Download your current backup or load the latest saved work.', paused: 'Saving is paused. Download a backup or load the latest saved work.'};
+      health = code; const text = messages[code] || messages.paused;
+      status.textContent = text;
+      button.textContent = ['ok', 'restored'].includes(code) ? 'Saved work · ' + history.length : ['ready', 'cleared'].includes(code) ? 'Saved work' : 'Check saved work';
+      button.classList.toggle('ap-warning', ['unavailable', 'invalid', 'conflict', 'paused'].includes(code));
+      button.setAttribute('aria-label', 'Saved work and ' + history.length + ' past attempts. ' + text);
+      if (!['ready', 'ok', 'restored'].includes(code)) live.textContent = text;
+    }
+    function snapshot() { return {state: clone(options.getState()), view: codec.capture()}; }
+    function apply(value) {
+      suspended = true;
+      try {
+        if (!value || value.cleared) { history = []; options.reset(); }
+        else {
+          codec.restore(value.snapshot.view); options.setState(clone(value.snapshot.state));
+          history = clone(value.history); options.afterRestore?.();
+        }
+        lastSnapshot = JSON.stringify(snapshot());
+      } finally { suspended = false; }
+    }
+    function load() {
+      const loaded = store.load();
+      if (loaded.status !== 'ok') { message(loaded.status); return false; }
+      try { if (loaded.value) apply(loaded.value); message(loaded.value?.cleared ? 'cleared' : loaded.value ? 'restored' : 'ready'); return true; }
+      catch { store.pause(); suspended = false; message('invalid'); return false; }
+    }
+    function capture(force = false) {
+      if (suspended) return;
+      const current = snapshot(), text = JSON.stringify(current);
+      if (!force && text === lastSnapshot) return;
+      const saved = store.save(current, history);
+      if (saved.status === 'conflict' && (saved.value?.cleared || saved.generationChanged)) { const latest = store.load(); if (latest.status === 'ok') { apply(latest.value); message(latest.value?.cleared ? 'cleared' : 'restored'); return; } }
+      if (saved.status === 'ok') lastSnapshot = text;
+      message(saved.status);
+    }
+    function schedule() { if (!suspended && !scheduled) { scheduled = true; queueMicrotask(() => { scheduled = false; capture(); }); } }
+    function renderHistory() {
+      list.replaceChildren();
+      if (!history.length) { const p = document.createElement('p'); p.textContent = 'No checked attempts saved yet. Your unfinished work is saved as you go.'; list.append(p); }
+      history.forEach((attempt, index) => {
+        const details = document.createElement('details'), summary = document.createElement('summary'), when = document.createElement('p'), dl = document.createElement('dl');
+        summary.textContent = (index + 1) + '. ' + attempt.title; when.textContent = new Date(attempt.when).toLocaleString();
+        for (const answer of attempt.answers) { const dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = answer.label; dd.textContent = answer.value; dl.append(dt, dd); }
+        details.append(summary, when, dl);
+        for (const text of attempt.feedback) { const p = document.createElement('p'); p.textContent = text; details.append(p); }
+        list.append(details);
+      });
+    }
+    function recordAttempt(action) {
+      const root = options.currentRoot?.() || document.querySelector('#interactive,main') || document.body;
+      const answers = [...root.querySelectorAll('input:not([type=file]):not([type=hidden]),textarea,select')].filter(e => !e.closest('[hidden]')).map(e => {
+        const label = (e.id && document.querySelector('label[for="' + global.CSS.escape(e.id) + '"]')?.textContent) || e.closest('label')?.textContent || e.closest('fieldset')?.querySelector('legend')?.textContent || e.name || e.id || 'Response';
+        return {label: label.trim(), value: e.matches('input[type=checkbox],input[type=radio]') ? (e.checked ? 'Selected: ' : 'Not selected: ') + e.value : e.tagName === 'SELECT' ? e.selectedOptions[0]?.textContent || e.value : e.value};
+      });
+      const feedback = [...root.querySelectorAll('.fb,.feedback,.field-feedback,[id$="-feedback"],[id^="feedback-"],#completion-status')].filter(e => !e.closest('[hidden]')).map(e => e.textContent.trim()).filter(Boolean);
+      history.push({when: new Date().toISOString(), title: (root.querySelector('h2,h3')?.textContent.trim() || options.title || document.title) + ' · ' + action, answers, feedback});
+      capture(true);
+    }
+    function restart(confirm = true) {
+      if (confirm && !global.confirm('Restart this activity? This permanently clears all saved answers, writing, progress and past attempts for this activity in this browser. Downloaded files are unchanged.')) return false;
+      const result = store.erase(options.legacyKeys || []);
+      if (result.status !== 'ok') { message(result.status); return false; }
+      apply(result.value); message('cleared'); renderHistory();
+      if (dialog.open) dialog.close();
+      (document.querySelector('#h-top,h1') || button).focus?.();
+      return true;
+    }
+    function backup() {
+      const data = JSON.stringify({schema: SCHEMA, id: options.id, compatibility: options.compatibility, epoch: 'backup', revision: 0, snapshot: snapshot(), history}, null, 2);
+      const a = document.createElement('a'), url = global.URL.createObjectURL(new Blob([data], {type: 'application/json'}));
+      a.href = url; a.download = options.id + '-saved-work.json'; a.click(); setTimeout(() => global.URL.revokeObjectURL(url), 1000);
+    }
+    button.addEventListener('click', () => { renderHistory(); dialog.showModal(); });
+    dialog.querySelector('#ap-close').addEventListener('click', () => { dialog.close(); button.focus(); });
+    dialog.querySelector('#ap-load').addEventListener('click', () => { load(); renderHistory(); });
+    dialog.querySelector('#ap-export').addEventListener('click', backup);
+    dialog.querySelector('#ap-import').addEventListener('click', () => dialog.querySelector('#ap-import-file').click());
+    dialog.querySelector('#ap-import-file').addEventListener('change', async event => {
+      const file = event.target.files[0]; event.target.value = ''; if (!file) return;
+      try {
+        if (file.size > LIMIT) throw Error('Backup is too large');
+        const value = parse(await file.text(), options.id, options.compatibility);
+        if (!value || value.cleared) throw Error('Backup has no work');
+        for (const tree of Object.values(value.snapshot.view)) codec.validate(tree);
+        if (!global.confirm('Replace your current work and attempt history with this backup? Download your current backup first if you want to keep both.')) return;
+        const loaded = store.load(); if (loaded.status !== 'ok') { message(loaded.status); return; }
+        apply(value); capture(true); renderHistory();
+      } catch { status.textContent = 'That backup could not be restored. Current work and the saved copy are kept.'; }
+    });
+    dialog.querySelector('#ap-retry').addEventListener('click', () => capture(true));
+    dialog.querySelector('#ap-restart').addEventListener('click', () => restart());
+    document.addEventListener('click', event => {
+      const target = event.target.closest('button');
+      if (!target || target.closest('.ap-dialog') || target === button) return;
+      if (target.type === 'submit' && target.form) return;
+      if ((options.restartIds || ['restart']).includes(target.id)) { event.preventDefault(); event.stopImmediatePropagation(); restart(!(options.confirmedRestartIds || ['erase-confirm']).includes(target.id)); }
+    }, true);
+    document.addEventListener('click', event => {
+      const target = event.target.closest('button');
+      if (!target || target.closest('.ap-dialog') || target === button) return;
+      if (target.type === 'submit' && target.form) return;
+      if (/^(check|complete)-|-(check)$/.test(target.id) || Object.keys(target.dataset).some(k => /^(check|show|reveal|complete)/i.test(k)) || /^(check|compare my|i have reviewed|complete this)/i.test(target.textContent.trim())) recordAttempt(target.textContent.trim());
+      else schedule();
+    });
+    document.addEventListener('submit', event => { if (!event.target.closest('.ap-dialog')) recordAttempt('Check answer'); });
+    document.addEventListener('input', schedule); document.addEventListener('change', schedule);
+    document.addEventListener('toggle', schedule, true);
+    const observer = new global.MutationObserver(schedule);
+    for (const id of options.roots || []) observer.observe(document.getElementById(id), {subtree: true, childList: true, characterData: true, attributes: true});
+    global.addEventListener('storage', event => {
+      if (event.key !== store.key && event.key !== null) return;
+      let value = null; try { value = parse(global.localStorage.getItem(store.key), options.id, options.compatibility); } catch {}
+      if (value && (value.cleared || value.epoch !== store.epoch)) { const latest = store.load(); if (latest.status === 'ok') { apply(latest.value); message(latest.value?.cleared ? 'cleared' : 'restored'); } }
+      else message('conflict');
+    });
+    suspended = false;
+    load();
+    // A migrated legacy capstone has already restored itself; save it in the shared format.
+    if (options.legacyKeys?.length && health === 'ready') { history = clone(options.initialHistory?.() || []); capture(true); }
+    const controller = {capture, restart, load, backup, recordAttempt, get history() { return clone(history); }, get health() { return health; }, get key() { return store.key; }};
+    global.ActivityProgressController = controller;
+    return controller;
+  }
+  const api = {createStore, parse, validateData, createCodec, mount};
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  global.ActivityProgress = api;
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>const DATA={"title": "Plan the call together", "intro": "Prepare one joint customer call with Lucy, your solutions architect. Turn the Dawnstar Diagnostics case into a coordinated plan for business value, technical input and a useful response to Amira’s operational question.", "boundary": "This is a proposed plan for the fictional call, not an agreed customer solution. Confirm priorities, responsibilities, data and support needs with the people involved. No service, data freshness, cost, delivery result or support entitlement is guaranteed by this short case.", "scope": "Four planning decisions are checked. Your own messages, handoffs and follow-up plan are checked for completeness and self-reviewed for meaning. No CRM login, provider account, external submission or real teammate conversation is required.", "originalScenario": ["You and Lucy are preparing for a joint call with Amira. The meeting is scheduled for tomorrow morning, and your goal is to help her explore how AWS solutions could improve operational efficiency and order fulfillment.", "Before you meet, you and Lucy decide to review what you know about the customer. Dawnstar Diagnostics is a mid-sized healthcare company that distributes medical equipment to hospitals and clinics. The company is growing quickly, but Amira’s team is struggling with outdated inventory systems, inconsistent data, and delayed deliveries.", "Amira is eager to modernize operations, but she wants to see clear business value before committing to new technology. She is analytical and results-focused but also cautious about adopting large-scale solutions without proven outcomes."], "scenario": ["You and Lucy are preparing for a joint call with Amira. The meeting is scheduled for tomorrow morning, and your goal is to help her explore how cloud capabilities could improve operational efficiency and order fulfillment.", "Before you meet, you and Lucy decide to review what you know about the customer. Dawnstar Diagnostics is a mid-sized healthcare company that distributes medical equipment to hospitals and clinics. The company is growing quickly, but Amira’s team is struggling with outdated inventory systems, inconsistent data, and delayed deliveries.", "Amira is eager to modernize operations, but she wants to see clear business value before committing to new technology. She is analytical and results-focused but also cautious about adopting large-scale solutions without proven outcomes."], "people": "You lead the business conversation; Lucy is your solutions architect and contributes technical assessment. Amira contributes the customer’s goals, constraints and operational requirements. Agree how you will work together rather than treating those roles as exclusive speaking rights.", "customerQuestion": "This sounds promising, but our team doesn’t have much experience managing data systems. How would this actually work for us day to day?", "review": ["My writing uses the known case and keeps proposed benefits, actions and assumptions distinct from confirmed results or commitments.", "My business and technical contributions connect clearly, invite Amira’s input and identify what must be confirmed before promising an outcome or support arrangement."], "closing": "Review the three sections as one call plan. Confirm the handoff and follow-up with Lucy, and treat customer questions and support needs as items to explore. Keep your plan, then return to the course page to mark the step complete. This workbench does not update course completion.", "stages": [{"id": "business", "title": "Agree the business opening", "short": "Business value", "intro": "Before the call, agree who leads the business opening and how it connects to Amira’s stated needs. Then write your own message and purpose for the call.", "decisions": [{"id": "lead", "prompt": "Who primarily leads the business-value framing in this call?", "correct": "sales", "options": [{"id": "sales", "name": "You, the sales representative, with Lucy contributing technical context.", "feedback": "This is the planned lead in this scenario. Invite Amira to confirm priorities and use Lucy’s input; business value is a shared concern, not an exclusive right to speak."}, {"id": "technical", "name": "Lucy alone, while you avoid the business discussion.", "feedback": "Lucy contributes technical context, but handing off all business framing would miss your planned sales role. Prepare the business opening together and lead it yourself."}]}, {"id": "emphasis", "prompt": "Which emphasis best fits the supplied customer goals?", "correct": "operations", "options": [{"id": "infrastructure", "name": "Lead with the scale and geographic reach of cloud infrastructure.", "feedback": "Infrastructure detail may be relevant later, but it does not directly connect the opening to inventory, data consistency and delayed deliveries."}, {"id": "operations", "name": "Explore improved operational efficiency, delivery performance and useful supply-chain visibility.", "feedback": "This directly connects to the stated business challenges. These are outcomes to assess, not verified improvements or a promise that dashboards alone fix deliveries."}, {"id": "migration", "name": "Promise lower costs by moving every existing system to the cloud.", "feedback": "The case does not establish a whole-system migration or a saving. Do not substitute a blanket cost claim for the customer’s stated operational needs."}, {"id": "reputation", "name": "Lead with a provider’s healthcare security and compliance reputation.", "feedback": "Security requirements may matter, but reputation alone neither addresses the main operational need nor proves the customer’s requirements are met."}]}], "fields": [{"id": "message", "label": "Your business opening for Amira", "hint": "Connect the known inventory, data and delivery problems to possible customer value in clear language.", "sample": "We would like to explore where more consistent inventory information and useful reporting could help your team improve order fulfilment. Before proposing technology, we want to understand the delivery bottlenecks and what useful visibility means for your team."}, {"id": "reason", "label": "Why does that message fit this customer?", "hint": "Refer to the case evidence and distinguish a proposed benefit from a proven result.", "sample": "The case names outdated inventory systems, inconsistent data and delayed deliveries. This opening stays with those operational concerns and asks for evidence before promising better performance."}, {"id": "confirm", "label": "Your proposed call objective and a question to confirm it", "hint": "Describe what you and Lucy hope to learn or agree, then invite Amira to confirm the priority.", "sample": "Proposed objective: agree which operational problem and information flow to investigate first. Ask Amira which delivery or reporting issue has the greatest impact and what a useful outcome from this call would be."}]}, {"id": "team", "title": "Coordinate business and technical input", "short": "Team handoff", "intro": "Agree the leads and prepare a useful brief for Lucy. Her technical explanation should test how the proposed capabilities relate to Amira’s operational goals.", "decisions": [{"id": "roles", "prompt": "How should you divide the primary contributions in this planned call?", "correct": "aligned", "options": [{"id": "reverse", "name": "Lucy leads the business context; you deliver the technical assessment without her input.", "feedback": "This reverses the planned leads and leaves technical claims without Lucy’s assessment. Agree complementary roles instead."}, {"id": "aligned", "name": "You lead the business context; Lucy leads technical assessment, with both listening and contributing.", "feedback": "This is the planned division. Both teammates connect their contributions to the customer’s goals and invite Amira to correct assumptions."}, {"id": "no-tech", "name": "Both discuss business value and leave all technical questions unowned.", "feedback": "A shared business goal is useful, but technical questions still need a named lead and follow-up."}, {"id": "customer-only", "name": "Ask Amira to resolve the technical details herself while your team gives only a pitch.", "feedback": "Amira provides essential requirements and context; that does not replace your team’s responsibility to prepare and own an appropriate technical assessment."}]}, {"id": "focus", "prompt": "What is the strongest initial focus for Lucy’s technical contribution here?", "correct": "visibility", "options": [{"id": "locations", "name": "Explain global data-centre distribution before exploring the inventory problem.", "feedback": "Location choices can matter, but the supplied priority is operational visibility and delivery performance. First connect the technical discussion to that need."}, {"id": "visibility", "name": "Assess inventory data flows, reporting needs and how proposed tracking/analytics could support delivery visibility.", "feedback": "This connects technical work to the case. Verify data quality, integration and required update frequency; no particular tool or real-time result is established."}, {"id": "full-migration", "name": "Present a complete migration roadmap before confirming systems and constraints.", "feedback": "The case does not supply enough detail to commit to a full roadmap. Establish systems, constraints and the useful first scope before proposing milestones."}, {"id": "compute-cost", "name": "Discuss only compute cost tools and assume that this resolves delivery delays.", "feedback": "Costs may be considered, but compute spending alone does not explain the stated inventory and delivery problem."}]}], "fields": [{"id": "message", "label": "Your technical brief for Lucy", "hint": "Specify the customer goal, the technical questions and what she should validate.", "sample": "Amira needs clearer inventory and delivery visibility. Please help us understand the current inventory systems, inconsistent data formats, integration needs and useful reporting frequency before we discuss a suitable approach."}, {"id": "reason", "label": "Your handoff and how the two messages complement each other", "hint": "Write a sentence you could use to invite Lucy in, and explain the link from business outcome to technical inquiry.", "sample": "Lucy, could you help us explore which data flows and reporting options would support the delivery visibility Amira needs? I will keep the discussion tied to the operational problem while Lucy assesses feasibility and unknowns."}, {"id": "confirm", "label": "Questions or dependencies to confirm before the call", "hint": "Identify missing information and agree who will prepare or ask about it. Do not invent answers.", "sample": "Proposed preparation: I confirm Amira’s priority and agenda; Lucy identifies the systems/data-flow questions and any information needed for an assessment. We both confirm what we can explain on the call and what needs follow-up."}]}, {"id": "response", "title": "Plan the joint response and follow-up", "short": "Joint response", "intro": "Practise the question supplied in the case as a possible moment in the planned call. You lead the response and involve Lucy where technical or operating details need assessment.", "decisions": [], "fields": [{"id": "message", "label": "Your joint response to Amira", "hint": "Acknowledge the concern, use plain language and ask about daily work before offering support as if it were already agreed.", "sample": "That is an important concern. Could you walk us through a typical inventory update and who handles a delivery issue today? Lucy and I can then explore which operating tasks, training and support options would need to be considered before recommending an approach."}, {"id": "reason", "label": "How will you and Lucy coordinate the response?", "hint": "Explain who leads, when to hand over and how you will check understanding.", "sample": "I acknowledge the concern and ask about the team’s daily work. Lucy helps assess the operating tasks, responsibilities and available options. I connect that explanation back to the customer’s goals and ask Amira whether it addresses the concern."}, {"id": "confirm", "label": "Your proposed follow-up, owners and timing to agree", "hint": "Include support scope, training or operating responsibilities to confirm. Proposed owners and timing are not customer commitments.", "sample": "Propose that I record Amira’s daily-work and training questions, while Lucy identifies operating responsibilities and support options to assess. Agree owners and a follow-up date with Amira. Confirm scope, availability and any commercial arrangements before promising ongoing support."}]}]};
+const IMAGES={"start": "data:image/webp;base64,UklGRjQEAABXRUJQVlA4ICgEAABQHACdASqgAHgAPm0ulUakIqIhJnIM2IANiU3bq8JbFEC648g3qo22fmA/Wb9o/eV/xHqo3iDn1fZgyGXwB/S+rTXV/2bwVfwr/GbjFf3HHXdqrxi3iZ8Yj/NfLp/rv8B5x/nP2C/1N9Jn1d+gj+26EzqiBUf93dX55Te2V7X0/rdVz6E8CwjE1l/w14C77IaVgxih9XmgY+hh7cGa9bLFzF/nsZ1WrI+GnNTE9QRh7adf/IKj5w52k6H4PiYtIf0Eg6o3DIo0U4/V3XioIUY+GDQQFkz4TFqexTYt/cwTPsy0zE1eKxbGtVgAAP78Iw3FB2NTAALz/r0Wdsw0WGdS+eqLyPQKdZA4pw+F0f/wAX1xmwvSujny801LLeXduLf8A7PsEf53/wiM+rofqOJ//8m7JhZRP9M37YZI9n/RU/+VD9ssOUPN2KHsFiWnlUUz59nDY9SQWtaChWVukTneRuhFbMbdwB9KFPc+ViN6/H8aD3JSu6J5e49nUcPIAwPFUwffzrfcKKGWr1VyFQJbwzz3mosbb0QD5Sid9/+aJ99xLNdmmvihYy/gPYi8pgeY3yit5lqf6kizO2NrNdlMbaXDzmdGBMpu0t1/ZdGPKMbfQ1lZRQ9aPTL1qvFUq+b6RBb0jQCDhW1hqdt5b5ts2JGJaDXKpYdMoPvZNum3B6dFGKgABlOC1pmNgbRNXVxomEzVG3iElQEDajHSmo3JjFxz6QbNIy1tSGwoAS3GxTddE/Jc59LaEWS8Xjk3n/76sd+IyX8RbihnIjPM8tX/CJ4kAp+W1/6dJMAhPpOOCnuuuvXFKRTcuxKqXEWJzronGM1f9fVAOwTkXlMGlh9aEKYvsUEO1kUo6o8KV7iDl62aIQWbiZ+3ok7rb+vhxDiC7RHNTPnS84dH3u3x3XWLZoRiKD0Vo6m+pdViZ5rN22UAVQ2wzzXe+D6VUeXI/+lmfBP5699NfMReYdOqZgjItMAEjc9HSXBez/UVABeHnZJNz/aqdN2y7f3BGGYR8piFz3Fcqwca+rT86XokTDzfP8UC8r5zkHeylCqcVFGq6zoM4ME4Chj6rlwDH1QGq0fyfI7zhQZ/FxVglNtSRfcTGTj/GrG2vv84Ror9O7FOXH+AOxlPf27bb4j5JMYHVWsh0PiTIqwxJkDqio+jaYW+tdji8dGeS6yAiJskU4tfa7I/EsrVscHv9tC6D1sl3IhB7uFwSp+Wazp/viPnXbPsAINOGc6VLVzg+rr3O2sHoRmgtzxucT/I6H0E0bWn9g0KtUaciObHRNE4ftXjykME0zeb87M3+inEBC8z62XNJtexP5LVe6/3Auf8ZTsSrVyIsWywDsAOZEj6u74o7JOxTK4xZn/zQ1VskbpPa7iMigkhr/ctmNUL1qStt/kLf4tGIqcgAAAAAA==", "business": "data:image/webp;base64,UklGRjQEAABXRUJQVlA4ICgEAABQHACdASqgAHgAPm0ulUakIqIhJnIM2IANiU3bq8JbFEC648g3qo22fmA/Wb9o/eV/xHqo3iDn1fZgyGXwB/S+rTXV/2bwVfwr/GbjFf3HHXdqrxi3iZ8Yj/NfLp/rv8B5x/nP2C/1N9Jn1d+gj+26EzqiBUf93dX55Te2V7X0/rdVz6E8CwjE1l/w14C77IaVgxih9XmgY+hh7cGa9bLFzF/nsZ1WrI+GnNTE9QRh7adf/IKj5w52k6H4PiYtIf0Eg6o3DIo0U4/V3XioIUY+GDQQFkz4TFqexTYt/cwTPsy0zE1eKxbGtVgAAP78Iw3FB2NTAALz/r0Wdsw0WGdS+eqLyPQKdZA4pw+F0f/wAX1xmwvSujny801LLeXduLf8A7PsEf53/wiM+rofqOJ//8m7JhZRP9M37YZI9n/RU/+VD9ssOUPN2KHsFiWnlUUz59nDY9SQWtaChWVukTneRuhFbMbdwB9KFPc+ViN6/H8aD3JSu6J5e49nUcPIAwPFUwffzrfcKKGWr1VyFQJbwzz3mosbb0QD5Sid9/+aJ99xLNdmmvihYy/gPYi8pgeY3yit5lqf6kizO2NrNdlMbaXDzmdGBMpu0t1/ZdGPKMbfQ1lZRQ9aPTL1qvFUq+b6RBb0jQCDhW1hqdt5b5ts2JGJaDXKpYdMoPvZNum3B6dFGKgABlOC1pmNgbRNXVxomEzVG3iElQEDajHSmo3JjFxz6QbNIy1tSGwoAS3GxTddE/Jc59LaEWS8Xjk3n/76sd+IyX8RbihnIjPM8tX/CJ4kAp+W1/6dJMAhPpOOCnuuuvXFKRTcuxKqXEWJzronGM1f9fVAOwTkXlMGlh9aEKYvsUEO1kUo6o8KV7iDl62aIQWbiZ+3ok7rb+vhxDiC7RHNTPnS84dH3u3x3XWLZoRiKD0Vo6m+pdViZ5rN22UAVQ2wzzXe+D6VUeXI/+lmfBP5699NfMReYdOqZgjItMAEjc9HSXBez/UVABeHnZJNz/aqdN2y7f3BGGYR8piFz3Fcqwca+rT86XokTDzfP8UC8r5zkHeylCqcVFGq6zoM4ME4Chj6rlwDH1QGq0fyfI7zhQZ/FxVglNtSRfcTGTj/GrG2vv84Ror9O7FOXH+AOxlPf27bb4j5JMYHVWsh0PiTIqwxJkDqio+jaYW+tdji8dGeS6yAiJskU4tfa7I/EsrVscHv9tC6D1sl3IhB7uFwSp+Wazp/viPnXbPsAINOGc6VLVzg+rr3O2sHoRmgtzxucT/I6H0E0bWn9g0KtUaciObHRNE4ftXjykME0zeb87M3+inEBC8z62XNJtexP5LVe6/3Auf8ZTsSrVyIsWywDsAOZEj6u74o7JOxTK4xZn/zQ1VskbpPa7iMigkhr/ctmNUL1qStt/kLf4tGIqcgAAAAAA==", "team": "data:image/webp;base64,UklGRjQEAABXRUJQVlA4ICgEAABQHACdASqgAHgAPm0ulUakIqIhJnIM2IANiU3bq8JbFEC648g3qo22fmA/Wb9o/eV/xHqo3iDn1fZgyGXwB/S+rTXV/2bwVfwr/GbjFf3HHXdqrxi3iZ8Yj/NfLp/rv8B5x/nP2C/1N9Jn1d+gj+26EzqiBUf93dX55Te2V7X0/rdVz6E8CwjE1l/w14C77IaVgxih9XmgY+hh7cGa9bLFzF/nsZ1WrI+GnNTE9QRh7adf/IKj5w52k6H4PiYtIf0Eg6o3DIo0U4/V3XioIUY+GDQQFkz4TFqexTYt/cwTPsy0zE1eKxbGtVgAAP78Iw3FB2NTAALz/r0Wdsw0WGdS+eqLyPQKdZA4pw+F0f/wAX1xmwvSujny801LLeXduLf8A7PsEf53/wiM+rofqOJ//8m7JhZRP9M37YZI9n/RU/+VD9ssOUPN2KHsFiWnlUUz59nDY9SQWtaChWVukTneRuhFbMbdwB9KFPc+ViN6/H8aD3JSu6J5e49nUcPIAwPFUwffzrfcKKGWr1VyFQJbwzz3mosbb0QD5Sid9/+aJ99xLNdmmvihYy/gPYi8pgeY3yit5lqf6kizO2NrNdlMbaXDzmdGBMpu0t1/ZdGPKMbfQ1lZRQ9aPTL1qvFUq+b6RBb0jQCDhW1hqdt5b5ts2JGJaDXKpYdMoPvZNum3B6dFGKgABlOC1pmNgbRNXVxomEzVG3iElQEDajHSmo3JjFxz6QbNIy1tSGwoAS3GxTddE/Jc59LaEWS8Xjk3n/76sd+IyX8RbihnIjPM8tX/CJ4kAp+W1/6dJMAhPpOOCnuuuvXFKRTcuxKqXEWJzronGM1f9fVAOwTkXlMGlh9aEKYvsUEO1kUo6o8KV7iDl62aIQWbiZ+3ok7rb+vhxDiC7RHNTPnS84dH3u3x3XWLZoRiKD0Vo6m+pdViZ5rN22UAVQ2wzzXe+D6VUeXI/+lmfBP5699NfMReYdOqZgjItMAEjc9HSXBez/UVABeHnZJNz/aqdN2y7f3BGGYR8piFz3Fcqwca+rT86XokTDzfP8UC8r5zkHeylCqcVFGq6zoM4ME4Chj6rlwDH1QGq0fyfI7zhQZ/FxVglNtSRfcTGTj/GrG2vv84Ror9O7FOXH+AOxlPf27bb4j5JMYHVWsh0PiTIqwxJkDqio+jaYW+tdji8dGeS6yAiJskU4tfa7I/EsrVscHv9tC6D1sl3IhB7uFwSp+Wazp/viPnXbPsAINOGc6VLVzg+rr3O2sHoRmgtzxucT/I6H0E0bWn9g0KtUaciObHRNE4ftXjykME0zeb87M3+inEBC8z62XNJtexP5LVe6/3Auf8ZTsSrVyIsWywDsAOZEj6u74o7JOxTK4xZn/zQ1VskbpPa7iMigkhr/ctmNUL1qStt/kLf4tGIqcgAAAAAA==", "response": "data:image/webp;base64,UklGRjQEAABXRUJQVlA4ICgEAABQHACdASqgAHgAPm0ulUakIqIhJnIM2IANiU3bq8JbFEC648g3qo22fmA/Wb9o/eV/xHqo3iDn1fZgyGXwB/S+rTXV/2bwVfwr/GbjFf3HHXdqrxi3iZ8Yj/NfLp/rv8B5x/nP2C/1N9Jn1d+gj+26EzqiBUf93dX55Te2V7X0/rdVz6E8CwjE1l/w14C77IaVgxih9XmgY+hh7cGa9bLFzF/nsZ1WrI+GnNTE9QRh7adf/IKj5w52k6H4PiYtIf0Eg6o3DIo0U4/V3XioIUY+GDQQFkz4TFqexTYt/cwTPsy0zE1eKxbGtVgAAP78Iw3FB2NTAALz/r0Wdsw0WGdS+eqLyPQKdZA4pw+F0f/wAX1xmwvSujny801LLeXduLf8A7PsEf53/wiM+rofqOJ//8m7JhZRP9M37YZI9n/RU/+VD9ssOUPN2KHsFiWnlUUz59nDY9SQWtaChWVukTneRuhFbMbdwB9KFPc+ViN6/H8aD3JSu6J5e49nUcPIAwPFUwffzrfcKKGWr1VyFQJbwzz3mosbb0QD5Sid9/+aJ99xLNdmmvihYy/gPYi8pgeY3yit5lqf6kizO2NrNdlMbaXDzmdGBMpu0t1/ZdGPKMbfQ1lZRQ9aPTL1qvFUq+b6RBb0jQCDhW1hqdt5b5ts2JGJaDXKpYdMoPvZNum3B6dFGKgABlOC1pmNgbRNXVxomEzVG3iElQEDajHSmo3JjFxz6QbNIy1tSGwoAS3GxTddE/Jc59LaEWS8Xjk3n/76sd+IyX8RbihnIjPM8tX/CJ4kAp+W1/6dJMAhPpOOCnuuuvXFKRTcuxKqXEWJzronGM1f9fVAOwTkXlMGlh9aEKYvsUEO1kUo6o8KV7iDl62aIQWbiZ+3ok7rb+vhxDiC7RHNTPnS84dH3u3x3XWLZoRiKD0Vo6m+pdViZ5rN22UAVQ2wzzXe+D6VUeXI/+lmfBP5699NfMReYdOqZgjItMAEjc9HSXBez/UVABeHnZJNz/aqdN2y7f3BGGYR8piFz3Fcqwca+rT86XokTDzfP8UC8r5zkHeylCqcVFGq6zoM4ME4Chj6rlwDH1QGq0fyfI7zhQZ/FxVglNtSRfcTGTj/GrG2vv84Ror9O7FOXH+AOxlPf27bb4j5JMYHVWsh0PiTIqwxJkDqio+jaYW+tdji8dGeS6yAiJskU4tfa7I/EsrVscHv9tC6D1sl3IhB7uFwSp+Wazp/viPnXbPsAINOGc6VLVzg+rr3O2sHoRmgtzxucT/I6H0E0bWn9g0KtUaciObHRNE4ftXjykME0zeb87M3+inEBC8z62XNJtexP5LVe6/3Auf8ZTsSrVyIsWywDsAOZEj6u74o7JOxTK4xZn/zQ1VskbpPa7iMigkhr/ctmNUL1qStt/kLf4tGIqcgAAAAAA==", "record": "data:image/webp;base64,UklGRjQEAABXRUJQVlA4ICgEAABQHACdASqgAHgAPm0ulUakIqIhJnIM2IANiU3bq8JbFEC648g3qo22fmA/Wb9o/eV/xHqo3iDn1fZgyGXwB/S+rTXV/2bwVfwr/GbjFf3HHXdqrxi3iZ8Yj/NfLp/rv8B5x/nP2C/1N9Jn1d+gj+26EzqiBUf93dX55Te2V7X0/rdVz6E8CwjE1l/w14C77IaVgxih9XmgY+hh7cGa9bLFzF/nsZ1WrI+GnNTE9QRh7adf/IKj5w52k6H4PiYtIf0Eg6o3DIo0U4/V3XioIUY+GDQQFkz4TFqexTYt/cwTPsy0zE1eKxbGtVgAAP78Iw3FB2NTAALz/r0Wdsw0WGdS+eqLyPQKdZA4pw+F0f/wAX1xmwvSujny801LLeXduLf8A7PsEf53/wiM+rofqOJ//8m7JhZRP9M37YZI9n/RU/+VD9ssOUPN2KHsFiWnlUUz59nDY9SQWtaChWVukTneRuhFbMbdwB9KFPc+ViN6/H8aD3JSu6J5e49nUcPIAwPFUwffzrfcKKGWr1VyFQJbwzz3mosbb0QD5Sid9/+aJ99xLNdmmvihYy/gPYi8pgeY3yit5lqf6kizO2NrNdlMbaXDzmdGBMpu0t1/ZdGPKMbfQ1lZRQ9aPTL1qvFUq+b6RBb0jQCDhW1hqdt5b5ts2JGJaDXKpYdMoPvZNum3B6dFGKgABlOC1pmNgbRNXVxomEzVG3iElQEDajHSmo3JjFxz6QbNIy1tSGwoAS3GxTddE/Jc59LaEWS8Xjk3n/76sd+IyX8RbihnIjPM8tX/CJ4kAp+W1/6dJMAhPpOOCnuuuvXFKRTcuxKqXEWJzronGM1f9fVAOwTkXlMGlh9aEKYvsUEO1kUo6o8KV7iDl62aIQWbiZ+3ok7rb+vhxDiC7RHNTPnS84dH3u3x3XWLZoRiKD0Vo6m+pdViZ5rN22UAVQ2wzzXe+D6VUeXI/+lmfBP5699NfMReYdOqZgjItMAEjc9HSXBez/UVABeHnZJNz/aqdN2y7f3BGGYR8piFz3Fcqwca+rT86XokTDzfP8UC8r5zkHeylCqcVFGq6zoM4ME4Chj6rlwDH1QGq0fyfI7zhQZ/FxVglNtSRfcTGTj/GrG2vv84Ror9O7FOXH+AOxlPf27bb4j5JMYHVWsh0PiTIqwxJkDqio+jaYW+tdji8dGeS6yAiJskU4tfa7I/EsrVscHv9tC6D1sl3IhB7uFwSp+Wazp/viPnXbPsAINOGc6VLVzg+rr3O2sHoRmgtzxucT/I6H0E0bWn9g0KtUaciObHRNE4ftXjykME0zeb87M3+inEBC8z62XNJtexP5LVe6/3Auf8ZTsSrVyIsWywDsAOZEj6u74o7JOxTK4xZn/zQ1VskbpPa7iMigkhr/ctmNUL1qStt/kLf4tGIqcgAAAAAA=="};
+const SOURCES={"checked": "2026-11-02", "scope": "Source-grounded planning practice. No specific service implementation, support contract, measured delivery result or legal-compliance claim is asserted.", "sources": []};
+// Shared board engine for the C1 activities: one fixed screen, illustrated tiles left and right open their step in the
+// centre stage. The activity's app.js fills in Board.tiles and the hooks below, then calls Board.start().
+// Tile: { id, title, short, image, side: 'left'|'right', render: () => html, slot: bool }
+const byId = id => document.getElementById(id);
+const safe = v => String(v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const Board = {
+  tiles: [],
+  faces: null,                              // { n, p, w } images for a reacting character; null = the current tile's picture
+  mood: { n: 'Focused.', p: 'Done.', w: 'Not yet.' },
+  cardLabel: (n, total) => `Progress ${n}/${total}`,
+  unlocked: () => true,
+  lockedMsg: () => '',
+  onOpen: () => {},
+  onClick: () => false,                     // return true when the activity handled the click
+  onReset: () => {},
+  st: null,
+  cur: 0,
+
+  idx(id) { return this.tiles.findIndex(t => t.id === id); },
+  slots() { return this.tiles.filter(t => t.slot).map(t => t.id); },
+  say(msg) { byId('live').textContent = ''; setTimeout(() => { byId('live').textContent = msg; }, 30); },
+  face(m) {
+    const f = byId('face'); f.className = m;
+    const src = this.faces ? this.faces[m] : this.tiles[this.cur].image;
+    f.innerHTML = `<img src="${src}" width="72" height="72" alt=""><span class="sr">${safe(this.mood[m])}</span>`;
+  },
+
+  start() {
+    byId('interactive').hidden = false;
+    this.build();
+    this.wire();
+  },
+  build() {
+    this.st = { done: {}, tries: {} };
+    this.onReset();
+    byId('stage-body').innerHTML = this.tiles.map((t, i) => `<section class="pane" id="pane-${t.id}" hidden aria-labelledby="ph-${t.id}">
+      <h2 id="ph-${t.id}" tabindex="-1"><span class="kick">Step ${i + 1} of ${this.tiles.length}</span> ${safe(t.title)}</h2>${t.render()}</section>`).join('');
+    const tile = t => `<li><button type="button" class="tile" data-tile="${t.id}" id="tile-${t.id}">
+      <span class="ico" aria-hidden="true"><img src="${t.image}" alt=""></span><span class="tt">${safe(t.short)}</span><span class="state" aria-hidden="true"></span><span class="sr st-text"></span></button></li>`;
+    byId('rail-left').innerHTML = this.tiles.filter(t => t.side === 'left').map(tile).join('');
+    byId('rail-right').innerHTML = this.tiles.filter(t => t.side === 'right').map(tile).join('');
+    byId('slots').innerHTML = this.slots().map(id => `<li><button type="button" class="slot" data-tile="${id}" id="slot-${id}"><strong>${safe(this.tiles[this.idx(id)].title)}</strong><span class="body muted">Not yet done.</span></button></li>`).join('');
+    this.open(0, true);
+  },
+
+  open(i, silent) {
+    const t = this.tiles[i];
+    if (!this.unlocked(t.id)) { const m = this.lockedMsg(t.id); this.say(m); byId('lockmsg').textContent = m; return; }
+    byId('lockmsg').textContent = '';
+    this.cur = i;
+    this.tiles.forEach(x => { byId('pane-' + x.id).hidden = x.id !== t.id; });
+    this.onOpen(t.id);
+    this.face(this.st.done[t.id] ? 'p' : 'n');
+    this.paint();
+    byId('stage-scroll').scrollTop = 0;
+    if (!silent) byId('ph-' + t.id).focus();
+  },
+  paint() {
+    this.tiles.forEach((t, i) => {
+      const b = byId('tile-' + t.id), done = !!this.st.done[t.id], lock = !this.unlocked(t.id);
+      b.className = 'tile' + (done ? ' done' : '') + (i === this.cur ? ' current' : '') + (lock ? ' locked' : '');
+      b.setAttribute('aria-current', i === this.cur ? 'step' : 'false');
+      b.querySelector('.state').textContent = done ? '✓' : lock ? '🔒' : '';
+      b.querySelector('.st-text').textContent = done ? ' (done)' : lock ? ' (locked)' : i === this.cur ? ' (current)' : ' (not started)';
+    });
+    const s = this.slots(), n = s.filter(id => this.st.done[id]).length;
+    byId('prog').textContent = `${n} of ${s.length} done`;
+    byId('bar').style.width = (s.length ? n / s.length * 100 : 0) + '%';
+    byId('card').classList.toggle('complete', n === s.length);
+    byId('unlocked').hidden = n !== s.length;
+    byId('toggle-card').textContent = this.cardLabel(n, s.length);
+    const last = this.tiles.length - 1, nx = byId('next'), pv = byId('prev');
+    pv.disabled = this.cur === 0; nx.disabled = this.cur === last;
+    nx.textContent = this.cur < last ? 'Next: ' + this.tiles[this.cur + 1].short + ' →' : 'Last step';
+    pv.textContent = this.cur ? '← ' + this.tiles[this.cur - 1].short : '←';
+  },
+  nextOpen() {
+    for (let k = 1; k <= this.tiles.length; k++) {
+      const j = (this.cur + k) % this.tiles.length, t = this.tiles[j];
+      if (!this.st.done[t.id] && this.unlocked(t.id)) return j;
+    }
+    return -1;
+  },
+
+  // Reactions
+  stamp(text) { const s = byId('stamp'); s.textContent = text; s.classList.remove('on'); void s.offsetWidth; s.classList.add('on'); },
+  wrong(fb) { this.face('w'); fb.classList.remove('wob'); void fb.offsetWidth; fb.classList.add('wob'); this.say(this.mood.w); },
+  fill(id, html) { const s = byId('slot-' + id); if (!s) return; const b = s.querySelector('.body'); b.className = 'body'; b.innerHTML = html; },
+  fly(id) {
+    const slot = byId('slot-' + id);
+    const pop = () => { if (slot) { slot.classList.add('filled', 'pop'); setTimeout(() => slot.classList.remove('pop'), 700); } };
+    if (!slot || reduced()) { pop(); return; }
+    const from = byId('tile-' + id).querySelector('.ico').getBoundingClientRect();
+    const to = (byId('card').hidden ? byId('toggle-card') : slot).getBoundingClientRect();
+    const c = document.createElement('div'); c.className = 'flyer'; c.textContent = '✓';
+    Object.assign(c.style, { left: from.left + 'px', top: from.top + 'px', width: from.width + 'px', height: from.height + 'px' });
+    document.body.appendChild(c);
+    const a = c.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${to.left + 12 - from.left}px,${to.top + 12 - from.top}px) scale(1.4)`, opacity: .2 }], { duration: 650, easing: 'cubic-bezier(.3,.7,.2,1)' });
+    a.onfinish = () => { c.remove(); pop(); };
+  },
+  // A step is finished: tick its tile, fill its slot, react, and offer the next open step inside `holder`.
+  complete(id, holder, stampText, slotHtml) {
+    this.st.done[id] = true;
+    if (slotHtml !== undefined) { this.fill(id, slotHtml); this.fly(id); }
+    this.face('p');
+    if (stampText) this.stamp(stampText);
+    const j = this.nextOpen();
+    if (holder && !holder.querySelector('[data-advance]')) {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'go'; b.dataset.advance = '1';
+      b.textContent = j >= 0 ? 'Continue to ' + this.tiles[j].short : 'All done';
+      holder.appendChild(b);
+    }
+    this.paint();
+    this.say(this.mood.p);
+  },
+  // Count a failed check; true once the "Show me the answer" escape should appear (after two).
+  failed(id) { this.st.tries[id] = (this.st.tries[id] || 0) + 1; return this.st.tries[id] >= 2; },
+
+  showCard(on) {
+    byId('card').hidden = !on;
+    byId('toggle-card').setAttribute('aria-expanded', String(on));
+    if (on) byId('closecard').focus();
+  },
+  wire() {
+    document.addEventListener('click', e => {
+      const t = e.target.closest('button');
+      if (!t || this.onClick(t)) return;
+      if (t.dataset.tile) this.open(this.idx(t.dataset.tile));
+      else if (t.dataset.advance) { const j = this.nextOpen(); if (j >= 0) this.open(j); else this.say('Every step is done.'); }
+      else if (t.id === 'prev') this.open(this.cur - 1);
+      else if (t.id === 'next') this.open(this.cur + 1);
+      else if (t.id === 'restart') { this.build(); byId('h-top').focus(); }
+      else if (t.id === 'toggle-card') this.showCard(byId('card').hidden);
+      else if (t.id === 'closecard') { this.showCard(false); byId('toggle-card').focus(); }
+      else if (t.id === 'casefile' && byId('casedlg')) byId('casedlg').showModal();
+      else if (t.id === 'closecase') byId('casedlg').close();
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !byId('card').hidden) { this.showCard(false); byId('toggle-card').focus(); } });
+  }
+};
+
+const CASES=DATA.stages,IDS=CASES.map(c=>c.id),FORMAT='c2-joint-call-plan-v1';let checked={},pending=null;
+const choice=(d,id)=>d.options.find(o=>o.id===id);
+function reference(open=false){return `<details class="reference"${open?' open':''}><summary>Review the known customer case</summary><div class="profile">${DATA.scenario.map(p=>`<p>${safe(p)}</p>`).join('')}<p>${safe(DATA.people)}</p><h3>Amira's question for the practice response</h3><blockquote>${safe(DATA.customerQuestion)}</blockquote></div></details>`;}
+function sample(c){return `<details class="reference"><summary>Compare with one possible plan section after drafting</summary><div class="profile"><p>This is a possible plan, not an agreed solution, committed action or script to copy. It does not fill your writing.</p>${c.fields.map(f=>`<h3>${safe(f.label)}</h3><p>${safe(f.sample)}</p>`).join('')}</div></details>`;}
+// Feedback state: pure functions used by feedback and confirmation help.
+function decisionFeedback(c,v){return c.decisions.map(d=>{const selected=choice(d,v.choices[d.id]);return {id:c.id+'-'+d.id,prompt:d.prompt,selected:selected?.name||'',feedback:selected?.feedback||'',status:!v.choices[d.id]?'blank':!selected?'unknown':v.choices[d.id]===d.correct?'correct':'incorrect'};});}
+function progressMessage(c,v,current,reviewed,done){const issues=decisionFeedback(c,v).filter(r=>r.status!=='correct'),missing=c.fields.filter(f=>!v[f.id].trim());if(issues.length)return issues.length+' planning '+(issues.length===1?'choice needs':'choices need')+' attention. First: '+issues[0].prompt+' Use Change this choice in the feedback, then check the plan section again. Your writing is kept.';if(missing.length)return 'Still to write: '+missing.map(f=>f.label).join('; ')+'. Your existing writing is kept.';if(!current)return 'Select Check the plan section to check your current choices and filled fields. Your writing is self-reviewed.';if(!reviewed)return 'The planning choices and filled fields are checked. Tick both self-review statements, then select I have reviewed this section.';if(done)return 'Section confirmed. Select Continue to move on.';return 'Ready to confirm. Select I have reviewed this section to continue.';}
+// End feedback state.
+function task(c){return `<p>${safe(c.intro)}</p>${c.id==='response'?`<section class="panel"><h3>Amira's question</h3><blockquote>${safe(DATA.customerQuestion)}</blockquote></section>`:''}${reference()}${c.decisions.map(d=>`<label class="field" for="${c.id}-${d.id}">${safe(d.prompt)}</label><select id="${c.id}-${d.id}" data-change="${c.id}"><option value="">Choose one</option>${d.options.map(o=>`<option value="${o.id}">${safe(o.name)}</option>`).join('')}</select>`).join('')}${c.fields.map(f=>`<label class="field" for="${c.id}-${f.id}">${safe(f.label)}</label><p class="muted">${safe(f.hint)}</p><textarea id="${c.id}-${f.id}" data-write="${c.id}" maxlength="4000" rows="4"></textarea>`).join('')}<button type="button" data-check="${c.id}">Check the plan section</button><section class="fb" id="fb-${c.id}" tabindex="-1" role="status" hidden></section><fieldset><legend>Self-review this section</legend>${DATA.review.map((t,j)=>`<label class="pick"><input type="checkbox" id="${c.id}-review-${j}" data-review="${c.id}"><span>${safe(t)}</span></label>`).join('')}</fieldset><p>Planning choices and filled fields are checked. The meaning and quality of your writing are self-reviewed.</p><div class="actions"><button type="button" data-complete="${c.id}" aria-describedby="next-help-${c.id}" disabled>I have reviewed this section</button><button type="button" data-continue="${c.id}" hidden>Continue</button></div><p id="next-help-${c.id}" role="status"></p>${sample(c)}`;}
+function read(id){const c=CASES.find(c=>c.id===id);return {choices:Object.fromEntries(c.decisions.map(d=>[d.id,byId(id+'-'+d.id).value])),message:byId(id+'-message').value,reason:byId(id+'-reason').value,confirm:byId(id+'-confirm').value};}
+function assess(c,v){return c.decisions.every(d=>v.choices[d.id]===d.correct);}
+function signature(id){return JSON.stringify(read(id));}
+function reviewed(id){return DATA.review.every((_,j)=>byId(id+'-review-'+j).checked);}
+function valid(id){const c=CASES.find(c=>c.id===id),v=read(id);return checked[id]===signature(id)&&assess(c,v)&&!!v.message.trim()&&!!v.reason.trim()&&!!v.confirm.trim();}
+function sync(id){const c=CASES.find(c=>c.id===id),v=read(id);byId('pane-'+id).querySelector('[data-complete]').disabled=!(valid(id)&&reviewed(id))||!!Board.st.done[id];byId('next-help-'+id).textContent=progressMessage(c,v,valid(id),reviewed(id),!!Board.st.done[id]);}
+function clearStamp(){byId('stamp').textContent='';byId('stamp').classList.remove('on');}
+function invalidate(id){reopenFrom(id);delete checked[id];delete Board.st.done[id];DATA.review.forEach((_,j)=>byId(id+'-review-'+j).checked=false);byId('whole-review').checked=false;byId('fb-'+id).hidden=true;byId('pane-'+id).querySelector('[data-continue]').hidden=true;clearStamp();sync(id);Board.fill(id,'Changed: check the choices and review your writing again.');Board.paint();updateRecord();}
+function focusFeedback(box){const scroller=byId('stage-scroll');if(scroller.scrollHeight>scroller.clientHeight+2)scroller.scrollTop+=box.getBoundingClientRect().top-scroller.getBoundingClientRect().top-12;else window.scrollTo({top:Math.max(0,window.scrollY+box.getBoundingClientRect().top-12),behavior:'auto'});box.focus({preventScroll:true});}
+function check(c){const v=read(c.id),ok=assess(c,v),box=byId('fb-'+c.id);box.hidden=false;const missing=c.fields.filter(f=>!v[f.id].trim()).map(f=>f.label);checked[c.id]=ok&&!missing.length?signature(c.id):null;box.innerHTML=`<p><strong>${c.decisions.length?(ok?'The planning choices fit this case':'Some planning choices need changing'):'Review the writing and coordination plan'}</strong></p>${decisionFeedback(c,v).map(r=>`<section><p><strong>${safe(r.prompt)}</strong></p><p>${safe(r.selected||'Not chosen.')}</p><p><strong>${r.status==='correct'?'Correct.':r.status==='incorrect'?'Not quite.':r.status==='unknown'?'Choose an available option.':'Choose one.'}</strong> ${safe(r.feedback||'Return to this choice, select an option and check again. Your writing is kept.')}</p>${r.status!=='correct'?`<button type="button" data-fix="${r.id}" aria-label="Change choice: ${safe(r.prompt)}">Change this choice</button>`:''}</section>`).join('')}${missing.length?`<p>Still to write: ${safe(missing.join('; '))}. Existing writing is kept.</p>`:'<p>All three writing fields contain a response. That does not verify the quality of the prose. Use the two self-review statements before recording the section.</p>'}<p>Keep this as a proposed plan. Confirm responsibilities, technical assumptions and support arrangements before making a commitment.</p>`;sync(c.id);focusFeedback(box);}
+function updateRecord(){if(!byId('written-record'))return;byId('written-record').innerHTML=CASES.map(c=>{const v=read(c.id);return `<section class="panel"><h3>${safe(c.title)}</h3><p>${Board.st.done[c.id]?'Choices checked; writing self-reviewed.':'Draft: review not complete.'}</p>${c.decisions.map(d=>`<p><strong>${safe(d.prompt)}</strong> ${safe(choice(d,v.choices[d.id])?.name||'Not chosen.')}</p>`).join('')}<dl>${c.fields.map(f=>`<dt>${safe(f.label)}</dt><dd>${safe(v[f.id]||'Not entered yet.')}</dd>`).join('')}</dl></section>`;}).join('');byId('download').disabled=!(allConfirmed()&&byId('whole-review').checked);}
+function download(text,name,type){const u=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
+function notify(msg){byId('save-status').textContent=msg;Board.say(msg);}
+Board.tiles=[{id:'start',title:'Prepare one coordinated customer call',short:'Customer case',image:IMAGES.start,side:'left',render:()=>`<p>${safe(DATA.intro)}</p><p>${safe(DATA.boundary)}</p><p>${safe(DATA.scope)}</p>${reference(true)}<p>Build three connected sections: the business opening, the team handoff, and a response/follow-up plan. Check four planning decisions and write all nine fields in your own words, then self-review the meaning. Examples are available after drafting.</p><p>Save editable draft keeps unfinished work; each writing field allows 4,000 characters. Restore asks before replacing work and reopens reviews. Use the complete text version or PDF below for offline planning.</p><button type="button" id="begin">Start the business opening</button>`},...CASES.map((c,i)=>({id:c.id,title:c.title,short:c.short,image:IMAGES[c.id],side:i===0?'left':'right',slot:true,render:()=>task(c)})),{id:'record',title:'Review and keep your joint call plan',short:'Your call plan',image:IMAGES.record,side:'right',render:()=>`<p>Your three sections form one current call plan, including unfinished drafts. Reopen any section to edit.</p><div id="written-record"></div><label class="pick"><input type="checkbox" id="whole-review"><span>I have checked the plan as a whole: the business message, technical handoff and joint response support the same customer goals, with proposed owners and validation needs clear.</span></label><button type="button" id="download" disabled>Download my joint call plan</button><p id="download-status" role="status"></p><p>${safe(DATA.closing)}</p>`}];
+Board.unlocked=()=>true;Board.cardLabel=()=>`Sections ${IDS.filter(id=>Board.st.done[id]).length}/3`;Board.mood={n:'Preparing the joint call plan.',p:'Call-plan section reviewed.',w:'Review the planning choices.'};
+Board.onReset=()=>{checked={};pending=null;clearStamp();byId('card').hidden=true;byId('toggle-card').setAttribute('aria-expanded','false');if(byId('restore-warning'))byId('restore-warning').hidden=true;};Board.onOpen=id=>{if(id==='record')updateRecord();else if(IDS.includes(id))sync(id);};
+Board.onClick=b=>{
+ if(b.dataset.fix){const target=CASES.flatMap(c=>c.decisions.map(d=>c.id+'-'+d.id)).includes(b.dataset.fix)?byId(b.dataset.fix):null;if(target){target.scrollIntoView({block:'center',behavior:'auto'});target.focus({preventScroll:true});}return true;}
+
+ if(b.id==='restart'){if(IDS.some(id=>{const v=read(id);return Object.values(v.choices).some(Boolean)||v.message||v.reason||v.confirm;})&&!confirm('Start again and clear your call plan? Save an editable draft first if you want to keep them.'))return true;return false;}
+ if(b.id==='begin'){Board.open(1);return true;}
+ const id=b.dataset.check||b.dataset.complete||b.dataset.continue,c=CASES.find(c=>c.id===id);
+ if(b.dataset.check){check(c);return true;}
+ if(b.dataset.complete){if(!Board.unlocked(id)||!valid(id)||!reviewed(id))return true;Board.complete(id,null,'Self-reviewed','Section reviewed');sync(id);const n=byId('pane-'+id).querySelector('[data-continue]');n.hidden=false;n.focus();updateRecord();return true;}
+ if(b.dataset.continue){Board.open(Board.idx(id)+1);return true;}
+ if(b.id==='save-work'){download(JSON.stringify({format:FORMAT,cases:Object.fromEntries(IDS.map(id=>[id,read(id)]))},null,2),'my-joint-call-plan-draft.json','application/json');notify('Editable draft downloaded. Keep it to restore unfinished work later.');return true;}
+ if(b.id==='restore-work'){byId('restore-file').click();return true;}
+ if(b.id==='restore-cancel'){pending=null;byId('restore-warning').hidden=true;notify('Restore cancelled. Current writing kept.');return true;}
+ if(b.id==='restore-confirm'){if(!pending)return true;CASES.forEach(c=>{const v=pending[c.id];for(const d of c.decisions)byId(c.id+'-'+d.id).value=v.choices[d.id];for(const f of ['message','reason','confirm'])byId(c.id+'-'+f).value=v[f];invalidate(c.id);});pending=null;byId('restore-warning').hidden=true;updateRecord();notify('Draft restored. Check the choices and review your writing again.');Board.open(1);return true;}
+ if(b.id==='download'){if(b.disabled||!allConfirmed()||!byId('whole-review').checked)return true;const lines=[DATA.title,'Proposed call plan. Choices checked; authored prose self-reviewed, not automatically graded.',...DATA.scenario,'Participants and roles: '+DATA.people,'Amira’s question: '+DATA.customerQuestion,''];CASES.forEach(c=>{const v=read(c.id);lines.push(c.title,...c.decisions.map(d=>d.prompt+' '+choice(d,v.choices[d.id]).name),...c.fields.map(f=>f.label+': '+v[f.id]),'');});download(lines.join('\n'),'my-joint-call-plan.txt','text/plain;charset=utf-8');byId('download-status').textContent='Your joint call plan has been downloaded.';return true;}return false;
+};
+
+function allConfirmed(){return IDS.every(id=>Board.st.done[id]&&valid(id)&&reviewed(id));}
+function reopenFrom(id,preserveCurrent=false){IDS.slice(IDS.indexOf(id)).forEach(next=>{delete Board.st.done[next];if(!(preserveCurrent&&next===id)){delete checked[next];DATA.review.forEach((_,j)=>byId(next+'-review-'+j).checked=false);byId('fb-'+next).hidden=true;}byId('pane-'+next).querySelector('[data-continue]').hidden=true;Board.fill(next,'Recheck this section. Your writing is kept.');sync(next);});}
+Board.unlocked=id=>Board.tiles.slice(1,Board.idx(id)).filter(t=>t.slot).every(t=>Board.st?.done[t.id]&&valid(t.id)&&reviewed(t.id));
+Board.lockedMsg=()=> 'Correct and confirm each earlier section before continuing. Your writing is kept.';
+const originalPaint=Board.paint;Board.paint=function(){originalPaint.call(this);byId('next').disabled=this.cur===this.tiles.length-1||!this.unlocked(this.tiles[this.cur+1].id);this.tiles.forEach(t=>byId('tile-'+t.id).setAttribute('aria-disabled',String(!this.unlocked(t.id))));};
+
+Board.start();const toolbar=document.createElement('section');toolbar.className='save-tools';toolbar.setAttribute('aria-label','Keep or restore your writing');toolbar.innerHTML='<button type="button" id="save-work">Save editable draft</button><button type="button" id="restore-work" class="quiet">Restore draft</button><input id="restore-file" type="file" accept=".json,application/json" hidden><p id="save-status" role="status"></p><div id="restore-warning" hidden><p>Replace all current work with the selected draft? Review status will be cleared.</p><button type="button" id="restore-confirm">Replace my current work</button><button type="button" id="restore-cancel" class="quiet">Cancel restore</button></div>';byId('interactive').before(toolbar);
+document.addEventListener('input',e=>{if(e.target.dataset.write)invalidate(e.target.dataset.write);});document.addEventListener('change',e=>{if(e.target.dataset.change)invalidate(e.target.dataset.change);if(e.target.dataset.review){const id=e.target.dataset.review;if(!reviewed(id)){reopenFrom(id,true);delete Board.st.done[id];byId('whole-review').checked=false;byId('pane-'+id).querySelector('[data-continue]').hidden=true;clearStamp();Board.fill(id,'Self-review reopened.');Board.paint();}sync(id);updateRecord();}if(e.target.id==='whole-review')updateRecord();});
+byId('restore-file').addEventListener('change',async e=>{const file=e.target.files[0];pending=null;byId('restore-warning').hidden=true;if(!file)return;try{if(file.size>1000000)throw Error();const v=JSON.parse(await file.text());if(v.format!==FORMAT||!v.cases||typeof v.cases!=='object'||Array.isArray(v.cases))throw Error();const rows={};for(const c of CASES){const r=v.cases[c.id];if(!r||typeof r!=='object'||Array.isArray(r))throw Error();if(!r.choices||typeof r.choices!=='object'||Array.isArray(r.choices)||Object.keys(r.choices).length!==c.decisions.length)throw Error();for(const d of c.decisions)if(typeof r.choices[d.id]!=='string'||r.choices[d.id]&&!choice(d,r.choices[d.id]))throw Error();for(const f of ['message','reason','confirm'])if(typeof r[f]!=='string'||r[f].length>4000)throw Error();rows[c.id]={choices:Object.fromEntries(c.decisions.map(d=>[d.id,r.choices[d.id]])),message:r.message,reason:r.reason,confirm:r.confirm};}pending=rows;byId('restore-warning').hidden=false;notify('Draft read. Confirm below before replacing current work.');byId('restore-confirm').focus();}catch{notify('That is not a valid draft for this activity. Your current writing is kept.');}e.target.value='';});
+
+
+
+let restoredEdition=2;
+ActivityProgress.mount({id:"c2-plan-call-together",compatibility:"state-v1:6eef0949f8551a8df559",title:document.title,media:Object.values(IMAGES),roots:['stage-body','slots','stamp'],getState:()=>({board:Board.st,cur:Board.cur,checked,assessmentVersion:2}),setState:v=>{Board.st=v.board;Board.cur=v.cur;checked=v.checked||{};restoredEdition=v.assessmentVersion;},afterRestore:()=>{
+ const values=CASES.map(c=>[...byId('pane-'+c.id).querySelectorAll('input[id],select[id],textarea[id]')].map(e=>({id:e.id,value:e.value,checked:e.checked}))),feedbackShown=CASES.map(c=>!byId('fb-'+c.id).hidden),oldBoard=Board.st,oldChecked=checked,cur=Board.cur,whole=byId('whole-review').checked;
+ Board.build();values.flat().forEach(v=>{const e=byId(v.id);if(e){e.value=v.value;if(e.type==='checkbox'||e.type==='radio')e.checked=restoredEdition===2?v.checked:!e.dataset.review&&v.checked;}});Board.st=oldBoard;checked=restoredEdition===2?oldChecked:{};if(restoredEdition!==2)Board.st.done={};let incomplete=false;
+ CASES.forEach(c=>{if(incomplete||!valid(c.id)||!reviewed(c.id))delete Board.st.done[c.id];if(!Board.st.done[c.id])incomplete=true;const i=IDS.indexOf(c.id);if(restoredEdition===2&&feedbackShown[i])check(c);Board.fill(c.id,Board.st.done[c.id]?'Choices checked; writing reviewed.':'Recheck this section. Your writing is kept.');sync(c.id);byId('pane-'+c.id).querySelector('[data-continue]').hidden=!Board.st.done[c.id];});byId('whole-review').checked=!incomplete&&whole;updateRecord();if(Board.tiles[cur]&&Board.unlocked(Board.tiles[cur].id))Board.open(cur,true);else Board.open(IDS.findIndex(id=>!Board.st.done[id])+1,true);Board.paint();
+ },reset:()=>Board.build(),currentRoot:()=>byId('pane-'+Board.tiles[Board.cur].id)});
+</script></body></html>
