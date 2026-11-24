@@ -1,0 +1,120 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Capstone sales project</title><style>:root{color-scheme:light;--ink:#192c3c;--muted:#506577;--paper:#fff;--line:#c6d5de;--accent:#6651c9;--green:#087c5b}*{box-sizing:border-box}body{margin:0;background:#edf2f5;color:var(--ink);font:16px/1.55 system-ui,sans-serif}a{color:#44319e}button,input,textarea{font:inherit}button,a.button{border:1px solid #9a8ddd;border-radius:9px;padding:9px 13px;background:#fff;color:#362477;cursor:pointer;text-decoration:none}button:hover,a.button:hover{background:#f1edff}button.primary{background:var(--accent);color:#fff}button:disabled{opacity:.55;cursor:default}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid #cc6a14;outline-offset:3px}header{max-width:1440px;margin:auto;padding:26px 28px 12px}.eyebrow{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}h1{font-size:clamp(1.65rem,3vw,2.35rem);line-height:1.2;margin:8px 0 12px}h2{font-size:1.4rem;line-height:1.3}h3{font-size:1.08rem}p{margin:0 0 13px}.intro{max-width:900px}.utility{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin:15px 0}.notice{font-size:.92rem;color:var(--muted)}.board{display:grid;grid-template-columns:minmax(170px,225px) minmax(360px,1fr) minmax(170px,225px);gap:18px;max-width:1440px;margin:0 auto;padding:12px 28px 30px}.rail{display:flex;flex-direction:column;gap:12px}.task-link{text-align:left;min-height:77px;display:flex;flex-direction:column;justify-content:center;width:100%}.task-link[aria-current=true]{border:2px solid var(--accent);background:#eee9ff}.task-link.done{border-left:6px solid var(--green)}.task-link .status{font-size:.82rem;color:var(--muted)}.screen{background:var(--paper);border:1px solid var(--line);border-radius:16px;box-shadow:0 7px 22px #24374d0b;min-height:640px;overflow:hidden}.screen-head{background:#203e54;color:#fff;padding:20px 24px}.screen-head p{margin:4px 0 0;color:#e0ebf4}.screen-body{padding:24px}.panel{display:none}.panel.active{display:block}details{border:1px solid var(--line);border-radius:9px;margin:12px 0;background:#fff}summary{cursor:pointer;font-weight:650;padding:12px 15px}details>div{padding:0 16px 12px}.case-card{border-left:4px solid #28a4a4;padding-left:14px;margin:16px 0}.case-card h3{margin:0 0 5px}.task-response{width:100%;min-height:220px;resize:vertical;padding:12px;border:1px solid #879da9;border-radius:9px;color:var(--ink);background:#fcfdff}.task-response:focus{border-color:var(--accent)}label{display:block;font-weight:600;margin:12px 0 7px}.checks{padding:12px 16px;background:#f1f7f4;border-radius:9px;margin:14px 0}.checks li{margin:6px 0}.actions{display:flex;flex-wrap:wrap;gap:10px;margin:15px 0}.progress-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:15px}.progress-card strong{display:block}progress{width:100%;accent-color:var(--green);height:14px}.feedback{border-left:4px solid #6b7db2;padding:10px 13px;background:#f1f4fb;margin-top:12px}.feedback.good{border-color:var(--green);background:#edf7f1}.question{border-bottom:1px solid var(--line);padding:15px 0}.question:first-child{padding-top:0}.question legend{font-weight:650}.question label{font-weight:400;display:flex;gap:10px;align-items:flex-start;padding:5px;margin:3px 0}.question input{margin-top:6px;flex:none}.question fieldset{border:0;padding:0;margin:0}.mini{font-size:.88rem;color:var(--muted)}#live{min-height:28px;max-width:1384px;margin:auto;padding:0 28px;color:#07573f;font-weight:600}.downloads{display:flex;flex-wrap:wrap;gap:8px}.export-summary{display:none}.reference-table{display:grid;gap:10px}.reference-table div{padding:10px;border-bottom:1px solid var(--line)}.reference-table strong{display:block}footer{max-width:1384px;margin:auto;padding:0 28px 25px}.hidden-file{position:absolute;left:-9999px}.print-note{display:none}@media(max-width:1000px){.board{grid-template-columns:170px 1fr}.right{grid-column:1;grid-row:2}.screen{grid-column:2;grid-row:1/span 2}.screen-body{padding:18px}}@media(max-width:680px){header{padding:20px 16px 8px}.board{display:flex;flex-direction:column;padding:10px 16px 22px}.rail{display:grid;grid-template-columns:1fr 1fr;gap:8px}.right{display:flex;flex-direction:column}.screen{order:1;min-height:0}.left{order:0}.right{order:2}.task-link{min-height:65px}.screen-head{padding:16px}.screen-body{padding:16px}.progress-card{grid-column:1/-1}.task-response{min-height:230px}#live{padding:0 16px}.question label{padding:9px 0}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}@media print{body{background:#fff;color:#111;font:11pt/1.4 Arial,sans-serif}header{padding:0}.board,.utility,.notice,#live,footer,.intro{display:none}.export-summary{display:block}.export-summary h2{break-before:page}.export-summary h2:first-of-type{break-before:auto}.export-summary pre{font:inherit;white-space:pre-wrap;overflow-wrap:anywhere}.print-note{display:block}.eyebrow{color:#111}h1{font-size:21pt}}
+
+@media(min-width:1001px){.rail{position:sticky;top:18px;align-self:start}}
+
+button,a.button,select,summary{min-height:44px}select{display:block;width:100%;max-width:100%;font:inherit;padding:10px;border:1px solid #879da9;border-radius:8px;background:white;color:var(--ink)}.board>*{min-width:0}.screen{overflow:visible}.task-link{overflow-wrap:anywhere}.task-response{min-height:160px}.revision-field{border-top:2px solid var(--line);margin-top:18px;padding-top:10px}.self-check{display:flex;align-items:flex-start;gap:10px;font-weight:400;padding:9px;border:1px solid var(--line);border-radius:8px;min-height:44px}.self-check input{flex:0 0 22px;width:22px;height:22px;margin-top:2px;accent-color:var(--green)}.record-section{border-bottom:1px solid var(--line);padding:12px 0}dt{font-weight:700}dd{white-space:pre-wrap;overflow-wrap:anywhere;margin:4px 0 16px}.transcript-turn{padding:8px 0;border-bottom:1px solid var(--line)}blockquote{margin:8px 0 16px;padding-left:12px;border-left:4px solid #28a4a4;overflow-wrap:anywhere}#restore-warning{border:2px solid var(--accent);border-radius:10px;padding:12px;max-width:900px}#text-version{max-width:1000px;margin:18px auto;padding:0 20px;overflow-wrap:anywhere}#text-version>summary{font-size:1.1rem}#text-version h1{font-size:1.7rem}#text-version h2{font-size:1.35rem}.complete-text{padding:16px;background:white}#plan-record dd,#review-record dd{font-weight:400}.professional-review{padding:12px;background:#f1f7f4;border-radius:8px}button[data-open]{max-width:100%;white-space:normal}.task-response,select{scroll-margin-top:15px}@media(max-width:680px){.task-response{min-height:180px}.utility{align-items:stretch}.utility button,.utility a{max-width:100%}.rail{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.screen-body{padding:14px}#text-version{padding:0 12px}.self-check{padding:8px}}@media print{#text-version{display:none}.record-section{break-inside:auto}.record-section h3{break-after:avoid}dd{white-space:pre-wrap}}
+
+.next-step-card{padding:16px;border:2px solid #6651c9;border-radius:10px;background:#f4f1ff;margin:0 0 18px}.next-step-card h3{margin:0 0 8px}.next-step-card button{max-width:100%;white-space:normal}.next-step-card button[hidden]{display:none}#finish-actions{margin-bottom:20px}#finish-actions .professional-review{margin-bottom:14px}#finish-actions>#download-plan{width:100%;min-height:50px}@media print{.next-step-card{display:none}}
+</style></head><body><header><h1>Blank text template</h1><a href="index.html">Open the interactive capstone</a><p>Copy the text below into your own editor, or use the Excel download in the interactive workbench.</p></header><main class="complete-text" style="max-width:950px;margin:auto"><pre style="white-space:pre-wrap;overflow-wrap:anywhere;font:inherit">Ashbourne Global opportunity engagement plan
+Blank text template - fictional ungraded practice.
+This is ungraded practice. Your writing is not submitted, automatically graded or certified. The final scored course assessment is separate. No cloud account, deployment or paid service is needed.
+
+Buyer roles and responsibilities
+Map all four stakeholders. For each, describe known responsibilities, evidence for your assessment of influence, what authority still needs confirmation and a proposed engagement action. Begin Nina’s entry with a two-sentence opportunity summary: the customer’s goal, what the conversation establishes and the biggest unanswered question. Once in this section, preferably in Nina’s opening entry, name the person or people you would involve next, explain why, and identify evidence that could change that priority. You can propose a joint conversation; a job title alone does not establish authority.
+Nina Okafor - Director of IT
+Include known responsibilities, a supported influence judgement or question, and how you would engage Nina. Start with your short opportunity summary and the biggest unanswered question. Then explain Nina’s role and whether you would involve her in the next conversation, with your reason.
+[Write your response here]
+
+Marcus Lee - Finance Manager
+Connect budgeting and cost evaluation to a supported engagement plan; do not assume signing authority.
+[Write your response here]
+
+Sofia Martinez - Operations Lead
+Include regional reporting/workflow needs and influence to confirm.
+[Write your response here]
+
+Aisha Bello - Learning Manager
+Include facilitator/learner needs and an engagement action; do not dismiss this perspective because of hierarchy.
+[Write your response here]
+
+Your review and revision note
+After comparing your actual section with the criteria and example, describe one change you made and why, or explain why you kept it. Revise the section itself where needed.
+[Write your response here]
+
+Review criteria:
+I covered all four people with their actual responsibilities and priorities.
+Influence/authority judgements are supported or explicitly marked for confirmation.
+Each stakeholder has a proposed engagement action; my summary distinguishes known evidence from open questions, and I justify who to involve next and what could change that priority.
+
+Tailored cloud value statements
+Write three concise value statements covering all four stakeholder perspectives. Link a capability hypothesis to a goal, a proposed measure and what must be validated; one statement can address Sofia and Aisha together. In Nina’s statement or its supporting note, record one relevant capability source (course step title or document/link), the specific fact it supports, and what it does not establish for Ashbourne. Use a real source you have checked; do not invent a quotation or treat a general capability as a validated customer solution.
+Value for Nina: secure modernization and integration
+Explain a possible capability and business value, a measure to agree and technical validation still needed. Include one source, the capability fact it supports and the customer-specific question it leaves open.
+[Write your response here]
+
+Value for Marcus: cost visibility and comparison
+Use cost scenarios and explicit assumptions; do not promise a fixed bill, saving or return.
+[Write your response here]
+
+Value for Sofia and Aisha: reporting and learner insight
+Address both regional workflow and learner/facilitator needs, with proposed measures and data-freshness questions.
+[Write your response here]
+
+Your review and revision note
+After comparing your actual section with the criteria and example, describe one change you made and why, or explain why you kept it. Revise the section itself where needed.
+[Write your response here]
+
+Review criteria:
+Each statement connects a capability to named customer priorities, with all four perspectives covered.
+Proposed measures have a baseline or question to establish one; targets are not presented as measured results.
+The wording stays clear and conditional where design, cost, security or data outcomes are unverified. I identify a checked source, its supported fact and the remaining customer-specific gap.
+
+Responses to two supplied objections
+The two concerns are already identified in the transcript. Choose a framework for each, write a response and prepare a relevant follow-up/evidence action. Either taught framework may be used thoughtfully; no comparable customer outcome is supplied. If you select Feel-Felt-Found, identify the comparable experience and supported finding you would need to verify before using it; the case does not provide them. State what is missing rather than inventing a customer story.
+Framework for Nina’s response: Acknowledge-Ask / Feel-Felt-Found
+
+Framework for Marcus’s response: Acknowledge-Ask / Feel-Felt-Found
+
+Your response to Nina
+Use the chosen framework, the actual migration/integration concern and a professional opening. Do not claim a proven secure transition.
+[Write your response here]
+
+Follow-up and evidence for Nina
+Identify the technical questions, evidence or test and proposed next action. If using Feel-Felt-Found, state what comparable evidence is missing. Explain briefly why your selected framework fits the evidence in this concern, as well as the follow-up you propose.
+[Write your response here]
+
+Your response to Marcus
+Use the chosen framework and annual spending concern without promising savings or a predictable bill.
+[Write your response here]
+
+Follow-up and evidence for Marcus
+Identify required cost inputs, uncertainty and a proposed action/owner to confirm. Explain briefly why your selected framework fits the evidence in this concern, as well as the follow-up you propose.
+[Write your response here]
+
+Your review and revision note
+After comparing your actual section with the criteria and example, describe one change you made and why, or explain why you kept it. Revise the section itself where needed.
+[Write your response here]
+
+Review criteria:
+Both supplied objections have a selected framework, an actual response, a reason the framework fits the evidence, and a specific follow-up/evidence plan.
+The response acknowledges the concern and uses a relevant open question or verified evidence; no testimonial is invented.
+Follow-up moves toward validation and understanding, without claiming the concern is already resolved.
+
+Joint technical follow-up call plan
+Plan the follow-up to the scoping call. Include the objective, all participants and contributions, a focused agenda and proposed follow-up actions with owners and timing to agree.
+Your proposed call objective
+Connect the next conversation to the customer’s evaluation needs and unknowns.
+[Write your response here]
+
+Participants and primary contributions
+Include all four customer contacts, you and a technical teammate; confirm authority and attendance rather than assuming them.
+[Write your response here]
+
+Your agenda and handoff
+Connect business goals to technical questions, include customer input and preserve reporting/cost/learner needs. Write the actual sentence you would use to hand over to your technical teammate: connect the customer’s question to the focused contribution you need, and invite the customer to confirm the focus.
+[Write your response here]
+
+Proposed follow-up actions, owners and timing to agree
+Name actions and suggested owners, dependencies and how timing will be agreed. Do not invent a committed deadline.
+[Write your response here]
+
+Your review and revision note
+After comparing your actual section with the criteria and example, describe one change you made and why, or explain why you kept it. Revise the section itself where needed.
+[Write your response here]
+
+Review criteria:
+The objective and agenda address the actual migration/integration, cost and reporting/learner needs.
+All four customer perspectives and complementary sales/technical contributions are present. My agenda includes a specific customer-purpose handoff sentence.
+Follow-up names proposed actions and owners, with dependencies and timing to agree rather than invented commitments.
+
+</pre></main></body></html>
